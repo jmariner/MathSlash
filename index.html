@@ -17,16 +17,20 @@
 			background-image: url("images/{spriteSheet}");
 		}
 	</template>
-
 	<template id="animated_element_template">
 		{selector} {
 			position: absolute;
 			width: {width}px;
 			height: {height}px;
-			background-position: {start};
+			top: {top};
+			left: {left};
+			bottom: {bottom};
+			right: {right};
 		}
-		{selector}.{playingClass} { animation: {animationName} steps({frames}) {durationString} infinite; }
-		@keyframes {animationName} {
+	</template>
+	<template id="element_animation_template">
+		{selector}.{animationName}.{playingClass} { animation: {characterName}-{animationName} steps({frames}) {durationString} infinite; }
+		@keyframes {characterName}-{animationName} {
 			from { background-position: {start}; }
 			to { background-position: {end}; }
 		}
@@ -48,8 +52,7 @@
 <body class="mdl-color--primary flex-column justify-between">
 	<div class=""></div>
 	<div class="tile-parent"></div>
-	<div class="knight"></div>
-	<div class="monster"></div>
+	<div class="ken"></div>
 </body>
 
 </html>
