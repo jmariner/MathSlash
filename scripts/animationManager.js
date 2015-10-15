@@ -13,7 +13,7 @@ AnimationManager.prototype.registerCharacter = function(name, options) {
 	if (name && options) {
 		this._characterList.push(name);
 		this.characters[name] = new AnimationManager.Character(this,
-			options.name, options.selector, options.startY, options.size, options.position, options.styles);
+			name, options.selector, options.startY, options.size, options.position, options.styles);
 		return this.characters[name];
 	}
 };
@@ -58,7 +58,7 @@ AnimationManager.Character = function(manager, name, selector, startY, size, pos
 AnimationManager.Character.prototype.registerAnimation = function(name, options) {
 	this._animationList.push(name);
 	this.animations[name] = new AnimationManager.Animation(this,
-		options.name, options.index, options.frames, options.duration);
+		name, options.index, options.frames, options.duration);
 	return this.animations[name];
 };
 
