@@ -18,7 +18,6 @@ AnimationManager.prototype.registerCharacter = function(name, options) {
 	}
 };
 
-
 //											====================== Character ======================
 AnimationManager.Character = function(manager, name, selector, startY, size, position, styles) {
 
@@ -54,7 +53,13 @@ AnimationManager.Character = function(manager, name, selector, startY, size, pos
 	this.animations = {};
 	this._currentAnimation = undefined;
 };
-// TODO allow parameter object vs a list
+
+AnimationManager.Character.prototype.setStyles = function(styles) {
+    if (styles) {
+        this.$element.css(styles);
+    }
+};
+
 AnimationManager.Character.prototype.registerAnimation = function(name, options) {
 	this._animationList.push(name);
 	this.animations[name] = new AnimationManager.Animation(this,
@@ -77,7 +82,6 @@ AnimationManager.Character.prototype.stopAnimation = function() {
 	}
 };
 
-
 //											====================== Animation ======================
 AnimationManager.Animation = function(character, name, index, frames, duration) {
 
@@ -94,33 +98,32 @@ AnimationManager.Animation = function(character, name, index, frames, duration) 
 
 	this.startY = this.character.startY + this.character.size.h * this.index;
 
-	Utils.generateStylesheet("element_animation_template", {
-		selector: this.character.selector,
-		start: "0px " + -this.startY+"px",
-		end: (-this.frames*this.character.size.w)+"px " + -this.startY+"px",
-		frames: this.frames,
-		animationName: this.name,
-		characterName: this.character.name,
-		durationString: duration/1000+"s",
-		playingClass: AnimationManager.playingClass
-	}, this.character.name + "-" + this.name);
+    this._generateStyles();
 
 	this._timeouts = {};
-	this._status = "stopped";
+	this._status = "stop";
 };
 
-AnimationManager.Animation.prototype.isStopped = function() { return this._status === "stopped"; };
-AnimationManager.Animation.prototype.isPlaying = function() { return this._status === "playing"; };
-AnimationManager.Animation.prototype.isLooping = function() { return this._status.indexOf("looping") > -1; };
-AnimationManager.Animation.prototype.isInfLooping = function() { return this._status === "infinite looping"; };
+AnimationManager.Animation.prototype._generateStyles = function() {
+    Utils.generateStylesheet("element_animation_template", {
+        selector: this.character.selector,
+        start: "0px " + -this.startY+"px",
+        end: (-this.frames*this.character.size.w)+"px " + -this.startY+"px",
+        frames: this.frames,
+        animationName: this.name,
+        characterName: this.character.name,
+        durationString: this.duration/1000+"s",
+        playingClass: AnimationManager.playingClass
+    }, this.character.name + "-" + this.name);
+};
+
+AnimationManager.Animation.prototype.isStopped = function() { return this._status === "stop"; };
+AnimationManager.Animation.prototype.isPlaying = function() { return this._status === "play"; };
+AnimationManager.Animation.prototype.isLooping = function() { return this._status.indexOf("loop") > -1; };
 
 AnimationManager.Animation.prototype._play = function(dur, returnToPrev) {
 	var dis = this;
-	var duration;
-	if (dur) {
-		duration = dur;
-	}
-	else duration = this.duration;
+    this.currentDuration = dur || this.duration;
 
 	if (returnToPrev) var prev = this.character._currentAnimation;
 	this.character.stopAnimation();
@@ -129,28 +132,42 @@ AnimationManager.Animation.prototype._play = function(dur, returnToPrev) {
 		.addClass(this.name)
 		.addClass(AnimationManager.playingClass);
 	this.character._currentAnimation = this;
-	if (duration === -1) this._status = "infinite looping";
-	else if (duration > this.duration) this._status = "looping";
+	if (this.currentDuration === -1 || this.currentDuration > this.duration) this._status = "loop";
 	else {
-		this._status = "playing";
+		this._status = "play";
 		this._timeouts.play = setTimeout(function(){
 			dis.stop.call(dis);
-			if (prev) prev.loop(); //TODO this needs improvement
-		}, duration);
+			if (prev) prev.loop();
+		}, this.currentDuration);
 	}
 };
 
-AnimationManager.Animation.prototype.playAndReturn = function() { this._play(0, true)}; // TODO playAndReturn()
+// TODO PAUSE FUNCTION
+AnimationManager.Animation.prototype.pause = function() {
+  if (this.status !== "stop") {
+      // need to hook into animation events to find current frame and save it
+  }
+};
+
+AnimationManager.Animation.prototype.playAndReturn = function() { this._play(0, true)};
 AnimationManager.Animation.prototype.playOnce = function() { this._play(); };
 AnimationManager.Animation.prototype.loop = function(dur) { this._play(dur || -1); };
 
 AnimationManager.Animation.prototype.stop = function() {
-	if (this._status !== "stopped") {
+	if (this.isStopped()) {
 		this.character.$element
 			.removeClass(this.name)
 			.removeClass(AnimationManager.playingClass);
 		clearTimeout(this._timeouts.play);
-		this._status = "stopped";
+		this._status = "stop";
+        this.currentDuration = 0;
 		this.character._currentAnimation = undefined;
 	}
 };
+
+AnimationManager.Animation.prototype.setDuration = function(dur) {
+    if (typeof dur != "number" || dur < 0) throw "Invalid duration: " + dur + ". Must be a number (milliseconds)";
+
+    this.duration = dur;
+    this._generateStyles();
+}

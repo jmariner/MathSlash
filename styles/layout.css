@@ -1,0 +1,83 @@
+* { padding: 0; margin: 0; }
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#game {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: solid 16px black;
+    width: 85vh;
+    height: 95vh;
+}
+#graphicArea {
+    position: relative;
+    height: 70%;
+    background-color: deepskyblue;
+}
+#barArea {
+    height: 5%;
+    background: linear-gradient(#c7004c,red);
+    padding: 8px 0;
+    box-sizing: border-box;
+    display: flex;
+}
+.barSegment {
+    width: 3%;
+    height: 100%;
+    background-color: #21ff00;
+    border: solid 4px green;
+    box-sizing: border-box;
+}
+#tile-area {
+    background: linear-gradient(#ff0028, #ff9a00);
+    height: 25%;
+    display: flex;
+    justify-content: space-around;
+}
+#leftArea {
+    width: 28%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#rightArea {
+    width: 71%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.bigTileArea {
+    height: 95%;
+}
+
+.row {
+    position: relative;
+    height: 31%;
+    padding: 0;
+}
+
+.arrow {
+    height: 100%;
+    margin-right: 32px;
+}
+
+.tile {
+    color: whitesmoke;
+    background: radial-gradient(#007dfa, #f0f6ff);
+    border: solid 4px black;
+    align-self: center;
+}
+
+.tile.isOperator {
+    align-self: flex-end;
+    margin-right: 2px !important;
+}

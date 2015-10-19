@@ -100,9 +100,10 @@ Utils.scaleToFit = function(parent, childSel) {
 };
 
 Utils.generateStylesheet = function(templateID, globalStyles, customResultID) {
-	if (!customResultID) $("head style#" + templateID + "_replaced").remove();
+    customResultID = (customResultID !== undefined) ? "_"+customResultID : "";
+	$("head style#" + templateID + customResultID + "_replaced").remove();
 	var $template = $("head template#" + templateID);
-	var s = $("<style>").html($template.html()).attr("id", templateID + "_" + customResultID + "_replaced").html(function(i, old) {
+	var s = $("<style>").html($template.html()).attr("id", templateID  + customResultID + "_replaced").html(function(i, old) {
 
 		var html = old.replace(/(;|\{)\n/gm, "$1").replace(/\t+/g, " ").replace(/\n\s/g, "\n");
 

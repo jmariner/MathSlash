@@ -9,8 +9,10 @@
     <orderEntry type="library" name="math" level="application" />
     <orderEntry type="library" name="jquery.fittext" level="application" />
     <orderEntry type="library" name="MathJax" level="application" />
-    <orderEntry type="library" name="jQuery-2.0.0" level="application" />
     <orderEntry type="library" name="jquery-ui" level="application" />
     <orderEntry type="library" name="material" level="application" />
+    <orderEntry type="library" name="math" level="application" />
+    <orderEntry type="library" name="jquery" level="application" />
+    <orderEntry type="library" name="mathjax-DefinitelyTyped" level="application" />
   </component>
 </module>

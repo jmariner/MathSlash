@@ -40,8 +40,16 @@ for (var difficulty = 1; difficulty < 5/*5 difficulties*/; difficulty++) {
 	possibleNumbers.push([]);
 	switch (difficulty) {
 		case 1: //ez mode
-			for (var k = 1; k <= 50; k++) {
+			for (var k = 1; k <= 15; k++) {
 				possibleNumbers[difficulty].push(new Integer(k));
+			}
+			break;
+		case 2:
+			for (var k = 1; k <= 25; k++) {
+				possibleNumbers[difficulty].push(new Integer(k));
+			}
+			for (var n = -1; n <= -15; n--) {
+				possibleNumbers[difficulty].push(new Integer(n));
 			}
 			break;
 		case 4:
@@ -83,3 +91,8 @@ function getRandomExpression(diff) {
 	return choice;
 }
 
+function getNumbersBetween(min, max) {
+	var arr = [];
+	for (var i = min; i <= max; i++) arr.push(i);
+	return arr;
+}

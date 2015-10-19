@@ -1,5 +1,6 @@
 "use strict";
-var Tile = function() {
+var Tile = function() { // TODO tiles are categorized by what operation is used before them
+                        //      so, generate a symbol before each tile to show which one it is
 //argument parsing
 	var args = {};
 	if (arguments.length === 1) {
@@ -131,20 +132,19 @@ Tile.operatorNames = {
 Tile.defaultOptions = {
 	math: {
 		parentSelector: "body > .tile-parent",
-		size: "15vh",
+		size: "100%",
 		widthToHeightRatio: 1
 	},
 	operator: {
 		parentSelector: "body > .tile-parent",
-		size: "10vh",
+		size: "48.5%",
 		widthToHeightRatio: 1
 	}
 };
 
 Tile.styles = {
 	classes: {
-		tile: "mdl-color--accent justify-center",
-		tileParent: "mld-color--primary-dark justify-center align-end",
+		tileParent: "justify-start",
 		tileAndParent: "flex-row border-box"
 	}
 };
