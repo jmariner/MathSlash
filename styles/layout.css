@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    background-color: #444;
+    background-color: black;
 }
 
 #game {
