@@ -1,0 +1,5 @@
+<svg viewBox="-25.6 -25.6 512 512" xmlns="http://www.w3.org/2000/svg">
+	<polyline transform="scale(.9)"
+	points="0,256 256,0 257,0 512,256 384,256 384,512 128,512 128,256 0,256 256,0"
+	/>
+</svg>
