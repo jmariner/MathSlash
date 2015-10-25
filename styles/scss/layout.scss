@@ -1,4 +1,10 @@
-html, body {
+@import "mixins";
+@import "flex";
+@import "utils";
+@import "arrow";
+
+* { padding: 0; margin: 0; }
+body {
 	font: {
 		family: 'Roboto', 'Helvetica', sans-serif;
 		size: 16px;
@@ -7,6 +13,21 @@ html, body {
 	padding: 0;
 	width: 100vw;
 	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	background: #444;
+
+	> div {
+		height: 100%;
+		@include flex(column, center, center);
+	}
+
+	#game {
+		position: relative;
+	}
+
 }
 
 .tile-parent {
