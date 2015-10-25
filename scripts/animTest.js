@@ -24,3 +24,8 @@
 ////
 ////	}
 ////});
+
+function tileTest() {
+	var t = new Tile("15", ".bigTileArea");
+	var tiles = [];
+}

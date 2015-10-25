@@ -53,8 +53,11 @@ Utils.parseForm = function(formID) {
 	return data;
 };
 
-Utils.rand = function(min, max) {
-	return min + Math.floor((Math.random() * (max - min + 1)));
+Utils.rand = function(min, max, allowFloats) {
+	if (allowFloats)
+		return min + (Math.random() * (max-min));
+	else
+		return min + Math.floor(Math.random() * (max-min+1));
 };
 
 Utils.forEachIn = function(func, obj) {
@@ -65,7 +68,7 @@ Utils.forEachIn = function(func, obj) {
 	}
 };
 
-Utils.scaleToFit = function(parent, childSel) {
+Utils.scaleToFit = function(parent, childSel, ratio) {
 
 	var $parent;
 	if (typeof parent === "string" || parent instanceof HTMLElement || parent instanceof HTMLCollection)
@@ -74,6 +77,8 @@ Utils.scaleToFit = function(parent, childSel) {
 	else throw "parent is not a selector, element, or jQuery object";
 
 	if (typeof childSel !== "string") throw "childSelector must be a string";
+
+	ratio = ratio || 1;
 
 	$parent.each(function() {
 		var $p = $(this);
@@ -85,16 +90,16 @@ Utils.scaleToFit = function(parent, childSel) {
 			parentMax = $p.height();
 		}
 		else {
-				max = $c.width();
-				parentMax = $p.width();
-			}
+			max = $c.width();
+			parentMax = $p.width();
+		}
 
-			var scaleFactor = parentMax / max;
-			var scale = "scale(" + scaleFactor + ")";
+		var scaleFactor = parentMax / max * ratio;
+		var scale = "scale(" + scaleFactor + ")";
 
-			$c.css("transform", scale);
+		$c.css("transform", scale);
 
-			if ($c.css("display") === "inline") $c.css("display", "inline-block");
+		if ($c.css("display") === "inline") $c.css("display", "inline-block");
 
 	});
 };
@@ -116,4 +121,11 @@ Utils.generateStylesheet = function(templateID, globalStyles, customResultID) {
 		return html.trim();
 	});
 	$template.after(s);
+};
+
+Utils.assert = function(condition, errorMessage) {
+	if (!condition) {
+		if (Error) throw new Error(errorMessage || "Assert Failed");
+		else throw errorMessage || "Assert Failed";
+	}
 };

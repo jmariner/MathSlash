@@ -11,29 +11,29 @@
 		<link rel="stylesheet" href="styles/css/flex.css">
 		<link rel="stylesheet" href="styles/css/utils.css">
 		<link rel="stylesheet" href="styles/layout.css">
-        <link rel="stylesheet" href="styles/arrow.css">
+		<link rel="stylesheet" href="styles/arrow.css">
 
 		<template id="spriteSheet_template">
 			.animated {
-				background-image: url("images/{spriteSheet}");
+			background-image: url("images/{spriteSheet}");
 			}
 		</template>
 		<template id="animated_element_template">
 			{selector} {
-				position: absolute;
-				width: {width}px;
-				height: {height}px;
-				top: {top};
-				left: {left};
-				bottom: {bottom};
-				right: {right};
+			position: absolute;
+			width: {width}px;
+			height: {height}px;
+			top: {top};
+			left: {left};
+			bottom: {bottom};
+			right: {right};
 			}
 		</template>
 		<template id="element_animation_template">
 			{selector}.{animationName}.{playingClass} { animation: {characterName}-{animationName} steps({frames}) {durationString} infinite; }
 			@keyframes {characterName}-{animationName} {
-				from { background-position: {start}; }
-				to { background-position: {end}; }
+			from { background-position: {start}; }
+			to { background-position: {end}; }
 			}
 		</template>
 
@@ -41,70 +41,78 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/mathjs/2.2.0/math.min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML.js"></script>
+		<script> MathJax.Hub.Config({showMathMenu:false}); </script>
 
-		<script src="scripts/tile.js"></script>
+		<script src="scripts/es6-compiled/tile.js"></script>
 		<script src="scripts/utils.js"></script>
 		<script src="scripts/randomTests.js"></script>
 		<script src="scripts/animTest.js"></script>
 		<script src="scripts/animationManager.js"></script>
+		<script src="scripts/es6-compiled/difficulty.js"></script>
 	</head>
 
 	<body>
+		<div id="left">
+			<button onclick="generateTiles(1)">Generate Tiles (difficulty=1)</button>
+			<button onclick="generateTiles(2)">Generate Tiles (difficulty=2)</button>
+			<button onclick="generateTiles(3)">Generate Tiles (difficulty=3)</button>
+		</div>
 		<div id="game">
-            <div id="graphicArea">
-                <div class="yoshi"></div>
-            </div>
-            <div id="barArea">
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-                <div class="barSegment"></div>
-            </div>
-            <div id="tile-area">
-                <div id="leftArea">
-                    <div class="bigTileArea"></div>
-                </div>
-                <div id="rightArea">
-                    <div class="tileRow1 row">
-                        <img src="images/arrow.svg" class="arrow top">
-                    </div>
-                    <div class="tileRow2 row">
-                        <img src="images/arrow.svg" class="arrow right">
-                    </div>
-                    <div class="tileRow3 row">
-                        <img src="images/arrow.svg" class="arrow down">
-                    </div>
-                </div>
-            </div>
-        </div>
+			<div id="graphicArea">
+				<div class="yoshi"></div>
+			</div>
+			<div id="barArea">
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+				<div class="barSegment"></div>
+			</div>
+			<div id="tile-area">
+				<div id="leftArea">
+					<div class="bigTileArea"></div>
+				</div>
+				<div id="rightArea">
+					<div class="tileRow1 row">
+						<img src="images/arrow.svg" class="arrow top">
+					</div>
+					<div class="tileRow2 row">
+						<img src="images/arrow.svg" class="arrow right">
+					</div>
+					<div class="tileRow3 row">
+						<img src="images/arrow.svg" class="arrow down">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="right"></div>
 	</body>
 </html>

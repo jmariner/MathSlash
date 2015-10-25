@@ -62,7 +62,7 @@ var Tile = function() { // TODO tiles are categorized by what operation is used 
 	this.options = this._checkOptions();
 
 	this.element = $el.get(0);
-	
+
 	this.resize(this.options.size);
 
 	$el.hide().appendTo(
@@ -119,7 +119,7 @@ Tile._getOperator = function(str) {
 Tile.operatorNames = {
 	"+": ["add", "plus"],
 	"-": ["sub", "subtract", "minus"],
-	"*": ["min", "multiply", "times"],
+	"*": ["multi", "multiply", "times"],
 	"/": ["div", "divide", "divided by", "over"],
 	display: {
 		"+": "+",
