@@ -3,11 +3,11 @@ class Tile {
 
 		Utils.assert(typeof value === "string", "Invalid parameter: value" + ((value !== undefined) ? ` (${value})` : ""));
 
-		if (Tile._isOperator(value.charAt(0)) !== undefined && /^\d+$/.test(value.substr(1))) {
+		if (Tile._isOperator(value.charAt(0)) && /^\d+$/.test(value.substr(1))) {
 			this.operation = Tile.operations[value.charAt(0)];
 			this.value = value.substr(1);
 		}
-		else if (Tile._isOperator(value.split(" ")[0]) !== undefined && /^\d+$/.test(value.split(" ")[1])) {
+		else if (Tile._isOperator(value.split(" ")[0]) && /^\d+$/.test(value.split(" ")[1])) {
 			this.operation = Tile.operations[value.split(" ")[0]];
 			this.value = value.split(" ")[1];
 		}

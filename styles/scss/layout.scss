@@ -1,9 +1,20 @@
+@charset "UTF-8";
 @import "mixins";
 @import "flex";
 @import "utils";
 @import "arrow";
 
-* { padding: 0; margin: 0; }
+$gameAreaWidth: 100vh;
+$gameAreaHeight: 100vh;
+$topAreaBackground: "/images/castleBackground1.jpg";
+
+* {
+	padding: 0;
+	margin: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
 body {
 	font: {
 		family: 'Roboto', 'Helvetica', sans-serif;
@@ -19,30 +30,86 @@ body {
 	overflow: hidden;
 	background: #444;
 
-	> div {
+	#game, #left, #right {
 		height: 100%;
 		@include flex(column, center, center);
-	}
-
-	#game {
 		position: relative;
 	}
 
-}
+	#left, #right { width: calc((100vw - #{$gameAreaWidth})/2); }
 
-.tile-parent {
-	width: 100%;
-	height: 25vh;
-	padding: 16px;
-	display: none; /* display set to flex later */
-	.tile {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		padding: 8px;
-		font-size: 8px;
-		&:not(:last-child) {
-			margin-right: 32px;
+	#game {
+		width: $gameAreaWidth;
+		height: $gameAreaHeight;
+		> div { width: 100%; }
+		#graphicArea {
+			//background: url("#{$topAreaBackground}");
+			position: relative;
+			height: 70%;
+			> img, > div.img { position: absolute;	}
+			.background {
+				width: 100%;
+				height: 100%;
+				z-index: 10;
+			}
+		}
+		#barArea {
+			height: 5%;
+			background: linear-gradient(#c7004c,red);
+			padding: 8px 0;
+			@include flex(row, flex-start, center);
+			.barSegment {
+				width: 3%;
+				height: 100%;
+				background-color: #21ff00;
+				border: solid 4px green;
+			}
+		}
+		#tileArea {
+			background: linear-gradient(#ff0028, #ff9a00);
+			height: 25%;
+			@include flex(row, space-around, center);
+			#leftArea {
+				width: 28%;
+				height: 100%;
+				@include flex(column, center, center);
+				.bigTileArea {
+					height: 95%;
+					width: 95%;
+				}
+			}
+			#rightArea {
+				width: 71%;
+				height: 100%;
+				@include flex(column, space-around, flex-start);
+				.row {
+					height: 31%;
+					width: 100%;
+					@include flex(row, flex-start, center);
+					> img, > div { margin-right: 32px; }
+					.arrow { height: 100%; }
+				}
+			}
+			.tile {
+				color: white;
+				position: relative;
+				background: #000;
+				@include flex(column, center, center);
+				&:last-child { margin-right: 0; }
+				&[data-operation]::before {
+					content: attr(data-operation);
+					position: absolute;
+					right: 100%;
+					bottom: 0;
+					height: 100%;
+					width: 50%;
+					text-align: center;
+					vertical-align: middle;
+					@include flex(column, center, center);
+					font-size: 32px;
+				}
+				&[data-operation="/"]::before { content: "÷"; }
+			}
 		}
 	}
 }

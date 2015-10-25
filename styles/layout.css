@@ -1,3 +1,4 @@
+@charset "UTF-8";
 *[class^="flex-"], *[class*=" flex-"] {
   display: flex; }
   *[class^="flex-"][class^="flex-row"], *[class^="flex-"][class*=" flex-row"], *[class*=" flex-"][class^="flex-row"], *[class*=" flex-"][class*=" flex-row"] {
@@ -107,7 +108,10 @@ kbd {
 
 * {
   padding: 0;
-  margin: 0; }
+  margin: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
 
 body {
   font-family: 'Roboto', 'Helvetica', sans-serif;
@@ -121,28 +125,102 @@ body {
   align-items: center;
   overflow: hidden;
   background: #444; }
-  body > div {
+  body #game, body #left, body #right {
     height: 100%;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
-    align-items: center; }
-  body #game {
-    position: relative; }
-
-.tile-parent {
-  width: 100%;
-  height: 25vh;
-  padding: 16px;
-  display: none;
-  /* display set to flex later */ }
-  .tile-parent .tile {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 8px;
-    font-size: 8px; }
-    .tile-parent .tile:not(:last-child) {
-      margin-right: 32px; }
+    position: relative; }
+  body #left, body #right {
+    width: calc((100vw - 100vh)/2); }
+  body #game {
+    width: 100vh;
+    height: 100vh; }
+    body #game > div {
+      width: 100%; }
+    body #game #graphicArea {
+      position: relative;
+      height: 70%; }
+      body #game #graphicArea > img, body #game #graphicArea > div.img {
+        position: absolute; }
+      body #game #graphicArea .background {
+        width: 100%;
+        height: 100%;
+        z-index: 10; }
+    body #game #barArea {
+      height: 5%;
+      background: linear-gradient(#c7004c, red);
+      padding: 8px 0;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: center; }
+      body #game #barArea .barSegment {
+        width: 3%;
+        height: 100%;
+        background-color: #21ff00;
+        border: solid 4px green; }
+    body #game #tileArea {
+      background: linear-gradient(#ff0028, #ff9a00);
+      height: 25%;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-around;
+      align-items: center; }
+      body #game #tileArea #leftArea {
+        width: 28%;
+        height: 100%;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center; }
+        body #game #tileArea #leftArea .bigTileArea {
+          height: 95%;
+          width: 95%; }
+      body #game #tileArea #rightArea {
+        width: 71%;
+        height: 100%;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: space-around;
+        align-items: flex-start; }
+        body #game #tileArea #rightArea .row {
+          height: 31%;
+          width: 100%;
+          display: flex;
+          flex-flow: row nowrap;
+          justify-content: flex-start;
+          align-items: center; }
+          body #game #tileArea #rightArea .row > img, body #game #tileArea #rightArea .row > div {
+            margin-right: 32px; }
+          body #game #tileArea #rightArea .row .arrow {
+            height: 100%; }
+      body #game #tileArea .tile {
+        color: white;
+        position: relative;
+        background: #000;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center; }
+        body #game #tileArea .tile:last-child {
+          margin-right: 0; }
+        body #game #tileArea .tile[data-operation]::before {
+          content: attr(data-operation);
+          position: absolute;
+          right: 100%;
+          bottom: 0;
+          height: 100%;
+          width: 50%;
+          text-align: center;
+          vertical-align: middle;
+          display: flex;
+          flex-flow: column nowrap;
+          justify-content: center;
+          align-items: center;
+          font-size: 32px; }
+        body #game #tileArea .tile[data-operation="/"]::before {
+          content: "÷"; }
 
 /*# sourceMappingURL=layout.css.map */
