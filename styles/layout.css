@@ -106,6 +106,11 @@ kbd {
 .arrow.right {
   transform: rotate(90deg); }
 
+#left button {
+  min-width: 50%;
+  font-size: 1.25em;
+  margin: .5em 0; }
+
 * {
   padding: 0;
   margin: 0;
@@ -133,21 +138,23 @@ body {
     align-items: center;
     position: relative; }
   body #left, body #right {
-    width: calc((100vw - 100vh)/2); }
+    width: calc((100vw - 93.33333vh)/2); }
   body #game {
-    width: 100vh;
+    width: 93.33333vh;
     height: 100vh; }
     body #game > div {
       width: 100%; }
     body #game #graphicArea {
+      background: url("/images/castleBackground4x3.jpg");
+      background-size: contain;
       position: relative;
-      height: 70%; }
-      body #game #graphicArea > img, body #game #graphicArea > div.img {
-        position: absolute; }
-      body #game #graphicArea .background {
-        width: 100%;
-        height: 100%;
-        z-index: 10; }
+      height: 70%;
+      /*			> img, > div.img { position: absolute;	}
+      			.background {
+      				width: 100%;
+      				height: 100%;
+      				z-index: 10;
+      			}*/ }
     body #game #barArea {
       height: 5%;
       background: linear-gradient(#c7004c, red);

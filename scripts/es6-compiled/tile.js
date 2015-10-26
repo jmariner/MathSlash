@@ -5,65 +5,78 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Tile = (function () {
-	function Tile(value, parentSelector) {
-		var _this = this;
+		// TODO TileRegistry - where tiles are created and can be looked up and changed
+		// TODO one registry per row - have them also store the main tile?
 
-		var size = arguments.length <= 2 || arguments[2] === undefined ? "100%" : arguments[2];
+		function Tile(value, parentSelector) {
+				var _this = this;
 
-		_classCallCheck(this, Tile);
+				var size = arguments.length <= 2 || arguments[2] === undefined ? "100%" : arguments[2];
 
-		Utils.assert(typeof value === "string", "Invalid parameter: value" + (value !== undefined ? " (" + value + ")" : ""));
+				_classCallCheck(this, Tile);
 
-		if (Tile._isOperator(value.charAt(0)) && /^\d+$/.test(value.substr(1))) {
-			this.operation = Tile.operations[value.charAt(0)];
-			this.value = value.substr(1);
-		} else if (Tile._isOperator(value.split(" ")[0]) && /^\d+$/.test(value.split(" ")[1])) {
-			this.operation = Tile.operations[value.split(" ")[0]];
-			this.value = value.split(" ")[1];
-		} else if (/^\d+$/.test(value)) {
-			this.value = value;
-			this.operation = undefined;
+				Utils.assert(typeof value === "string", "Invalid parameter: value" + (value !== undefined ? " (" + value + ")" : ""));
+
+				var valueRegex = /^([^\d\s]*)\s?(\d+(?:(\/|\^)\d+)?)$/.exec(value);
+
+				Utils.assert(valueRegex !== null, "Invalid parameter: value (" + value + ")");
+
+				var operatorPart = valueRegex[1];
+				var valuePart = valueRegex[2];
+				var typePart = valueRegex[3];
+
+				this.value = valuePart;
+
+				if (operatorPart !== "") {
+						Utils.assert(Tile._isOperator(operatorPart), "Invalid operation in value: " + operatorPart);
+						this.operation = Tile.operations[operatorPart];
+				} else this.operation = undefined;
+
+				var isInteger = typePart === undefined;
+
+				try {
+						math.parse(this.value);
+				} catch (e) {
+						throw "Cannot parse math: " + value;
+				}
+
+				this.parentSelector = parentSelector;
+				this.size = size;
+
+				this.$element = $("<div>").addClass("tile");
+				if (this.operation !== undefined) this.$element.attr("data-operation", this.operation);
+				this.element = this.$element.get(0);
+
+				var mathNode = math.parse(this.value);
+				this.computedValue = mathNode.compile().eval();
+				this.$element.attr("data-value", this.computedValue);
+
+				if (isInteger) this.$element.html($("<div>").addClass("math").text(this.value));else {
+						var tex = mathNode.toTex({ parenthesis: "auto" });
+						this.element.innerHTML = "$$ " + tex + " $$";
+				}
+
+				this.$element.hide().appendTo($(this.parentSelector)).fadeIn(250);
+
+				this.$element.outerHeight(this.size);
+				this.$element.remove().appendTo($(this.parentSelector));
+				this.$element.outerWidth(this.$element.outerHeight());
+
+				if (!isInteger) {
+						MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element], function () {
+								return Utils.scaleToFit(_this.$element, ".math", .9);
+						});
+				} else Utils.scaleToFit(this.$element, ".math");
 		}
 
-		try {
-			math.parse(this.value);
-		} catch (e) {
-			throw "Invalid parameter: value" + (value !== undefined ? " (" + value + ")" : "");
-		}
+		_createClass(Tile, null, [{
+				key: "_isOperator",
+				value: function _isOperator(op) {
+						return Tile.operations.hasOwnProperty(op);
+				}
+		}]);
 
-		this.parentSelector = parentSelector;
-		this.size = size;
-
-		this.$element = $("<div>").addClass("tile");
-		if (this.operation !== undefined) this.$element.attr("data-operation", this.operation);
-		this.element = this.$element.get(0);
-
-		var mathNode = math.parse(this.value);
-		this.computedValue = mathNode.compile().eval();
-
-		var tex = mathNode.toTex({ parenthesis: "auto" });
-
-		this.element.innerHTML = "$$ " + tex + " $$";
-
-		this.$element.hide().appendTo($(this.parentSelector).addClass("tileParent")).fadeIn(250);
-
-		this.$element.outerHeight(this.size);
-		this.$element.remove().appendTo($(this.parentSelector));
-		this.$element.outerWidth(this.$element.outerHeight());
-
-		MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element], function () {
-			return Utils.scaleToFit(_this.$element, ".math", .9);
-		});
-	}
-
-	_createClass(Tile, null, [{
-		key: "_isOperator",
-		value: function _isOperator(op) {
-			return Tile.operations.hasOwnProperty(op);
-		}
-	}]);
-
-	return Tile;
+		return Tile;
 })();
 
 Tile.operations = {};

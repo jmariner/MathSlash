@@ -1,23 +1,29 @@
-class Tile {
+class Tile { // TODO TileRegistry - where tiles are created and can be looked up and changed
+			 // TODO one registry per row - have them also store the main tile?
 	constructor(value, parentSelector, size="100%") {
 
 		Utils.assert(typeof value === "string", "Invalid parameter: value" + ((value !== undefined) ? ` (${value})` : ""));
 
-		if (Tile._isOperator(value.charAt(0)) && /^\d+$/.test(value.substr(1))) {
-			this.operation = Tile.operations[value.charAt(0)];
-			this.value = value.substr(1);
+		var valueRegex = /^([^\d\s]*)\s?(\d+(?:(\/|\^)\d+)?)$/.exec(value);
+
+		Utils.assert(valueRegex !== null, `Invalid parameter: value (${value})`);
+
+		var operatorPart = valueRegex[1];
+		var valuePart = valueRegex[2];
+		var typePart = valueRegex[3];
+
+		this.value = valuePart;
+
+		if (operatorPart !== "") {
+			Utils.assert(Tile._isOperator(operatorPart), `Invalid operation in value: ${operatorPart}`);
+			this.operation = Tile.operations[operatorPart];
 		}
-		else if (Tile._isOperator(value.split(" ")[0]) && /^\d+$/.test(value.split(" ")[1])) {
-			this.operation = Tile.operations[value.split(" ")[0]];
-			this.value = value.split(" ")[1];
-		}
-		else if (/^\d+$/.test(value)) {
-			this.value = value;
-			this.operation = undefined;
-		}
+		else this.operation = undefined;
+
+		var isInteger = typePart === undefined;
 
 		try { math.parse(this.value); }
-		catch(e) { throw "Invalid parameter: value" + ((value !== undefined) ? ` (${value})` : ""); }
+		catch(e) { throw `Cannot parse math: ${value}`; }
 
 		this.parentSelector = parentSelector;
 		this.size = size;
@@ -28,21 +34,25 @@ class Tile {
 
 		var mathNode = math.parse(this.value);
 		this.computedValue = mathNode.compile().eval();
+		this.$element.attr("data-value", this.computedValue);
 
-		var tex = mathNode.toTex({ parenthesis:"auto" });
-
-		this.element.innerHTML = `$$ ${tex} $$`;
+		if (isInteger) this.$element.html($("<div>").addClass("math").text(this.value));
+		else {
+			var tex = mathNode.toTex({parenthesis: "auto"});
+			this.element.innerHTML = `$$ ${tex} $$`;
+		}
 		
-		this.$element.hide().appendTo($(this.parentSelector).addClass("tileParent")).fadeIn(250);
+		this.$element.hide().appendTo($(this.parentSelector)).fadeIn(250);
 
 		this.$element.outerHeight(this.size);
 		this.$element.remove().appendTo($(this.parentSelector));
 		this.$element.outerWidth(this.$element.outerHeight());
 
-		MathJax.Hub.Queue(
-			["Typeset", MathJax.Hub, this.element],
-			() => Utils.scaleToFit(this.$element, ".math", .9)
-		);
+		if (!isInteger) {
+			MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element],
+				() => Utils.scaleToFit(this.$element, ".math", .9));
+		}
+		else Utils.scaleToFit(this.$element, ".math");
 	}
 
 	static _isOperator(op) {
