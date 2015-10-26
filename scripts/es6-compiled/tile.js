@@ -96,6 +96,8 @@ Tile.operations = {
 		times: "*",
 		multi: "*",
 		multiply: "*"
+		
+		// TODO forgot division... duh
 
 };
 
