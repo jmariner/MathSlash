@@ -3,8 +3,8 @@ class Tile { // TODO TileRegistry - where tiles are created and can be looked up
 	constructor(value, parentSelector, size="100%") {
 
 		Utils.assert(typeof value === "string", "Invalid parameter: value" + ((value !== undefined) ? ` (${value})` : ""));
-		Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + ((parentSelector !== undefined) ? ` (${parentSelector})` : ""))
-		Utils.assert($(parentSelector).length === 1, `Invalid parentSelector (too many matches): ${parentSelector}`)
+		Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + ((parentSelector !== undefined) ? ` (${parentSelector})` : ""));
+		Utils.assert($(parentSelector).length === 1, `Invalid parentSelector (too many matches): ${parentSelector}`);
 
 		var valueRegex = /^([^\d\s]*)\s?(\d+(?:(\/|\^)\d+)?)$/.exec(value);
 
@@ -62,12 +62,20 @@ class Tile { // TODO TileRegistry - where tiles are created and can be looked up
 	}
 }
 
-Tile.operations = {};
-Tile.operations["+"] = Tile.operations.plus =
-	Tile.operations.add = Tile.operations.addition = "+";
-Tile.operations["-"] = Tile.operations.sub =
-	Tile.operations.subtract = Tile.operations.minus = "-";
-Tile.operations["*"] = Tile.operations.multi =
-	Tile.operations.times = Tile.operations.multiply = "*";
-Tile.operations["/"] = Tile.operations.div =
-	Tile.operations.divide = Tile.operations.over = "/";
+Tile.operations = {
+	"+": "+",
+	plus: "+",
+	add: "+",
+	addition: "+",
+
+	"-" : "-",
+	sub: "-",
+	subtract: "-",
+	minus: "-",
+
+	"*": "*",
+	times: "*",
+	multi: "*",
+	multiply: "*"
+
+};

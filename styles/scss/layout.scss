@@ -4,10 +4,10 @@
 @import "utils";
 @import "arrow";
 
-$gameAreaWidth: (4/3) * 70vh;
-$gameAreaHeight: 100vh;
 $graphicAreaHeight: 70vh;
 $graphicAreaWidth: 100%;
+$gameAreaWidth: (4/3) * $graphicAreaHeight;
+$gameAreaHeight: 100vh;
 
 #left button {
 	min-width: 50%;
@@ -50,16 +50,11 @@ body {
 		height: $gameAreaHeight;
 		> div { width: 100%; }
 		#graphicArea {
-			background: url("/images/castleBackground4x3.jpg");
+			//noinspection CssUnknownTarget
+			background: url("../images/castleBackground4x3.jpg");
 			background-size: contain;
 			position: relative;
 			height: 70%;
-/*			> img, > div.img { position: absolute;	}
-			.background {
-				width: 100%;
-				height: 100%;
-				z-index: 10;
-			}*/
 		}
 		#barArea {
 			height: 5%;

@@ -81,10 +81,22 @@ var Tile = (function () {
 		return Tile;
 })();
 
-Tile.operations = {};
-Tile.operations["+"] = Tile.operations.plus = Tile.operations.add = Tile.operations.addition = "+";
-Tile.operations["-"] = Tile.operations.sub = Tile.operations.subtract = Tile.operations.minus = "-";
-Tile.operations["*"] = Tile.operations.multi = Tile.operations.times = Tile.operations.multiply = "*";
-Tile.operations["/"] = Tile.operations.div = Tile.operations.divide = Tile.operations.over = "/";
+Tile.operations = {
+		"+": "+",
+		plus: "+",
+		add: "+",
+		addition: "+",
+
+		"-": "-",
+		sub: "-",
+		subtract: "-",
+		minus: "-",
+
+		"*": "*",
+		times: "*",
+		multi: "*",
+		multiply: "*"
+
+};
 
 //# sourceMappingURL=tile.js.map
