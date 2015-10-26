@@ -59,6 +59,8 @@ var Tile = (function () {
 				}
 
 				this.$element.hide().appendTo($(this.parentSelector)).fadeIn(250);
+				
+				// TODO delay fade in to allow mathjax to do its thing
 
 				this.$element.outerHeight(this.size);
 				this.$element.remove().appendTo($(this.parentSelector));
@@ -95,7 +97,7 @@ Tile.operations = {
 		"*": "*",
 		times: "*",
 		multi: "*",
-		multiply: "*"
+		multiply: "*" // TODO display a multiplication "x" here
 		
 		// TODO forgot division... duh
 

@@ -4,6 +4,8 @@
 @import "utils";
 @import "arrow";
 
+// TODO school comp aspect ratio: 7:5 ish (sides are ~220px)
+
 $graphicAreaHeight: 70vh;
 $graphicAreaWidth: 100%;
 $gameAreaWidth: (4/3) * $graphicAreaHeight;
@@ -68,7 +70,7 @@ body {
 				border: solid 4px green;
 			}
 		}
-		#tileArea {
+		#tileArea { // TODO AR here is 1:3.74
 			background: linear-gradient(#ff0028, #ff9a00);
 			height: 25%;
 			@include flex(row, space-around, center);
