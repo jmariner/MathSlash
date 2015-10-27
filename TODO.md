@@ -1,5 +1,6 @@
 # TODO
 
+- need to work on parsing other difficulty data (fractions, exponents/powers, iif maintile is something)
 - delay / preload tiles that use mathjax to skip the parsing
 
 # Ideas
