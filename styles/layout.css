@@ -223,5 +223,7 @@ body {
           font-size: 32px; }
         body #game #tileArea .tile[data-operation="/"]::before {
           content: "÷"; }
+        body #game #tileArea .tile[data-operation="*"]::before {
+          content: "×"; }
 
 /*# sourceMappingURL=layout.css.map */

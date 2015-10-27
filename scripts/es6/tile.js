@@ -1,5 +1,4 @@
-class Tile { // TODO TileRegistry - where tiles are created and can be looked up and changed
-			 // TODO one registry per row - have them also store the main tile?
+class Tile {
 	constructor(value, parentSelector, size="100%") {
 
 		Utils.assert(typeof value === "string", "Invalid parameter: value" + ((value !== undefined) ? ` (${value})` : ""));
@@ -43,10 +42,12 @@ class Tile { // TODO TileRegistry - where tiles are created and can be looked up
 			var tex = mathNode.toTex({parenthesis: "auto"});
 			this.element.innerHTML = `$$ ${tex} $$`;
 		}
+
+		this.hide();
 		
-		this.$element.hide().appendTo($(this.parentSelector)).fadeIn(250);
+		this.$element.appendTo($(this.parentSelector));
 		
-		// TODO delay fade in to allow mathjax to do its thing
+		// TODO delay fade in to allow mathjax to do its thing (maybe even pre-load the tiles?)
 
 		this.$element.outerHeight(this.size);
 		this.$element.remove().appendTo($(this.parentSelector));
@@ -57,6 +58,18 @@ class Tile { // TODO TileRegistry - where tiles are created and can be looked up
 				() => Utils.scaleToFit(this.$element, ".math", .9));
 		}
 		else Utils.scaleToFit(this.$element, ".math");
+	}
+
+	hide() {
+		this.$element._hide(true);
+	}
+
+	show() {
+		this.$element._show();
+	}
+
+	remove() {
+		this.$element.remove();
 	}
 
 	static _isOperator(op) {
@@ -78,7 +91,11 @@ Tile.operations = {
 	"*": "*",
 	times: "*",
 	multi: "*",
-	multiply: "*" // TODO display a multiplication "x" here
+	multiply: "*", // displays "x" on page
 	
-	// TODO forgot division... duh
+	"/": "/",
+	div: "/",
+	over: "/",
+	divide: "/",
+	"divided by": "/" // displays division symbol on page
 };

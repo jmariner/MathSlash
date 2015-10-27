@@ -40,19 +40,21 @@
 		<script> MathJax.Hub.Config({showMathMenu:false}); </script>
 
 		<script src="scripts/es6-compiled/tile.js"></script>
+		<script src="scripts/es6-compiled/difficulty.js"></script>
+		<script src="scripts/es6-compiled/TileRegistry.js"></script>
+
 		<script src="scripts/utils.js"></script>
 		<script src="scripts/randomTests.js"></script>
-		<script src="scripts/animTest.js"></script>
+		<script src="scripts/tests.js"></script>
 		<script src="scripts/animationManager.js"></script>
-		<script src="scripts/es6-compiled/difficulty.js"></script>
 	</head>
 
 	<body>
 		<div id="left">
 			<button onclick='try { new Tile(prompt("Enter operation (eg +, sub, multiply, over):") + prompt("Enter value (eg 104, 10/4, 10^4):"), ".tileRow"+prompt("Enter row (1-3):")) } catch (e) { alert(e); }'>Generate Custom Tile...</button>
-			<button onclick="generateTiles(1)">Generate Tiles (difficulty=1)</button>
-			<button onclick="generateTiles(2)">Generate Tiles (difficulty=2)</button>
-			<button onclick="generateTiles(3)">Generate Tiles (difficulty=3)</button>
+			<button onclick="reg.generateTiles(1)">Generate Tiles (difficulty=1)</button>
+			<button onclick="reg.generateTiles(2)">Generate Tiles (difficulty=2)</button>
+			<button onclick="reg.generateTiles(3)">Generate Tiles (difficulty=3)</button>
 			<button onclick='$(".tile").remove();'>Clear</button>
 		</div>
 		<div id="game">

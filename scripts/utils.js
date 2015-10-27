@@ -129,3 +129,24 @@ Utils.assert = function(condition, errorMessage) {
 		else throw errorMessage || "Assert Failed";
 	}
 };
+
+Utils.pickWeightedRandom = function(choices) {
+	var ret = undefined;
+	choices = $.extend(true, [], choices);
+	if (choices.length === 1) ret = choices[0];
+	else {
+		var currentCumSum = 0;
+		choices.forEach(function(c){
+			Utils.assert(c.hasOwnProperty("weight"),
+				`Invalid parameter format - each object in array needs a weight. (${JSON.stringify(choices)})`);
+			currentCumSum += c.weight;
+			c.cumSum = currentCumSum;
+		});
+		var r = Utils.rand(0,currentCumSum, true);
+		choices.forEach(function(c, i){
+			if (r < c.cumSum && !ret) ret = choices[i];
+		});
+		delete ret.cumSum;
+	}
+	return ret;
+};

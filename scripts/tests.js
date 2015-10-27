@@ -25,7 +25,9 @@
 ////	}
 ////});
 
-function tileTest() {
-	var t = new Tile("15", ".bigTileArea");
-	var tiles = [];
-}
+$(function() {
+	window.reg = new TileRegistry(".bigTileArea");
+	reg.addGroup("row1", ".tileRow1");
+	reg.addGroup("row2", ".tileRow2");
+	reg.addGroup("row3", ".tileRow3");
+});

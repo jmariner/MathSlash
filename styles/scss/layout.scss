@@ -114,6 +114,7 @@ body {
 					font-size: 32px;
 				}
 				&[data-operation="/"]::before { content: "÷"; }
+				&[data-operation="*"]::before { content: "×"; }
 			}
 		}
 	}

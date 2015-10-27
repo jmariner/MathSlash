@@ -74,38 +74,9 @@ var DIFFICULTY_DATA = [null,
 		weight: 1,
 		operation: "multi"
 	}]
+}, {
+	main: [{ type: "power", baseLimits: [1, 12], powerLimits: [2, 2] }],
+	choice: [{ type: "power", baseLimits: [1, 12], powerLimits: [2, 2] }]
 }];
-
-function pickWeightedRandom(choices) {
-	var ret = undefined;
-	choices = $.extend(true, [], choices);
-	if (choices.length === 1) ret = choices[0];else {
-		var currentCumSum = 0;
-		choices.forEach(function (c) {
-			currentCumSum += c.weight;
-			c.cumSum = currentCumSum;
-		});
-		var r = Utils.rand(0, currentCumSum, true);
-		choices.forEach(function (c, i) {
-			if (r < c.cumSum && !ret) ret = choices[i];
-		});
-		delete ret.cumSum;
-	}
-	return { op: ret.operation || "", value: Utils.rand.apply(null, ret.limits) };
-}
-
-function generateTiles(diff) {
-	$(".tile").remove();
-	var main = pickWeightedRandom(DIFFICULTY_DATA[diff].main);
-	var others = [];
-	for (var i = 0; i <= 3; i++) {
-		others.push(pickWeightedRandom(DIFFICULTY_DATA[diff].choices));
-	}
-
-	window.mainTile = new Tile(main.op + main.value, ".bigTileArea");
-	window.otherTiles = others.map(function (t) {
-		return new Tile(t.op + " " + t.value, ".tileRow1");
-	});
-}
 
 //# sourceMappingURL=difficulty.js.map

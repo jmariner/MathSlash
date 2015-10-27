@@ -5,102 +5,119 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Tile = (function () {
-		// TODO TileRegistry - where tiles are created and can be looked up and changed
-		// TODO one registry per row - have them also store the main tile?
+	function Tile(value, parentSelector) {
+		var _this = this;
 
-		function Tile(value, parentSelector) {
-				var _this = this;
+		var size = arguments.length <= 2 || arguments[2] === undefined ? "100%" : arguments[2];
 
-				var size = arguments.length <= 2 || arguments[2] === undefined ? "100%" : arguments[2];
+		_classCallCheck(this, Tile);
 
-				_classCallCheck(this, Tile);
+		Utils.assert(typeof value === "string", "Invalid parameter: value" + (value !== undefined ? " (" + value + ")" : ""));
+		Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + (parentSelector !== undefined ? " (" + parentSelector + ")" : ""));
+		Utils.assert($(parentSelector).length === 1, "Invalid parentSelector (too many matches): " + parentSelector);
 
-				Utils.assert(typeof value === "string", "Invalid parameter: value" + (value !== undefined ? " (" + value + ")" : ""));
-				Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + (parentSelector !== undefined ? " (" + parentSelector + ")" : ""));
-				Utils.assert($(parentSelector).length === 1, "Invalid parentSelector (too many matches): " + parentSelector);
+		var valueRegex = /^([^\d\s]*)\s?(\d+(?:(\/|\^)\d+)?)$/.exec(value);
 
-				var valueRegex = /^([^\d\s]*)\s?(\d+(?:(\/|\^)\d+)?)$/.exec(value);
+		Utils.assert(valueRegex !== null, "Invalid parameter: value (" + value + ")");
 
-				Utils.assert(valueRegex !== null, "Invalid parameter: value (" + value + ")");
+		var operatorPart = valueRegex[1];
+		var valuePart = valueRegex[2];
+		var typePart = valueRegex[3];
 
-				var operatorPart = valueRegex[1];
-				var valuePart = valueRegex[2];
-				var typePart = valueRegex[3];
+		this.value = valuePart;
 
-				this.value = valuePart;
+		if (operatorPart !== "") {
+			Utils.assert(Tile._isOperator(operatorPart), "Invalid operation in value: " + operatorPart);
+			this.operation = Tile.operations[operatorPart];
+		} else this.operation = undefined;
 
-				if (operatorPart !== "") {
-						Utils.assert(Tile._isOperator(operatorPart), "Invalid operation in value: " + operatorPart);
-						this.operation = Tile.operations[operatorPart];
-				} else this.operation = undefined;
+		var isInteger = typePart === undefined;
 
-				var isInteger = typePart === undefined;
-
-				try {
-						math.parse(this.value);
-				} catch (e) {
-						throw "Cannot parse math: " + value;
-				}
-
-				this.parentSelector = parentSelector;
-				this.size = size;
-
-				this.$element = $("<div>").addClass("tile");
-				if (this.operation !== undefined) this.$element.attr("data-operation", this.operation);
-				this.element = this.$element.get(0);
-
-				var mathNode = math.parse(this.value);
-				this.computedValue = mathNode.compile().eval();
-				this.$element.attr("data-value", this.computedValue);
-
-				if (isInteger) this.$element.html($("<div>").addClass("math").text(this.value));else {
-						var tex = mathNode.toTex({ parenthesis: "auto" });
-						this.element.innerHTML = "$$ " + tex + " $$";
-				}
-
-				this.$element.hide().appendTo($(this.parentSelector)).fadeIn(250);
-				
-				// TODO delay fade in to allow mathjax to do its thing
-
-				this.$element.outerHeight(this.size);
-				this.$element.remove().appendTo($(this.parentSelector));
-				this.$element.outerWidth(this.$element.outerHeight());
-
-				if (!isInteger) {
-						MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element], function () {
-								return Utils.scaleToFit(_this.$element, ".math", .9);
-						});
-				} else Utils.scaleToFit(this.$element, ".math");
+		try {
+			math.parse(this.value);
+		} catch (e) {
+			throw "Cannot parse math: " + value;
 		}
 
-		_createClass(Tile, null, [{
-				key: "_isOperator",
-				value: function _isOperator(op) {
-						return Tile.operations.hasOwnProperty(op);
-				}
-		}]);
+		this.parentSelector = parentSelector;
+		this.size = size;
 
-		return Tile;
+		this.$element = $("<div>").addClass("tile");
+		if (this.operation !== undefined) this.$element.attr("data-operation", this.operation);
+		this.element = this.$element.get(0);
+
+		var mathNode = math.parse(this.value);
+		this.computedValue = mathNode.compile().eval();
+		this.$element.attr("data-value", this.computedValue);
+
+		if (isInteger) this.$element.html($("<div>").addClass("math").text(this.value));else {
+			var tex = mathNode.toTex({ parenthesis: "auto" });
+			this.element.innerHTML = "$$ " + tex + " $$";
+		}
+
+		this.hide();
+
+		this.$element.appendTo($(this.parentSelector));
+
+		// TODO delay fade in to allow mathjax to do its thing (maybe even pre-load the tiles?)
+
+		this.$element.outerHeight(this.size);
+		this.$element.remove().appendTo($(this.parentSelector));
+		this.$element.outerWidth(this.$element.outerHeight());
+
+		if (!isInteger) {
+			MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element], function () {
+				return Utils.scaleToFit(_this.$element, ".math", .9);
+			});
+		} else Utils.scaleToFit(this.$element, ".math");
+	}
+
+	_createClass(Tile, [{
+		key: "hide",
+		value: function hide() {
+			this.$element._hide(true);
+		}
+	}, {
+		key: "show",
+		value: function show() {
+			this.$element._show();
+		}
+	}, {
+		key: "remove",
+		value: function remove() {
+			this.$element.remove();
+		}
+	}], [{
+		key: "_isOperator",
+		value: function _isOperator(op) {
+			return Tile.operations.hasOwnProperty(op);
+		}
+	}]);
+
+	return Tile;
 })();
 
 Tile.operations = {
-		"+": "+",
-		plus: "+",
-		add: "+",
-		addition: "+",
+	"+": "+",
+	plus: "+",
+	add: "+",
+	addition: "+",
 
-		"-": "-",
-		sub: "-",
-		subtract: "-",
-		minus: "-",
+	"-": "-",
+	sub: "-",
+	subtract: "-",
+	minus: "-",
 
-		"*": "*",
-		times: "*",
-		multi: "*",
-		multiply: "*" // TODO display a multiplication "x" here
-		
-		// TODO forgot division... duh
+	"*": "*",
+	times: "*",
+	multi: "*",
+	multiply: "*", // displays "x" on page
 
+	"/": "/",
+	div: "/",
+	over: "/",
+	divide: "/",
+	"divided by": "/" // displays division symbol on page
 };
 
 //# sourceMappingURL=tile.js.map
