@@ -59,14 +59,19 @@ var TileRegistry = (function () {
 			}
 
 			if (diff !== undefined) {
-				this.mainTile = new Tile(TileRegistry.getRandomTileValue(diff, true), this.mainParentSelector);
+				this.mainTile = new Tile(TileRegistry.getRandomTileValue(diff), this.mainParentSelector);
 			}
 
 			this.mainTile.show();
 		}
 	}, {
 		key: "_genChoiceTiles",
-		value: function _genChoiceTiles(diff, groupName) {
+		value: function _genChoiceTiles(diff, groupName, mainNumber) {
+			Utils.assert(typeof groupName === "string" && this.choiceTileMap[groupName] !== undefined, "Invalid group: " + groupName);
+
+			Utils.assert(mainNumber !== undefined, "_genChoiceTiles(...) must be called after main number is generated");
+			Utils.assert(typeof mainNumber === "string" || typeof mainNumber === "number", "Invalid mainNumber: " + mainNumber);
+
 			var group = this.choiceTileMap[groupName];
 
 			group.tiles.forEach(function (t) {
@@ -74,7 +79,7 @@ var TileRegistry = (function () {
 			});
 
 			group.tiles = Array.apply(null, { length: this.choiceTileCount }).map(function () {
-				return new Tile(TileRegistry.getRandomTileValue(diff), group.parentSelector);
+				return new Tile(TileRegistry.getRandomTileValue(diff, mainNumber), group.parentSelector);
 			});
 
 			group.tiles.forEach(function (t) {
@@ -95,7 +100,7 @@ var TileRegistry = (function () {
 
 			this._genMainTile(diff);
 			Object.keys(this.choiceTileMap).forEach(function (g) {
-				return _this._genChoiceTiles(diff, g);
+				return _this._genChoiceTiles(diff, g, _this.mainTile.value);
 			});
 		}
 	}]);
@@ -103,12 +108,22 @@ var TileRegistry = (function () {
 	return TileRegistry;
 })();
 
-TileRegistry.getRandomTileValue = function (difficulty) {
+TileRegistry.getRandomTileValue = function (difficulty, mainNumber) {
 	var _Utils, _Utils2, _Utils3;
 
-	var main = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 	// this pulls from difficulty.js
-	var choice = Utils.pickWeightedRandom(DIFFICULTY_DATA[difficulty][main ? "main" : "choices"]);
+
+	Utils.assert(typeof difficulty === "number" && DIFFICULTY_DATA[difficulty] !== undefined, "Invalid difficulty: " + difficulty);
+
+	var isMain = mainNumber === undefined;
+
+	var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
+
+	var choice = Utils.pickWeightedRandom(choices);
+
+	while (!isMain && choice.hasOwnProperty("iff") && math.eval(choice.iff, { mainNumber: mainNumber }) === false) {
+		choice = Utils.pickWeightedRandom(choices); // TODO regenerating a set of diff4 tiles = no multiplication anymore
+	}
 
 	var value = undefined;
 	switch (choice.type) {
@@ -126,9 +141,11 @@ TileRegistry.getRandomTileValue = function (difficulty) {
 			value = NaN;
 	}
 
-	var oper = choice.hasOwnProperty("operation") ? choice.operation : "";
+	var oper = isMain ? "" : choice.operation;
 
 	return oper + value;
+
+	//etst1
 };
 
 //# sourceMappingURL=TileRegistry.js.map

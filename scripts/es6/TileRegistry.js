@@ -42,7 +42,7 @@ class TileRegistry {
 
 		if (diff !== undefined) {
 			this.mainTile = new Tile(
-				TileRegistry.getRandomTileValue(diff, true),
+				TileRegistry.getRandomTileValue(diff),
 				this.mainParentSelector
 			);
 		}
@@ -50,14 +50,22 @@ class TileRegistry {
 		this.mainTile.show();
 	}
 
-	_genChoiceTiles(diff, groupName) {
+	_genChoiceTiles(diff, groupName, mainNumber) {
+		Utils.assert(typeof groupName === "string" && this.choiceTileMap[groupName] !== undefined,
+			`Invalid group: ${groupName}`);
+
+		Utils.assert(mainNumber !== undefined,
+			"_genChoiceTiles(...) must be called after main number is generated");
+		Utils.assert(typeof mainNumber === "string" || typeof mainNumber === "number",
+			`Invalid mainNumber: ${mainNumber}`);
+
 		var group = this.choiceTileMap[groupName];
 
 		group.tiles.forEach(t => t.remove());
 
 		group.tiles = Array.apply(null, {length: this.choiceTileCount})
 			.map(() => new Tile(
-				TileRegistry.getRandomTileValue(diff),
+				TileRegistry.getRandomTileValue(diff, mainNumber),
 				group.parentSelector
 			)
 		);
@@ -74,14 +82,24 @@ class TileRegistry {
 
 	generateTiles(diff) {
 		this._genMainTile(diff);
-		Object.keys(this.choiceTileMap).forEach(g => this._genChoiceTiles(diff, g));
+		Object.keys(this.choiceTileMap).forEach(g => this._genChoiceTiles(diff, g, this.mainTile.value));
 	}
 }
 
-TileRegistry.getRandomTileValue = function(difficulty, main=false) { // this pulls from difficulty.js
-	var choice = Utils.pickWeightedRandom(
-		DIFFICULTY_DATA[difficulty][main ? "main" : "choices"]
-	); // TODO rerandomize if choice has "iff" and its false
+TileRegistry.getRandomTileValue = function(difficulty, mainNumber) { // this pulls from difficulty.js
+
+	Utils.assert(typeof difficulty === "number" && DIFFICULTY_DATA[difficulty] !== undefined,
+		`Invalid difficulty: ${difficulty}`);
+
+	var isMain = mainNumber === undefined;
+
+	var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
+
+	var choice = Utils.pickWeightedRandom(choices);
+
+	while (!isMain && choice.hasOwnProperty("iff") && math.eval(choice.iff, {mainNumber}) === false) {
+		choice = Utils.pickWeightedRandom(choices); // TODO regenerating a set of diff4 tiles = no multiplication anymore
+	}
 
 	var value = undefined;
 	switch (choice.type) {
@@ -99,7 +117,9 @@ TileRegistry.getRandomTileValue = function(difficulty, main=false) { // this pul
 			value = NaN;
 	}
 
-	var oper = choice.hasOwnProperty("operation") ? choice.operation : "";
+	var oper = isMain ? "" : choice.operation;
 
 	return oper + value;
+
+	//etst1
 };

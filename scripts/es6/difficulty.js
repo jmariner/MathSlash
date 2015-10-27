@@ -87,8 +87,22 @@ var DIFFICULTY_DATA = [null,
 			{
 				type: "integer",
 				iff: "mainNumber <= 12", // because multiplication tables
-				weight: 1,
+				limits: [1,12],
+				weight: 10,
 				operation: "multi"
+				//maxCount: 1 // TODO implement this
+			},
+			{
+				type: "integer",
+				limits: [1,50],
+				weight: 1,
+				operation: "add"
+			},
+			{
+				type: "integer",
+				limits: [1,50],
+				weight: 1,
+				operation: "sub"
 			}
 		]
 	},
