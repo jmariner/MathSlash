@@ -81,7 +81,7 @@ class TileRegistry {
 TileRegistry.getRandomTileValue = function(difficulty, main=false) { // this pulls from difficulty.js
 	var choice = Utils.pickWeightedRandom(
 		DIFFICULTY_DATA[difficulty][main ? "main" : "choices"]
-	);
+	); // TODO rerandomize if choice has "iff" and its false
 
 	var value = undefined;
 	switch (choice.type) {
