@@ -68,7 +68,6 @@ class TileRegistry {
 
 		group.tiles.forEach(t => t.remove());
 
-
 		//noinspection StatementWithEmptyBodyJS
 		for(;
 			group.tiles.push(TileRegistry._genSingleChoiceTile(diff, group)) < this.choiceTileCount;
@@ -81,12 +80,18 @@ class TileRegistry {
 		group.tiles.forEach(t => t.show());
 	}
 
-	static _genSingleChoiceTile(diff, group) {
+	static _genSingleChoiceTile(diff, group) { // this could be more efficient - prevent picking invalid tiles all together
 
-		var initChoice = TileRegistry.getRandomTileData(diff);
+		var choice = TileRegistry.getRandomTileData(diff); // TODO you are here
 		var tilesSoFar = group.tiles;
 
-		if (initChoice.hasOwnProperty("condition")) {}
+		if (choice.hasOwnProperty("condition")) {
+			//while condition is false, re-randomize choice
+		}
+		if (choice.hasOwnProperty("maxCount")) {
+			//while previoustiles has this choice, re-randomize choice
+		}
+		return choice;
 	}
 
 	static getRandomTileData(difficulty, isMain=false) {//mainNumber) { // this pulls from difficulty.js
