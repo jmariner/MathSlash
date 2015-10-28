@@ -70,11 +70,11 @@ var DIFFICULTY_DATA = [null,
 	}],
 	choices: [{
 		type: "integer",
-		iff: "mainNumber <= 12", // because multiplication tables
+		condition: "mainNumber <= 12", // because multiplication tables
 		limits: [1, 12],
 		weight: 10,
-		operation: "multi"
-		//maxCount: 1 // TODO implement this
+		operation: "multi",
+		maxCount: 1 // TODO implement this
 	}, {
 		type: "integer",
 		limits: [1, 50],

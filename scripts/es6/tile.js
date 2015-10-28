@@ -58,6 +58,8 @@ class Tile {
 				() => Utils.scaleToFit(this.$element, ".math", .9));
 		}
 		else Utils.scaleToFit(this.$element, ".math");
+
+		//console.log(`tile created: ${value} in ${parentSelector}`)
 	}
 
 	hide() {

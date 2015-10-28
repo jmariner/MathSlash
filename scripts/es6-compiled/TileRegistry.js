@@ -59,15 +59,20 @@ var TileRegistry = (function () {
 			}
 
 			if (diff !== undefined) {
-				this.mainTile = new Tile(TileRegistry.getRandomTileValue(diff), this.mainParentSelector);
+				this.mainTile = new Tile(TileRegistry.getRandomTileData(diff, true).value, this.mainParentSelector);
 			}
 
 			this.mainTile.show();
 		}
 	}, {
 		key: "_genChoiceTiles",
-		value: function _genChoiceTiles(diff, groupName, mainNumber) {
+		value: function _genChoiceTiles(groupName, diff, mainNumber) {
 			Utils.assert(typeof groupName === "string" && this.choiceTileMap[groupName] !== undefined, "Invalid group: " + groupName);
+
+			if (diff === undefined) {
+				this.clearGroup(groupName);
+				return;
+			}
 
 			Utils.assert(mainNumber !== undefined, "_genChoiceTiles(...) must be called after main number is generated");
 			Utils.assert(typeof mainNumber === "string" || typeof mainNumber === "number", "Invalid mainNumber: " + mainNumber);
@@ -78,20 +83,16 @@ var TileRegistry = (function () {
 				return t.remove();
 			});
 
-			group.tiles = Array.apply(null, { length: this.choiceTileCount }).map(function () {
-				return new Tile(TileRegistry.getRandomTileValue(diff, mainNumber), group.parentSelector);
-			});
+			//noinspection StatementWithEmptyBodyJS
+			for (; group.tiles.push(TileRegistry._genSingleChoiceTile(diff, group)) < this.choiceTileCount;);
+
+			//group.tiles = Array.apply(null, {length: this.choiceTileCount})
+			//	.map(() => _genSingleChoiceTile(diff, group)
+			//);
 
 			group.tiles.forEach(function (t) {
 				return t.show();
 			});
-
-			//noinspection StatementWithEmptyBodyJS
-			//for(
-			//	var tiles = [];
-			//	tiles.length <= this.choiceTileCount;       // this works too - just not as cool
-			//	tiles.push(TileRegistry.getRandomTileValue(diff))
-			//);
 		}
 	}, {
 		key: "generateTiles",
@@ -100,52 +101,68 @@ var TileRegistry = (function () {
 
 			this._genMainTile(diff);
 			Object.keys(this.choiceTileMap).forEach(function (g) {
-				return _this._genChoiceTiles(diff, g, _this.mainTile.value);
+				return _this._genChoiceTiles(g, diff, _this.mainTile.value);
 			});
+		}
+	}], [{
+		key: "_genSingleChoiceTile",
+		value: function _genSingleChoiceTile(diff, group) {
+
+			var initChoice = TileRegistry.getRandomTileData(diff);
+			var tilesSoFar = group.tiles;
+
+			if (initChoice.hasOwnProperty("condition")) {}
+		}
+	}, {
+		key: "getRandomTileData",
+		value: function getRandomTileData(difficulty) {
+			var _Utils, _Utils2, _Utils3;
+
+			var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+			//mainNumber) { // this pulls from difficulty.js
+
+			Utils.assert(typeof difficulty === "number" && DIFFICULTY_DATA[difficulty] !== undefined, "Invalid difficulty: " + difficulty);
+
+			//var isMain = mainNumber === undefined;
+
+			var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
+
+			var choice = Utils.pickWeightedRandom(choices);
+
+			//if (!isMain) {
+			//	while (choice.hasOwnProperty("condition") && math.eval(choice.condition, {mainNumber}) === false) {
+			//		choice = Utils.pickWeightedRandom(choices);
+			//	}
+			//}
+
+			var value = undefined;
+			switch (choice.type) {
+				case "integer":
+					value = (_Utils = Utils).rand.apply(_Utils, _toConsumableArray(choice.limits));
+					break;
+				case "fraction":
+					// TODO do fraction stuff
+					break;
+				case "power":
+				case "exponent":
+					value = (_Utils2 = Utils).rand.apply(_Utils2, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || (_Utils3 = Utils).rand.apply(_Utils3, _toConsumableArray(choice.powerLimits)));
+					break;
+				default:
+					value = NaN;
+			}
+
+			var operation = isMain ? "" : choice.operation;
+
+			//return operation + value;
+			return {
+				value: value,
+				operation: operation,
+				condition: choice.condition
+			};
 		}
 	}]);
 
 	return TileRegistry;
 })();
-
-TileRegistry.getRandomTileValue = function (difficulty, mainNumber) {
-	var _Utils, _Utils2, _Utils3;
-
-	// this pulls from difficulty.js
-
-	Utils.assert(typeof difficulty === "number" && DIFFICULTY_DATA[difficulty] !== undefined, "Invalid difficulty: " + difficulty);
-
-	var isMain = mainNumber === undefined;
-
-	var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
-
-	var choice = Utils.pickWeightedRandom(choices);
-
-	while (!isMain && choice.hasOwnProperty("iff") && math.eval(choice.iff, { mainNumber: mainNumber }) === false) {
-		choice = Utils.pickWeightedRandom(choices); // TODO regenerating a set of diff4 tiles = no multiplication anymore
-	}
-
-	var value = undefined;
-	switch (choice.type) {
-		case "integer":
-			value = (_Utils = Utils).rand.apply(_Utils, _toConsumableArray(choice.limits));
-			break;
-		case "fraction":
-			// TODO do fraction stuff
-			break;
-		case "power":
-		case "exponent":
-			value = (_Utils2 = Utils).rand.apply(_Utils2, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || (_Utils3 = Utils).rand.apply(_Utils3, _toConsumableArray(choice.powerLimits)));
-			break;
-		default:
-			value = NaN;
-	}
-
-	var oper = isMain ? "" : choice.operation;
-
-	return oper + value;
-
-	//etst1
-};
 
 //# sourceMappingURL=TileRegistry.js.map
