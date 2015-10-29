@@ -18,7 +18,7 @@ var DIFFICULTY_DATA = [null,
 			}
 		]
 	},
-	
+
 //----------------------DIFFICULTY 2-----------------------------
 		{
 		main: [
@@ -43,7 +43,7 @@ var DIFFICULTY_DATA = [null,
 			}
 		]
 	},
-	
+
 //----------------------DIFFICULTY 3-----------------------------
 	{
 		main: [
@@ -90,7 +90,12 @@ var DIFFICULTY_DATA = [null,
 				limits: [1,12],
 				weight: 20,
 				operation: "multi",
-				maxCount: 1
+				maxCount: 1,
+				conditions: [
+					"mainNumber <= 12",
+					"countOfMe < 1"
+				]
+
 			},
 			{
 				type: "integer",
@@ -113,22 +118,19 @@ var DIFFICULTY_DATA = [null,
 	}
 ];
 
-var DATA = []; // compile DIFFICULTY_DATA to a map: conditions -> choice instead of array of choices
-			   // conditions include maxCount and custom condition property
-DIFFICULTY_DATA.forEach(function(diffGroup) {
-	for (let type in diffGroup) {
-		var typeData = diffGroup[type];
-		typeData.forEach(function(data) {
-			var conds = [];
-			if (data.hasOwnProperty("condition"))
-				conds.push(data.condition);
-			if (data.hasOwnProperty("maxCount"))
-				conds.push("countOfMe < " + data.maxCount);
-			return conds.join(" && ");
-		})
-	}
-});
+DIFFICULTY_DATA.forEach(function(diffGroup, diff) { // for each difficulty
 
+	Utils.forEachIn(function (type, typeData) { // for each type (main/choices)
+
+		typeData.forEach(function (data) { // for each choice
+			data.id = [diff, type, typeData.indexOf(data)].join("_");
+		}); // end for each choice
+
+	}, diffGroup); // end for each type
+
+}); // end for each difficulty
+
+/*
 class Choice {
     constructor(diff, isMain=false) {
         this.which = isMain ? "main" : "choices";
@@ -195,7 +197,6 @@ function getRandomTileData(difficulty, isMain=false) {
 			value = Utils.rand(...choice.limits);
 			break;
 		case "fraction":
-			// TODO do fraction stuff
 			break;
 		case "power":
 		case "exponent":
@@ -214,4 +215,4 @@ function getRandomTileData(difficulty, isMain=false) {
 		condition: choice.condition,
 		maxCount: choice.maxCount
 	};
-}
+}*/

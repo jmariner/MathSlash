@@ -1,11 +1,5 @@
 "use strict";
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 var DIFFICULTY_DATA = [null,
 
 //----------------------DIFFICULTY 1-----------------------------
@@ -80,7 +74,9 @@ var DIFFICULTY_DATA = [null,
 		limits: [1, 12],
 		weight: 20,
 		operation: "multi",
-		maxCount: 1
+		maxCount: 1,
+		conditions: ["mainNumber <= 12", "countOfMe < 1"]
+
 	}, {
 		type: "integer",
 		limits: [1, 50],
@@ -97,40 +93,35 @@ var DIFFICULTY_DATA = [null,
 	choice: [{ type: "power", baseLimits: [1, 12], powerLimits: [2, 2] }]
 }];
 
-var DATA = []; // compile DIFFICULTY_DATA to a map: conditions -> choice instead of array of choices
-// conditions include maxCount and custom condition property
-DIFFICULTY_DATA.forEach(function (diffGroup) {
-	for (var type in diffGroup) {
-		var typeData = diffGroup[type];
+DIFFICULTY_DATA.forEach(function (diffGroup, diff) {
+	// for each difficulty
+
+	Utils.forEachIn(function (type, typeData) {
+		// for each type (main/choices)
+
 		typeData.forEach(function (data) {
-			var conds = [];
-			if (data.hasOwnProperty("condition")) conds.push(data.condition);
-			if (data.hasOwnProperty("maxCount")) conds.push("countOfMe < " + data.maxCount);
-			return conds.join(" && ");
-		});
-	}
-});
+			// for each choice
+			data.id = [diff, type, typeData.indexOf(data)].join("_");
+		}); // end for each choice
+	}, diffGroup); // end for each type
+}); // end for each difficulty
 
-var Choice = (function () {
-	function Choice(diff) {
-		var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-		_classCallCheck(this, Choice);
-
-		this.which = isMain ? "main" : "choices";
-		this.diff = diff;
+/*
+class Choice {
+    constructor(diff, isMain=false) {
+        this.which = isMain ? "main" : "choices";
+        this.diff = diff;
 		this.data = undefined;
+    }
+
+	get id() {
+		return [
+			this.diff,
+			this.which.charAt(0),
+			DIFFICULTY_DATA[this.diff][this.which].indexOf(this.data)
+		].join(".");
 	}
-
-	_createClass(Choice, [{
-		key: "id",
-		get: function get() {
-			return [this.diff, this.which.charAt(0), DIFFICULTY_DATA[this.diff][this.which].indexOf(this.data)].join(".");
-		}
-	}]);
-
-	return Choice;
-})();
+}
 
 function _genSingleChoiceTile(diff, group, mainNumber) {
 
@@ -139,16 +130,13 @@ function _genSingleChoiceTile(diff, group, mainNumber) {
 	var choice = TileRegistry.getRandomTileData(diff);
 	var choicesSoFar = group.choices;
 
-	var reRoll = function reRoll() {
-		return TileRegistry.getRandomTileData(diff);
-	};
+	var reRoll = () => TileRegistry.getRandomTileData(diff);
 
 	//called before adding any more elements, preventing going over max
-	var hasMax = function hasMax(choices) {
-		// currently limited to one option with maxCount; need some sort of ID system to determine which choice is which
+	var hasMax = function(choices) { // currently limited to one option with maxCount; need some sort of ID system to determine which choice is which
 		var count = 0;
 		var max = 0;
-		return choices.some(function (c) {
+		return choices.some(function(c){
 			if (c.maxCount !== undefined) {
 				if (max === 0) max = c.maxCount;
 				if (max > 0 && max === ++count) return true;
@@ -157,9 +145,9 @@ function _genSingleChoiceTile(diff, group, mainNumber) {
 	};
 
 	var success = false;
-	while (!success && (choice.condition !== undefined || choice.maxCount !== undefined)) {
+	while (!success && ((choice.condition !== undefined) || (choice.maxCount !== undefined))) {
 		success = true;
-		while (choice.condition !== undefined && math.eval(choice.condition, { mainNumber: mainNumber }) === false) {
+		while (choice.condition !== undefined && math.eval(choice.condition, {mainNumber}) === false) {
 			choice = reRoll();
 			success = false;
 		}
@@ -171,10 +159,7 @@ function _genSingleChoiceTile(diff, group, mainNumber) {
 	return choice;
 }
 
-function getRandomTileData(difficulty) {
-	var _Utils, _Utils2, _Utils3;
-
-	var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+function getRandomTileData(difficulty, isMain=false) {
 
 	var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
 
@@ -185,14 +170,13 @@ function getRandomTileData(difficulty) {
 	var value = undefined;
 	switch (choice.type) {
 		case "integer":
-			value = (_Utils = Utils).rand.apply(_Utils, _toConsumableArray(choice.limits));
+			value = Utils.rand(...choice.limits);
 			break;
 		case "fraction":
-			// TODO do fraction stuff
 			break;
 		case "power":
 		case "exponent":
-			value = (_Utils2 = Utils).rand.apply(_Utils2, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || (_Utils3 = Utils).rand.apply(_Utils3, _toConsumableArray(choice.powerLimits)));
+			value = `${Utils.rand(...choice.baseLimits)} ^ ${choice.power || Utils.rand(...choice.powerLimits)}`;
 			break;
 		default:
 			value = NaN;
@@ -201,12 +185,12 @@ function getRandomTileData(difficulty) {
 	var operation = isMain ? "" : choice.operation;
 
 	return {
-		value: value,
-		valueString: operation + value,
-		operation: operation,
+		value,
+		valueString: operation+value,
+		operation,
 		condition: choice.condition,
 		maxCount: choice.maxCount
 	};
-}
+}*/
 
 //# sourceMappingURL=difficulty.js.map
