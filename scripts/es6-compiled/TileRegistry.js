@@ -59,7 +59,7 @@ var TileRegistry = (function () {
 			}
 
 			if (diff !== undefined) {
-				this.mainTile = new Tile(TileRegistry.getRandomTileData(diff, true).value, this.mainParentSelector);
+				this.mainTile = new Tile(TileRegistry.getRandomTileData(diff, true).valueString, this.mainParentSelector);
 			}
 
 			this.mainTile.show();
@@ -82,13 +82,15 @@ var TileRegistry = (function () {
 			group.tiles.forEach(function (t) {
 				return t.remove();
 			});
+			group.tiles = [];
 
+			group.choices = [];
 			//noinspection StatementWithEmptyBodyJS
-			for (; group.tiles.push(TileRegistry._genSingleChoiceTile(diff, group)) < this.choiceTileCount;);
+			for (; group.choices.push(TileRegistry._genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;);
 
-			//group.tiles = Array.apply(null, {length: this.choiceTileCount})
-			//	.map(() => _genSingleChoiceTile(diff, group)
-			//);
+			group.tiles = group.choices.map(function (c) {
+				return new Tile(c.valueString, group.parentSelector);
+			});
 
 			group.tiles.forEach(function (t) {
 				return t.show();
@@ -106,12 +108,44 @@ var TileRegistry = (function () {
 		}
 	}], [{
 		key: "_genSingleChoiceTile",
-		value: function _genSingleChoiceTile(diff, group) {
+		value: function _genSingleChoiceTile(diff, group, mainNumber) {
+			// this could be more efficient - prevent picking invalid tiles all together
 
-			var initChoice = TileRegistry.getRandomTileData(diff);
-			var tilesSoFar = group.tiles;
+			mainNumber = +mainNumber;
 
-			if (initChoice.hasOwnProperty("condition")) {}
+			var choice = TileRegistry.getRandomTileData(diff);
+			var choicesSoFar = group.choices;
+
+			var reRoll = function reRoll() {
+				return TileRegistry.getRandomTileData(diff);
+			};
+
+			//called before adding any more elements, preventing going over max
+			var hasMax = function hasMax(choices) {
+				// currently limited to one option with maxCount; need some sort of ID system to determine which choice is which
+				var count = 0;
+				var max = 0;
+				return choices.some(function (c) {
+					if (c.maxCount !== undefined) {
+						if (max === 0) max = c.maxCount;
+						if (max > 0 && max === ++count) return true;
+					}
+				});
+			};
+
+			var success = false;
+			while (!success && (choice.condition !== undefined || choice.maxCount !== undefined)) {
+				success = true;
+				while (choice.condition !== undefined && math.eval(choice.condition, { mainNumber: mainNumber }) === false) {
+					choice = reRoll();
+					success = false;
+				}
+				while (choice.maxCount !== undefined && hasMax(choicesSoFar)) {
+					choice = reRoll();
+					success = false;
+				}
+			}
+			return choice;
 		}
 	}, {
 		key: "getRandomTileData",
@@ -119,21 +153,13 @@ var TileRegistry = (function () {
 			var _Utils, _Utils2, _Utils3;
 
 			var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-			//mainNumber) { // this pulls from difficulty.js
+			// this pulls from difficulty.js
 
 			Utils.assert(typeof difficulty === "number" && DIFFICULTY_DATA[difficulty] !== undefined, "Invalid difficulty: " + difficulty);
-
-			//var isMain = mainNumber === undefined;
 
 			var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
 
 			var choice = Utils.pickWeightedRandom(choices);
-
-			//if (!isMain) {
-			//	while (choice.hasOwnProperty("condition") && math.eval(choice.condition, {mainNumber}) === false) {
-			//		choice = Utils.pickWeightedRandom(choices);
-			//	}
-			//}
 
 			var value = undefined;
 			switch (choice.type) {
@@ -156,8 +182,10 @@ var TileRegistry = (function () {
 			//return operation + value;
 			return {
 				value: value,
+				valueString: operation + value,
 				operation: operation,
-				condition: choice.condition
+				condition: choice.condition,
+				maxCount: choice.maxCount
 			};
 		}
 	}]);

@@ -23,7 +23,7 @@ $(function() {
 
 });
 
-Utils = {};
+var Utils = {};
 
 Utils.toggleDebug = function() { $("body").toggleClass("debug"); };
 

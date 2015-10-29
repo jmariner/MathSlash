@@ -75,22 +75,22 @@ var DIFFICULTY_DATA = [null,
 			{
 				type: "integer",
 				weight: 3,
-				limits: [1, 25]
-			},
+				limits: [1, 12]//25]
+			}/*,
 			{
 				type: "integer",
 				weight: 1,
 				limits: [1, 99]
-			}
+			}*/
 		],
 		choices: [
 			{
 				type: "integer",
 				condition: "mainNumber <= 12", // because multiplication tables
 				limits: [1,12],
-				weight: 10,
+				weight: 20,
 				operation: "multi",
-				maxCount: 1 // TODO implement this
+				maxCount: 1
 			},
 			{
 				type: "integer",
