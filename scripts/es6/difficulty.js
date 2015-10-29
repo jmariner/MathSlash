@@ -113,6 +113,22 @@ var DIFFICULTY_DATA = [null,
 	}
 ];
 
+var DATA = []; // compile DIFFICULTY_DATA to a map: conditions -> choice instead of array of choices
+			   // conditions include maxCount and custom condition property
+DIFFICULTY_DATA.forEach(function(diffGroup) {
+	for (let type in diffGroup) {
+		var typeData = diffGroup[type];
+		typeData.forEach(function(data) {
+			var conds = [];
+			if (data.hasOwnProperty("condition"))
+				conds.push(data.condition);
+			if (data.hasOwnProperty("maxCount"))
+				conds.push("countOfMe < " + data.maxCount);
+			return conds.join(" && ");
+		})
+	}
+});
+
 class Choice {
     constructor(diff, isMain=false) {
         this.which = isMain ? "main" : "choices";

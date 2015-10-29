@@ -97,6 +97,20 @@ var DIFFICULTY_DATA = [null,
 	choice: [{ type: "power", baseLimits: [1, 12], powerLimits: [2, 2] }]
 }];
 
+var DATA = []; // compile DIFFICULTY_DATA to a map: conditions -> choice instead of array of choices
+// conditions include maxCount and custom condition property
+DIFFICULTY_DATA.forEach(function (diffGroup) {
+	for (var type in diffGroup) {
+		var typeData = diffGroup[type];
+		typeData.forEach(function (data) {
+			var conds = [];
+			if (data.hasOwnProperty("condition")) conds.push(data.condition);
+			if (data.hasOwnProperty("maxCount")) conds.push("countOfMe < " + data.maxCount);
+			return conds.join(" && ");
+		});
+	}
+});
+
 var Choice = (function () {
 	function Choice(diff) {
 		var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
