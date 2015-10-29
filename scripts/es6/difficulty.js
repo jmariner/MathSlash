@@ -112,3 +112,16 @@ var DIFFICULTY_DATA = [null,
 		choice: [ { type: "power", baseLimits: [1,12], powerLimits: [2,2] }]
 	}
 ];
+
+class Choice {
+    constructor(diff, isMain=false) {
+        var which = isMain ? "main" : "choices";
+        var data =
+Utils.getWeightedRandom(DIFFICULTY_DATA[diff][which];
+        this.id = [
+            diff,
+            which.charAt(0),
+            DIFFICULTY_DATA[diff][which].indexOf(data)
+        ].join(".");
+    }
+}
