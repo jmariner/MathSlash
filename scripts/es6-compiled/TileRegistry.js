@@ -32,10 +32,26 @@ var TileRegistry = (function () {
 
 				$(parentSelector).find(".tile").remove();
 
-				this.choiceTileMap[name] = {
+				var me = this;
+
+				this.choiceTileMap[name] = Object.defineProperties({
+					name: name,
 					parentSelector: parentSelector,
 					tiles: []
-				};
+				}, {
+					totalValue: {
+						get: function get() {
+							// TODO this
+							var valuesWithOperators = (this.choices || this.tiles).map(function (c) {
+								return c.operation + " (" + c.value + ")";
+							});
+							var mathString = me.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
+							return math.eval(mathString);
+						},
+						configurable: true,
+						enumerable: true
+					}
+				});
 			}).apply(this, arguments);
 		}
 	}, {
@@ -89,12 +105,6 @@ var TileRegistry = (function () {
 			group.tiles = group.choices.map(function (c) {
 				return new Tile(c.valueString, group.parentSelector);
 			});
-
-			var valuesWithOperators = group.tiles.map(function (t) {
-				return t.operation + " (" + t.value + ")";
-			});
-			var mathString = this.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
-			group.totalValue = math.eval(mathString);
 		}
 	}, {
 		key: "generateTiles",

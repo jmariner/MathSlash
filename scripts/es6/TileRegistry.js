@@ -19,9 +19,17 @@ class TileRegistry {
 
 		$(parentSelector).find(".tile").remove();
 
+		var me = this;
+
 		this.choiceTileMap[name] = {
+			name,
 			parentSelector,
-			tiles: []
+			tiles: [],
+			get totalValue() { // TODO this
+				var valuesWithOperators = (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`);
+				var mathString = me.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
+				return math.eval(mathString);
+			}
 		};
 	}
 
@@ -81,9 +89,6 @@ class TileRegistry {
 
 		group.tiles = group.choices.map(c => new Tile(c.valueString, group.parentSelector));
 
-		var valuesWithOperators = group.tiles.map(t => `${t.operation} (${t.value})`);
-		var mathString = this.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
-		group.totalValue = math.eval(mathString);
 	}
 
 	generateTiles(diff) {

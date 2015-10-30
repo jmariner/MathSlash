@@ -45,7 +45,6 @@ var Randomizer = (function () {
             mainNumber = +mainNumber;
 
             var choice = Randomizer.getRandomTileData(diff);
-            var choicesSoFar = group.choices;
 
             var reRoll = function reRoll() {
                 return Randomizer.getRandomTileData(diff);
@@ -53,27 +52,33 @@ var Randomizer = (function () {
 
             var count = function count(id) {
                 var count = 0;
-                choicesSoFar.forEach(function (c) {
+                group.choices.forEach(function (c) {
                     count += c.id === id;
                 });
                 return count;
             };
 
             var scope = function scope() {
-                return { mainNumber: mainNumber, myCount: count(choice.id) };
+                return {
+                    mainNumber: mainNumber,
+                    me: choice.value,
+                    myCount: count(choice.id),
+                    valueSoFar: group.totalValue
+                };
             };
 
             while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
-                choice = reRoll(); // TODO (1) reRoll the problematic value instead of entire choice?
-                // ex: if subtracting will make the result negative, reRoll the subtracted value
+                choice = reRoll();
+            }
+            while (choice.retryCondition !== undefined && math.eval(choice.retryCondition, scope())) {
+                //TODO you are here
+                choice.reRollMe(); // ex: if subtracting will make the result negative, reRoll the subtracted value
             }
             return choice;
         }
     }, {
         key: "getRandomTileData",
         value: function getRandomTileData(difficulty) {
-            var _Utils;
-
             var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
             // this pulls from difficulty.js
 
@@ -84,29 +89,35 @@ var Randomizer = (function () {
             var choice = Randomizer.pickWeightedRandom(choices);
 
             var value = undefined;
-            switch (choice.type) {
-                case "integer":
-                    value = (_Utils = Utils).rand.apply(_Utils, _toConsumableArray(choice.limits));
-                    break;
-                case "fraction":
-                    value = Utils.buildFraction(Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.numeratorLimits || [NaN])), Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.denominatorLimits || NaN)), Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.resultLimits || [NaN]))).toString();
-                    break;
-                case "power":
-                case "exponent":
-                    value = Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.powerLimits)));
-                    break;
-                default:
-                    value = NaN;
-            }
+
+            var roll = function roll() {
+                var _Utils;
+
+                switch (choice.type) {
+                    case "integer":
+                        value = (_Utils = Utils).rand.apply(_Utils, _toConsumableArray(choice.limits));
+                        break;
+                    case "fraction":
+                        value = Utils.buildFraction(Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.numeratorLimits || [NaN])), Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.denominatorLimits || NaN)), Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.resultLimits || [NaN]))).toString();
+                        break;
+                    case "power":
+                    case "exponent":
+                        value = Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.powerLimits)));
+                        break;
+                    default:
+                        value = NaN;
+                }
+            };
+
+            roll();
 
             var operation = isMain ? "" : choice.operation;
-
-            //return operation + value;
             return {
                 value: value,
                 valueString: [operation, value].join(" "),
-                operation: operation,
-                condition: choice.condition // TODO (1) return a function to randomize the value (again?)
+                operation: Tile.operations[operation],
+                condition: choice.condition,
+                reRollMe: roll
             };
         }
     }]);

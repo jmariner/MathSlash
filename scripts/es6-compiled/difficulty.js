@@ -53,7 +53,8 @@ var DIFFICULTY_DATA = [null,
 		type: "integer",
 		weight: 1,
 		limits: [1, 500],
-		operation: "sub" // TODO (2) prevent final answer from being negative
+		operation: "sub", // TODO (2) prevent final answer from being negative
+		retryConditions: ["valueSoFar < me"]
 	}]
 },
 
@@ -126,6 +127,7 @@ DIFFICULTY_DATA.forEach(function (diffGroup, diff) {
 			// for each choice
 			data.id = [diff, type, typeData.indexOf(data)].join("_");
 			if (data.hasOwnProperty("conditions")) data.condition = data.conditions.join(" and ");
+			if (data.hasOwnProperty("retryConditions")) data.retryCondition = data.retryConditions.join(" and ");
 		}); // end for each choice
 	}, diffGroup); // end for each type
 }); // end for each difficulty
