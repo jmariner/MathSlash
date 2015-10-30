@@ -120,15 +120,17 @@ var DIFFICULTY_DATA = [null,
 		choices: [
 			{
 				type: "power",
-				baseLimits: [1,12],
+				baseLimits: [2,12],
 				power: 2,
-				weight: 1
+				weight: 50,
+				operation: "add"
 			},
 			{
 				type: "fraction",
-				resultLimits: [1,12],
-				denominatorLimits: [1,12],
-				weight: 100
+				resultLimits: [2,12],
+				denominatorLimits: [2,12],
+				weight: 500,
+				operation: "add"
 			},
 			{
 				type: "integer",

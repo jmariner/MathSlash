@@ -41,12 +41,11 @@ class TileRegistry {
 
 		if (diff !== undefined) {
 			this.mainTile = new Tile(
-				TileRegistry.getRandomTileData(diff, true).valueString,
+				Randomizer.getRandomTileData(diff, true).valueString,
 				this.mainParentSelector
 			);
 		}
 
-		this.mainTile.show();
 	}
 
 	_genChoiceTiles(groupName, diff, mainNumber) {
@@ -72,81 +71,17 @@ class TileRegistry {
 
 		for(
 			group.choices = [];
-			group.choices.push(TileRegistry._genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
+			group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
 		) {}
 
 		for(
 			let a = group.choices, rand, i = a.length;
 			i > 0;
-			rand = Utils.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
+			rand = Randomizer.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
 		) {}
 
 		group.tiles = group.choices.map(c => new Tile(c.valueString, group.parentSelector));
 
-		group.tiles.forEach(t => t.show());
-	}
-
-	static _genSingleChoiceTile(diff, group, mainNumber) {
-
-		mainNumber = +mainNumber;
-
-		var choice = TileRegistry.getRandomTileData(diff);
-		var choicesSoFar = group.choices;
-
-		var reRoll = () => TileRegistry.getRandomTileData(diff);
-
-		var count = function(id) {
-			let count = 0;
-			choicesSoFar.forEach(c => { count += c.id === id });
-			return count;
-		};
-
-		var scope = () => ({mainNumber, myCount: count(choice.id)});
-
-		while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
-			choice = reRoll();
-		}
-		return choice;
-	}
-
-	static getRandomTileData(difficulty, isMain=false) { // this pulls from difficulty.js
-
-		Utils.assert(typeof difficulty === "number" && DIFFICULTY_DATA[difficulty] !== undefined,
-			`Invalid difficulty: ${difficulty}`);
-
-		var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
-
-		var choice = Utils.pickWeightedRandom(choices);
-
-		var value = undefined;
-		switch (choice.type) {
-			case "integer":
-				value = Utils.rand(...choice.limits);
-				break;
-			case "fraction":
-				value = `${Utils.buildFraction(
-					Utils.rand(...(choice.numeratorLimits || [NaN])),
-					Utils.rand(...(choice.denominatorLimits || NaN)),
-					Utils.rand(...(choice.resultLimits || [NaN])) // TODO you are here
-				).toString()}`;
-				break;
-			case "power":
-			case "exponent":
-				value = `${Utils.rand(...choice.baseLimits)} ^ ${choice.power || Utils.rand(...choice.powerLimits)}`;
-				break;
-			default:
-				value = NaN;
-		}
-
-		var operation = isMain ? "" : choice.operation;
-
-		//return operation + value;
-		return {
-			value,
-			valueString: operation+value,
-			operation,
-			condition: choice.condition
-		};
 	}
 
 	generateTiles(diff) {

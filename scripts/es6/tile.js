@@ -5,7 +5,7 @@ class Tile {
 		Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + ((parentSelector !== undefined) ? ` (${parentSelector})` : ""));
 		Utils.assert($(parentSelector).length === 1, `Invalid parentSelector (too many matches): ${parentSelector}`);
 
-		var valueRegex = /^([^\d\s]*)\s?(\d+(?:(\/|\^)\d+)?)$/.exec(value);
+		var valueRegex = /^([^\d\s]*)\s?(\d+(?:\s?(\/|\^)\s?\d+)?)$/.exec(value);
 
 		Utils.assert(valueRegex !== null, `Invalid parameter: value (${value})`);
 
@@ -53,11 +53,15 @@ class Tile {
 		this.$element.remove().appendTo($(this.parentSelector));
 		this.$element.outerWidth(this.$element.outerHeight());
 
+		var ready = () => {
+			Utils.scaleToFit(this.$element, ".math");
+			this.show();
+		};
+
 		if (!isInteger) {
-			MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element],
-				() => Utils.scaleToFit(this.$element, ".math", .9));
+			MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element], ready);
 		}
-		else Utils.scaleToFit(this.$element, ".math");
+		else ready();
 
 		//console.log(`tile created: ${value} in ${parentSelector}`)
 	}
