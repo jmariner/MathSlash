@@ -69,18 +69,17 @@ class TileRegistry {
 		group.tiles.forEach(t => t.remove());
 		group.tiles = [];
 
-		group.choices = [];
-		//noinspection StatementWithEmptyBodyJS
-		for(;
-			group.choices.push(TileRegistry._genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
-		);
 
-		//noinspection StatementWithEmptyBodyJS
+		for(
+			group.choices = [];
+			group.choices.push(TileRegistry._genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
+		) {}
+
 		for(
 			let a = group.choices, rand, i = a.length;
 			i > 0;
 			rand = Utils.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
-		);
+		) {}
 
 		group.tiles = group.choices.map(c => new Tile(c.valueString, group.parentSelector));
 
@@ -125,7 +124,11 @@ class TileRegistry {
 				value = Utils.rand(...choice.limits);
 				break;
 			case "fraction":
-				// TODO do fraction stuff
+				value = `${Utils.buildFraction(
+					Utils.rand(...(choice.numeratorLimits || [NaN])),
+					Utils.rand(...(choice.denominatorLimits || NaN)),
+					Utils.rand(...(choice.resultLimits || [NaN])) // TODO you are here
+				).toString()}`;
 				break;
 			case "power":
 			case "exponent":

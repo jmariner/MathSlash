@@ -84,11 +84,8 @@ var TileRegistry = (function () {
 			});
 			group.tiles = [];
 
-			group.choices = [];
-			//noinspection StatementWithEmptyBodyJS
-			for (; group.choices.push(TileRegistry._genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;);
+			for (group.choices = []; group.choices.push(TileRegistry._genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;) {}
 
-			//noinspection StatementWithEmptyBodyJS
 			for (var a = group.choices, rand = undefined, i = a.length; i > 0; rand = Utils.rand(0, --i), (_ref = [a[rand], a[i]], a[i] = _ref[0], a[rand] = _ref[1], _ref)) {
 				var _ref;
 			}
@@ -144,7 +141,7 @@ var TileRegistry = (function () {
 	}, {
 		key: "getRandomTileData",
 		value: function getRandomTileData(difficulty) {
-			var _Utils, _Utils2, _Utils3;
+			var _Utils, _Utils2, _Utils3, _Utils4, _Utils5, _Utils6;
 
 			var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 			// this pulls from difficulty.js
@@ -161,11 +158,12 @@ var TileRegistry = (function () {
 					value = (_Utils = Utils).rand.apply(_Utils, _toConsumableArray(choice.limits));
 					break;
 				case "fraction":
-					// TODO do fraction stuff
+					value = "" + Utils.buildFraction((_Utils2 = Utils).rand.apply(_Utils2, _toConsumableArray(choice.numeratorLimits || [NaN])), (_Utils3 = Utils).rand.apply(_Utils3, _toConsumableArray(choice.denominatorLimits || NaN)), (_Utils4 = Utils).rand.apply(_Utils4, _toConsumableArray(choice.resultLimits || [NaN])) // TODO you are here
+					).toString();
 					break;
 				case "power":
 				case "exponent":
-					value = (_Utils2 = Utils).rand.apply(_Utils2, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || (_Utils3 = Utils).rand.apply(_Utils3, _toConsumableArray(choice.powerLimits)));
+					value = (_Utils5 = Utils).rand.apply(_Utils5, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || (_Utils6 = Utils).rand.apply(_Utils6, _toConsumableArray(choice.powerLimits)));
 					break;
 				default:
 					value = NaN;

@@ -56,6 +56,8 @@ Utils.parseForm = function (formID) {
 };
 
 Utils.rand = function (min, max, allowFloats) {
+	if (min === undefined || Number.isNaN(min) || max === undefined || Number.isNaN(max)) return undefined;
+
 	if (allowFloats) return min + Math.random() * (max - min);else return min + Math.floor(Math.random() * (max - min + 1));
 };
 
@@ -138,5 +140,37 @@ Utils.pickWeightedRandom = function (choices) {
 	}
 	return ret;
 };
+
+Utils.buildFraction = function () {
+	var n = arguments.length <= 0 || arguments[0] === undefined ? arguments[2] * arguments[1] : arguments[0];
+	var d = arguments.length <= 1 || arguments[1] === undefined ? n / arguments[2] : arguments[1];
+	var result = arguments.length <= 2 || arguments[2] === undefined ? n / d : arguments[2];
+	return (function () {
+		return {
+			n: n, d: d, result: result,
+			toString: function toString() {
+				return n + " / " + d;
+			}
+		};
+	})();
+};
+/*
+if (op.result === undefined) {
+	this.denominator = op.denominator;
+	this.numerator = op.numerator;
+	this.result = this.denominator / this.numerator;
+}
+if (op.numerator === undefined) {
+	this.denominator = op.denominator;
+	this.result = op.result;
+	this.numerator = this.result * this.denominator;
+}
+if (op.denominator === undefined) {
+	this.result = op.result;
+	this.numerator = op.numerator;
+	this.denominator = this.numerator / this.result;
+}
+
+this.toString = function() { return this.numerator + "/" + this.denominator; };)*/
 
 //# sourceMappingURL=utils.js.map

@@ -54,6 +54,8 @@ Utils.parseForm = function(formID) {
 };
 
 Utils.rand = function(min, max, allowFloats) {
+	if (min === undefined ||Number.isNaN(min) || max === undefined || Number.isNaN(max)) return undefined;
+
 	if (allowFloats)
 		return min + (Math.random() * (max-min));
 	else
@@ -150,3 +152,28 @@ Utils.pickWeightedRandom = function(choices) {
 	}
 	return ret;
 };
+
+Utils.buildFraction = function(n=(arguments[2]*arguments[1]), d=(n/arguments[2]), result=(n/d)) {
+	return {
+		n, d, result,
+		toString: () => `${n} / ${d}`
+	};
+};
+/*
+if (op.result === undefined) {
+	this.denominator = op.denominator;
+	this.numerator = op.numerator;
+	this.result = this.denominator / this.numerator;
+}
+if (op.numerator === undefined) {
+	this.denominator = op.denominator;
+	this.result = op.result;
+	this.numerator = this.result * this.denominator;
+}
+if (op.denominator === undefined) {
+	this.result = op.result;
+	this.numerator = op.numerator;
+	this.denominator = this.numerator / this.result;
+}
+
+this.toString = function() { return this.numerator + "/" + this.denominator; };)*/

@@ -87,8 +87,32 @@ var DIFFICULTY_DATA = [null,
 		operation: "sub"
 	}]
 }, {
-	main: [{ type: "power", baseLimits: [1, 12], powerLimits: [2, 2] }],
-	choice: [{ type: "power", baseLimits: [1, 12], powerLimits: [2, 2] }]
+	main: [{
+		type: "integer",
+		limits: [1, 50],
+		weight: 1
+	}],
+	choices: [{
+		type: "power",
+		baseLimits: [1, 12],
+		power: 2,
+		weight: 1
+	}, {
+		type: "fraction",
+		resultLimits: [1, 12],
+		denominatorLimits: [1, 12],
+		weight: 100
+	}, {
+		type: "integer",
+		limits: [1, 50],
+		weight: 2,
+		operation: "add"
+	}, {
+		type: "integer",
+		limits: [1, 50],
+		weight: 2,
+		operation: "sub"
+	}]
 }];
 
 DIFFICULTY_DATA.forEach(function (diffGroup, diff) {
