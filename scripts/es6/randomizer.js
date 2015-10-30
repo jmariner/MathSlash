@@ -21,7 +21,7 @@ class Randomizer {
                 currentCumSum += c.weight;
                 c.cumSum = currentCumSum;
             });
-            var r = Randomizer.rand(0,currentCumSum, true);
+            var r = Randomizer.rand(0,currentCumSum, true); // TODO this is inaccurate
             choices.forEach(function(c, i){
                 if (r < c.cumSum && !ret) ret = choices[i];
             });
