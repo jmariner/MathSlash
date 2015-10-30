@@ -48,7 +48,8 @@ class Randomizer {
         var scope = () => ({mainNumber, myCount: count(choice.id)});
 
         while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
-            choice = reRoll();
+            choice = reRoll(); // TODO (1) reRoll the problematic value instead of entire choice?
+                                // ex: if subtracting will make the result negative, reRoll the subtracted value
         }
         return choice;
     }
@@ -90,7 +91,7 @@ class Randomizer {
             value,
             valueString: [operation,value].join(" "),
             operation,
-            condition: choice.condition
+            condition: choice.condition // TODO (1) return a function to randomize the value (again?)
         };
     }
 }

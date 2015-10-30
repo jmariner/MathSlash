@@ -46,8 +46,6 @@ class Tile {
 		this.hide();
 		
 		this.$element.appendTo($(this.parentSelector));
-		
-		// TODO delay fade in to allow mathjax to do its thing (maybe even pre-load the tiles?)
 
 		this.$element.outerHeight(this.size);
 		this.$element.remove().appendTo($(this.parentSelector));

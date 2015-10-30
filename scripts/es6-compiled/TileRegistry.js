@@ -89,6 +89,12 @@ var TileRegistry = (function () {
 			group.tiles = group.choices.map(function (c) {
 				return new Tile(c.valueString, group.parentSelector);
 			});
+
+			var valuesWithOperators = group.tiles.map(function (t) {
+				return t.operation + " (" + t.value + ")";
+			});
+			var mathString = this.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
+			group.totalValue = math.eval(mathString);
 		}
 	}, {
 		key: "generateTiles",

@@ -53,7 +53,7 @@ var DIFFICULTY_DATA = [null,
 		type: "integer",
 		weight: 1,
 		limits: [1, 500],
-		operation: "sub"
+		operation: "sub" // TODO (2) prevent final answer from being negative
 	}]
 },
 
@@ -74,7 +74,6 @@ var DIFFICULTY_DATA = [null,
 		weight: 20,
 		operation: "multi",
 		conditions: ["mainNumber <= 12", "myCount < 1"]
-
 	}, {
 		type: "integer",
 		limits: [1, 50],

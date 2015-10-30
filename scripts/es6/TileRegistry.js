@@ -68,7 +68,6 @@ class TileRegistry {
 		group.tiles.forEach(t => t.remove());
 		group.tiles = [];
 
-
 		for(
 			group.choices = [];
 			group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
@@ -82,6 +81,9 @@ class TileRegistry {
 
 		group.tiles = group.choices.map(c => new Tile(c.valueString, group.parentSelector));
 
+		var valuesWithOperators = group.tiles.map(t => `${t.operation} (${t.value})`);
+		var mathString = this.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
+		group.totalValue = math.eval(mathString);
 	}
 
 	generateTiles(diff) {
