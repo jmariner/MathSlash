@@ -70,12 +70,10 @@ var DIFFICULTY_DATA = [null,
 	}],
 	choices: [{
 		type: "integer",
-		condition: "mainNumber <= 12", // because multiplication tables
 		limits: [1, 12],
 		weight: 20,
 		operation: "multi",
-		maxCount: 1,
-		conditions: ["mainNumber <= 12", "countOfMe < 1"]
+		conditions: ["mainNumber <= 12", "myCount < 1"]
 
 	}, {
 		type: "integer",
@@ -102,6 +100,7 @@ DIFFICULTY_DATA.forEach(function (diffGroup, diff) {
 		typeData.forEach(function (data) {
 			// for each choice
 			data.id = [diff, type, typeData.indexOf(data)].join("_");
+			if (data.hasOwnProperty("conditions")) data.condition = data.conditions.join(" and ");
 		}); // end for each choice
 	}, diffGroup); // end for each type
 }); // end for each difficulty

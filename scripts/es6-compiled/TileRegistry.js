@@ -88,6 +88,11 @@ var TileRegistry = (function () {
 			//noinspection StatementWithEmptyBodyJS
 			for (; group.choices.push(TileRegistry._genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;);
 
+			//noinspection StatementWithEmptyBodyJS
+			for (var a = group.choices, rand = undefined, i = a.length; i > 0; rand = Utils.rand(0, --i), (_ref = [a[rand], a[i]], a[i] = _ref[0], a[rand] = _ref[1], _ref)) {
+				var _ref;
+			}
+
 			group.tiles = group.choices.map(function (c) {
 				return new Tile(c.valueString, group.parentSelector);
 			});
@@ -109,7 +114,6 @@ var TileRegistry = (function () {
 	}], [{
 		key: "_genSingleChoiceTile",
 		value: function _genSingleChoiceTile(diff, group, mainNumber) {
-			// this could be more efficient - prevent picking invalid tiles all together
 
 			mainNumber = +mainNumber;
 
@@ -120,30 +124,20 @@ var TileRegistry = (function () {
 				return TileRegistry.getRandomTileData(diff);
 			};
 
-			//called before adding any more elements, preventing going over max
-			var hasMax = function hasMax(choices) {
-				// currently limited to one option with maxCount; need some sort of ID system to determine which choice is which
+			var count = function count(id) {
 				var count = 0;
-				var max = 0;
-				return choices.some(function (c) {
-					if (c.maxCount !== undefined) {
-						if (max === 0) max = c.maxCount;
-						if (max > 0 && max === ++count) return true;
-					}
+				choicesSoFar.forEach(function (c) {
+					count += c.id === id;
 				});
+				return count;
 			};
 
-			var success = false;
-			while (!success && (choice.condition !== undefined || choice.maxCount !== undefined)) {
-				success = true;
-				while (choice.condition !== undefined && math.eval(choice.condition, { mainNumber: mainNumber }) === false) {
-					choice = reRoll();
-					success = false;
-				}
-				while (choice.maxCount !== undefined && hasMax(choicesSoFar)) {
-					choice = reRoll();
-					success = false;
-				}
+			var scope = function scope() {
+				return { mainNumber: mainNumber, myCount: count(choice.id) };
+			};
+
+			while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
+				choice = reRoll();
 			}
 			return choice;
 		}
@@ -184,8 +178,7 @@ var TileRegistry = (function () {
 				value: value,
 				valueString: operation + value,
 				operation: operation,
-				condition: choice.condition,
-				maxCount: choice.maxCount
+				condition: choice.condition
 			};
 		}
 	}]);

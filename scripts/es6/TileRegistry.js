@@ -75,12 +75,19 @@ class TileRegistry {
 			group.choices.push(TileRegistry._genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
 		);
 
+		//noinspection StatementWithEmptyBodyJS
+		for(
+			let a = group.choices, rand, i = a.length;
+			i > 0;
+			rand = Utils.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
+		);
+
 		group.tiles = group.choices.map(c => new Tile(c.valueString, group.parentSelector));
 
 		group.tiles.forEach(t => t.show());
 	}
 
-	static _genSingleChoiceTile(diff, group, mainNumber) { // this could be more efficient - prevent picking invalid tiles all together
+	static _genSingleChoiceTile(diff, group, mainNumber) {
 
 		mainNumber = +mainNumber;
 
@@ -89,29 +96,16 @@ class TileRegistry {
 
 		var reRoll = () => TileRegistry.getRandomTileData(diff);
 
-		//called before adding any more elements, preventing going over max
-		var hasMax = function(choices) { // currently limited to one option with maxCount; need some sort of ID system to determine which choice is which
-			var count = 0;
-			var max = 0;
-			return choices.some(function(c){
-				if (c.maxCount !== undefined) {
-					if (max === 0) max = c.maxCount;
-					if (max > 0 && max === ++count) return true;
-				}
-			});
+		var count = function(id) {
+			let count = 0;
+			choicesSoFar.forEach(c => { count += c.id === id });
+			return count;
 		};
 
-		var success = false;
-		while (!success && ((choice.condition !== undefined) || (choice.maxCount !== undefined))) {
-			success = true;
-			while (choice.condition !== undefined && math.eval(choice.condition, {mainNumber}) === false) {
-				choice = reRoll();
-				success = false;
-			}
-			while (choice.maxCount !== undefined && hasMax(choicesSoFar)) {
-				choice = reRoll();
-				success = false;
-			}
+		var scope = () => ({mainNumber, myCount: count(choice.id)});
+
+		while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
+			choice = reRoll();
 		}
 		return choice;
 	}
@@ -148,8 +142,7 @@ class TileRegistry {
 			value,
 			valueString: operation+value,
 			operation,
-			condition: choice.condition,
-			maxCount: choice.maxCount
+			condition: choice.condition
 		};
 	}
 
