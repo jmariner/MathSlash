@@ -30,7 +30,7 @@ var Randomizer = (function () {
                     currentCumSum += c.weight;
                     c.cumSum = currentCumSum;
                 });
-                var r = Randomizer.rand(0, currentCumSum, true);
+                var r = Randomizer.rand(0, currentCumSum, true); // TODO this is inaccurate
                 choices.forEach(function (c, i) {
                     if (r < c.cumSum && !ret) ret = choices[i];
                 });
@@ -72,6 +72,8 @@ var Randomizer = (function () {
             }
             while (choice.retryCondition !== undefined && math.eval(choice.retryCondition, scope())) {
                 //TODO you are here
+                console.log(choice.retryCondition + " is true. scope:");
+                console.log(scope());
                 choice.reRollMe(); // ex: if subtracting will make the result negative, reRoll the subtracted value
             }
             return choice;
@@ -117,12 +119,58 @@ var Randomizer = (function () {
                 valueString: [operation, value].join(" "),
                 operation: Tile.operations[operation],
                 condition: choice.condition,
+                retryCondition: choice.retryCondition,
                 reRollMe: roll
             };
         }
     }]);
 
     return Randomizer;
+})();
+
+var RandomChoice = (function () {
+    // TODO this
+
+    function RandomChoice(choice) {
+        var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+
+        _classCallCheck(this, RandomChoice);
+
+        this.value = undefined;
+        this.operation = isMain ? "" : choice.operation;
+        this.condition = choice.condition;
+        this.retryCondition = choice.retryCondition;
+        this.choice = choice;
+    }
+
+    _createClass(RandomChoice, [{
+        key: "reRollMe",
+        value: function reRollMe() {
+            var _Utils2;
+
+            switch (this.choice.type) {
+                case "integer":
+                    value = (_Utils2 = Utils).rand.apply(_Utils2, _toConsumableArray(this.choice.limits));
+                    break;
+                case "fraction":
+                    value = Utils.buildFraction(Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.numeratorLimits || [NaN])), Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.denominatorLimits || NaN)), Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.resultLimits || [NaN]))).toString();
+                    break;
+                case "power":
+                case "exponent":
+                    value = Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.powerLimits)));
+                    break;
+                default:
+                    value = NaN;
+            }
+        }
+    }, {
+        key: "valueString",
+        get: function get() {
+            return [this.operation, this.value].join(" ");
+        }
+    }]);
+
+    return RandomChoice;
 })();
 
 //# sourceMappingURL=randomizer.js.map

@@ -25,7 +25,7 @@ class TileRegistry {
 			name,
 			parentSelector,
 			tiles: [],
-			get totalValue() { // TODO this
+			get totalValue() { // TODO this is janky and needs improvement
 				var valuesWithOperators = (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`);
 				var mathString = me.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
 				return math.eval(mathString);

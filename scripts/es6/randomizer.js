@@ -53,9 +53,10 @@ class Randomizer {
 
         while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
             choice = reRoll();
-
         }
         while (choice.retryCondition !== undefined && math.eval(choice.retryCondition, scope()) ) { //TODO you are here
+            console.log(choice.retryCondition + " is true. scope:");
+	        console.log(scope());
             choice.reRollMe(); // ex: if subtracting will make the result negative, reRoll the subtracted value
         }
         return choice;
@@ -102,7 +103,45 @@ class Randomizer {
             valueString: [operation,value].join(" "),
             operation: Tile.operations[operation],
             condition: choice.condition,
+	        retryCondition: choice.retryCondition,
             reRollMe: roll
         };
     }
+}
+
+class RandomChoice { // TODO this
+	constructor(choice, isMain=false) {
+		this.value = undefined;
+		this.operation = isMain ? "" : choice.operation;
+		this.condition = choice.condition;
+		this.retryCondition = choice.retryCondition;
+		this.choice = choice;
+	}
+
+	get valueString() {
+		return [this.operation, this.value].join(" ");
+	}
+
+	reRollMe() {
+		switch (this.choice.type) {
+			case "integer":
+				value = Utils.rand(...this.choice.limits);
+				break;
+			case "fraction":
+				value = Utils.buildFraction(
+					Randomizer.rand(...(this.choice.numeratorLimits || [NaN])),
+					Randomizer.rand(...(this.choice.denominatorLimits || NaN)),
+					Randomizer.rand(...(this.choice.resultLimits || [NaN]))
+				).toString();
+				break;
+			case "power":
+			case "exponent":
+				value = `${Randomizer.rand(...choice.baseLimits)} ^ ${choice.power ||
+				Randomizer.rand(...choice.powerLimits)}`;
+				break;
+			default:
+				value = NaN;
+		}
+	}
+
 }

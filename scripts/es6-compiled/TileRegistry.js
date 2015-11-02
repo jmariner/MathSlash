@@ -41,7 +41,7 @@ var TileRegistry = (function () {
 				}, {
 					totalValue: {
 						get: function get() {
-							// TODO this
+							// TODO this is janky and needs improvement
 							var valuesWithOperators = (this.choices || this.tiles).map(function (c) {
 								return c.operation + " (" + c.value + ")";
 							});
