@@ -125,10 +125,10 @@ class RandomChoice { // TODO this
 	reRollMe() {
 		switch (this.choice.type) {
 			case "integer":
-				value = Utils.rand(...this.choice.limits);
+				this.value = Utils.rand(...this.choice.limits);
 				break;
 			case "fraction":
-				value = Utils.buildFraction(
+				this.value = Utils.buildFraction(
 					Randomizer.rand(...(this.choice.numeratorLimits || [NaN])),
 					Randomizer.rand(...(this.choice.denominatorLimits || NaN)),
 					Randomizer.rand(...(this.choice.resultLimits || [NaN]))
@@ -136,11 +136,11 @@ class RandomChoice { // TODO this
 				break;
 			case "power":
 			case "exponent":
-				value = `${Randomizer.rand(...choice.baseLimits)} ^ ${choice.power ||
-				Randomizer.rand(...choice.powerLimits)}`;
+				this.value = `${Randomizer.rand(...this.choice.baseLimits)} ^ ${this.choice.power ||
+				Randomizer.rand(...this.choice.powerLimits)}`;
 				break;
 			default:
-				value = NaN;
+				this.value = NaN;
 		}
 	}
 
