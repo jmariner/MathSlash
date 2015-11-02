@@ -69,35 +69,14 @@ class Randomizer {
 
         var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
 
-        var choice = Randomizer.pickWeightedRandom(choices);
+        var rand = Randomizer.pickWeightedRandom(choices);
+		var choice = new RandomChoice(rand);
+		
+		choice.randomize();
+		
+		return choice;
 
-        var value = undefined;
-
-        var roll = function() {
-            switch (choice.type) {
-                case "integer":
-                    value = Utils.rand(...choice.limits);
-                    break;
-                case "fraction":
-                    value = Utils.buildFraction(
-                        Randomizer.rand(...(choice.numeratorLimits || [NaN])),
-                        Randomizer.rand(...(choice.denominatorLimits || NaN)),
-                        Randomizer.rand(...(choice.resultLimits || [NaN]))
-                    ).toString();
-                    break;
-                case "power":
-                case "exponent":
-                    value = `${Randomizer.rand(...choice.baseLimits)} ^ ${choice.power ||
-                    Randomizer.rand(...choice.powerLimits)}`;
-                    break;
-                default:
-                    value = NaN;
-            }
-        };
-
-        roll();
-
-        var operation = isMain ? "" : choice.operation;
+        /*var operation = isMain ? "" : choice.operation;
         return {
             value,
             valueString: [operation,value].join(" "),
@@ -105,7 +84,7 @@ class Randomizer {
             condition: choice.condition,
 	        retryCondition: choice.retryCondition,
             reRollMe: roll
-        };
+        };*/
     }
 }
 
@@ -122,7 +101,7 @@ class RandomChoice { // TODO this
 		return [this.operation, this.value].join(" ");
 	}
 
-	reRollMe() {
+	randomize() {
 		switch (this.choice.type) {
 			case "integer":
 				this.value = Utils.rand(...this.choice.limits);

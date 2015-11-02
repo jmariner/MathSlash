@@ -150,17 +150,17 @@ var RandomChoice = (function () {
 
             switch (this.choice.type) {
                 case "integer":
-                    value = (_Utils2 = Utils).rand.apply(_Utils2, _toConsumableArray(this.choice.limits));
+                    this.value = (_Utils2 = Utils).rand.apply(_Utils2, _toConsumableArray(this.choice.limits));
                     break;
                 case "fraction":
-                    value = Utils.buildFraction(Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.numeratorLimits || [NaN])), Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.denominatorLimits || NaN)), Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.resultLimits || [NaN]))).toString();
+                    this.value = Utils.buildFraction(Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.numeratorLimits || [NaN])), Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.denominatorLimits || NaN)), Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.resultLimits || [NaN]))).toString();
                     break;
                 case "power":
                 case "exponent":
-                    value = Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.baseLimits)) + " ^ " + (choice.power || Randomizer.rand.apply(Randomizer, _toConsumableArray(choice.powerLimits)));
+                    this.value = Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.baseLimits)) + " ^ " + (this.choice.power || Randomizer.rand.apply(Randomizer, _toConsumableArray(this.choice.powerLimits)));
                     break;
                 default:
-                    value = NaN;
+                    this.value = NaN;
             }
         }
     }, {
