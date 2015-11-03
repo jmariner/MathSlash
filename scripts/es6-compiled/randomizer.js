@@ -37,7 +37,8 @@ var Randomizer = (function () {
 				delete ret.cumSum;
 			}
 			return ret;
-		} //test
+		}
+		//test
 
 	}, {
 		key: "genSingleChoiceTile",
@@ -64,7 +65,9 @@ var Randomizer = (function () {
 					mainNumber: mainNumber,
 					me: choice.value,
 					myCount: count(choice.id),
-					valueSoFar: group.totalValue
+					valueSoFar: group.totalValue,
+					myIndex: group.choices.length,
+					finalIndex: group.registry.choiceTileCount
 				};
 			};
 
@@ -77,8 +80,7 @@ var Randomizer = (function () {
 				choice.randomize(); // ex: if subtracting will make the result negative, reRoll the subtracted value
 			}
 			return choice;
-		} //test
-
+		}
 	}, {
 		key: "getRandomTileData",
 		value: function getRandomTileData(difficulty) {
@@ -103,18 +105,20 @@ var Randomizer = (function () {
 
 var RandomChoice = (function () {
 	function RandomChoice(choice) {
-		var isMain = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
 		_classCallCheck(this, RandomChoice);
 
 		this.value = undefined;
-		this.operation = isMain ? "" : choice.operation;
 		this.condition = choice.condition;
 		this.retryCondition = choice.retryCondition;
 		this.choice = choice;
 	}
 
 	_createClass(RandomChoice, [{
+		key: "toTile",
+		value: function toTile(parentSel) {
+			return new Tile(this.valueString, parentSel);
+		}
+	}, {
 		key: "randomize",
 		value: function randomize() {
 			var _Utils;
@@ -137,7 +141,12 @@ var RandomChoice = (function () {
 	}, {
 		key: "valueString",
 		get: function get() {
-			return [this.operation, this.value].join(" ");
+			return [this.choice.operation, this.value].join(" ");
+		}
+	}, {
+		key: "operation",
+		get: function get() {
+			return this.toTile().operation;
 		}
 	}]);
 

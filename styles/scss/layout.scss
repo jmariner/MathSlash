@@ -88,11 +88,17 @@ body {
 				height: 100%;
 				@include flex(column, space-around, flex-start);
 				.row {
+					position: relative;
 					height: 31%;
 					width: 100%;
 					@include flex(row, flex-start, center);
 					> img, > div { margin-right: 32px; }
 					.arrow { height: 100%; }
+					&::after {
+						content: "=" attr(data-totalValue);
+						position: absolute;
+						right: 0;
+					}
 				}
 			}
 			.tile {

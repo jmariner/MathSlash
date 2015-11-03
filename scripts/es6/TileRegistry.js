@@ -8,26 +8,27 @@ class TileRegistry {
 		this.choiceTileCount = choiceTileCount;
 
 		this.mainTile = undefined;
-		this.choiceTileMap = {};
+		this.groups = {};
 	}
 
-	_initGroup(name, parentSelector=this.choiceTileMap[name].parentSelector) {
-		Utils.assert(typeof name === "string" && name.length > 0, `Invalid parameter: name ${name === undefined ? "" : name}`)
+	_initGroup(name, parentSelector=this.groups[name].parentSelector) {
+		Utils.assert(typeof name === "string" && name.length > 0, `Invalid parameter: name ${name === undefined ? "" : name}`);
 
 		Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + ((parentSelector !== undefined) ? ` (${parentSelector})` : ""));
 		Utils.assert($(parentSelector).length === 1, `Invalid parentSelector (too many matches): ${parentSelector}`);
 
 		$(parentSelector).find(".tile").remove();
 
-		var me = this;
+		let registry = this;
 
-		this.choiceTileMap[name] = {
+		this.groups[name] = {
+			registry,
 			name,
 			parentSelector,
 			tiles: [],
 			get totalValue() { // TODO this is janky and needs improvement
 				var valuesWithOperators = (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`);
-				var mathString = me.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
+				var mathString = registry.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
 				return math.eval(mathString);
 			}
 		};
@@ -57,7 +58,7 @@ class TileRegistry {
 	}
 
 	_genChoiceTiles(groupName, diff, mainNumber) {
-		Utils.assert(typeof groupName === "string" && this.choiceTileMap[groupName] !== undefined,
+		Utils.assert(typeof groupName === "string" && this.groups[groupName] !== undefined,
 			`Invalid group: ${groupName}`);
 
 		if (diff === undefined) {
@@ -71,28 +72,29 @@ class TileRegistry {
 			`Invalid mainNumber: ${mainNumber}`);
 
 
-		var group = this.choiceTileMap[groupName];
+		var group = this.groups[groupName];
 
 		group.tiles.forEach(t => t.remove());
 		group.tiles = [];
 
-		for(
+		for( // generate the tiles
 			group.choices = [];
 			group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
 		) {}
 
-		for(
+		for( // shuffle the order
 			let a = group.choices, rand, i = a.length;
 			i > 0;
 			rand = Randomizer.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
 		) {}
 
-		group.tiles = group.choices.map(c => new Tile(c.valueString, group.parentSelector));
+		group.tiles = group.choices.map(c => c.toTile(group.parentSelector));
 
+		$(group.parentSelector).attr("data-totalValue", group.totalValue);
 	}
 
 	generateTiles(diff) {
 		this._genMainTile(diff);
-		Object.keys(this.choiceTileMap).forEach(g => this._genChoiceTiles(g, diff, this.mainTile.value));
+		Object.keys(this.groups).forEach(g => this._genChoiceTiles(g, diff, this.mainTile.value));
 	}
 }

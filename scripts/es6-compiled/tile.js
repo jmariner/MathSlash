@@ -13,10 +13,15 @@ var Tile = (function () {
 		_classCallCheck(this, Tile);
 
 		Utils.assert(typeof value === "string", "Invalid parameter: value" + (value !== undefined ? " (" + value + ")" : ""));
-		Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + (parentSelector !== undefined ? " (" + parentSelector + ")" : ""));
-		Utils.assert($(parentSelector).length === 1, "Invalid parentSelector (too many matches): " + parentSelector);
 
-		var valueRegex = /^([^\d\s]*)\s?(\d+(?:\s?(\/|\^)\s?\d+)?)$/.exec(value);
+		if (parentSelector !== undefined) {
+			Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + (parentSelector !== undefined ? " (" + parentSelector + ")" : ""));
+			Utils.assert($(parentSelector).length === 1, "Invalid parentSelector (too many matches): " + parentSelector);
+		}
+
+		var addToDOM = parentSelector !== undefined;
+
+		var valueRegex = /^([^\d\s]*)\s?(\d+(?:\s?(\/|\^)\s?\d+)?)$/.exec(value); //
 
 		Utils.assert(valueRegex !== null, "Invalid parameter: value (" + value + ")");
 
@@ -50,29 +55,30 @@ var Tile = (function () {
 		this.computedValue = mathNode.compile().eval();
 		this.$element.attr("data-value", this.computedValue);
 
-		if (isInteger) this.$element.html($("<div>").addClass("math").text(this.value));else {
-			var tex = mathNode.toTex({ parenthesis: "auto" });
-			this.element.innerHTML = "$$ " + tex + " $$";
+		if (addToDOM) {
+
+			if (isInteger) this.$element.html($("<div>").addClass("math").text(this.value));else {
+				var tex = mathNode.toTex({ parenthesis: "auto" });
+				this.element.innerHTML = "$$ " + tex + " $$";
+			}
+
+			this.hide();
+
+			this.$element.appendTo($(this.parentSelector));
+
+			this.$element.outerHeight(this.size);
+			this.$element.remove().appendTo($(this.parentSelector));
+			this.$element.outerWidth(this.$element.outerHeight());
+
+			var ready = function ready() {
+				Utils.scaleToFit(_this.$element, ".math");
+				_this.show();
+			};
+
+			if (!isInteger) {
+				MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element], ready);
+			} else ready();
 		}
-
-		this.hide();
-
-		this.$element.appendTo($(this.parentSelector));
-
-		this.$element.outerHeight(this.size);
-		this.$element.remove().appendTo($(this.parentSelector));
-		this.$element.outerWidth(this.$element.outerHeight());
-
-		var ready = function ready() {
-			Utils.scaleToFit(_this.$element, ".math");
-			_this.show();
-		};
-
-		if (!isInteger) {
-			MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.element], ready);
-		} else ready();
-
-		//console.log(`tile created: ${value} in ${parentSelector}`)
 	}
 
 	_createClass(Tile, [{

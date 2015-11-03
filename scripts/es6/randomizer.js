@@ -48,7 +48,9 @@ class Randomizer {
 			mainNumber,
 			me: choice.value,
 			myCount: count(choice.id),
-			valueSoFar: group.totalValue
+			valueSoFar: group.totalValue,
+			myIndex: group.choices.length,
+			finalIndex: group.registry.choiceTileCount
 		});
 
 		while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
@@ -60,7 +62,7 @@ class Randomizer {
 			choice.randomize(); // ex: if subtracting will make the result negative, reRoll the subtracted value
 		}
 		return choice;
-	} //test
+	}
 
 	static getRandomTileData(difficulty, isMain=false) { // this pulls from difficulty.js
 
@@ -79,16 +81,23 @@ class Randomizer {
 }
 
 class RandomChoice {
-	constructor(choice, isMain=false) {
+	constructor(choice) {
 		this.value = undefined;
-		this.operation = isMain ? "" : choice.operation;
 		this.condition = choice.condition;
 		this.retryCondition = choice.retryCondition;
 		this.choice = choice;
 	}
 
 	get valueString() {
-		return [this.operation, this.value].join(" ");
+		return [this.choice.operation, this.value].join(" ");
+	}
+
+	toTile(parentSel) {
+		return new Tile(this.valueString, parentSel);
+	}
+
+	get operation() {
+		return this.toTile().operation;
 	}
 
 	randomize() {
@@ -112,5 +121,4 @@ class RandomChoice {
 				this.value = NaN;
 		}
 	}
-
 }

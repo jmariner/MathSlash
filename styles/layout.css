@@ -187,6 +187,7 @@ body {
         justify-content: space-around;
         align-items: flex-start; }
         body #game #tileArea #rightArea .row {
+          position: relative;
           height: 31%;
           width: 100%;
           display: flex;
@@ -197,6 +198,10 @@ body {
             margin-right: 32px; }
           body #game #tileArea #rightArea .row .arrow {
             height: 100%; }
+          body #game #tileArea #rightArea .row::after {
+            content: "=" attr(data-totalValue);
+            position: absolute;
+            right: 0; }
       body #game #tileArea .tile {
         color: white;
         position: relative;

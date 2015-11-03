@@ -39,7 +39,10 @@ var DIFFICULTY_DATA = [null,
 				type: "integer",
 				weight: 1,
 				limits: [1, 50],
-				operation: "sub"
+				operation: "sub",
+				retryConditions: [
+					"valueSoFar < me and myIndex == 0"
+				]
 			}
 		]
 	},
@@ -64,9 +67,9 @@ var DIFFICULTY_DATA = [null,
 				type: "integer",
 				weight: 1,
 				limits: [1,500],
-				operation: "sub", // TODO (2) prevent final answer from being negative
+				operation: "sub",
 				retryConditions: [
-					"valueSoFar < me"
+					"valueSoFar < me and myIndex == 0"
 				]
 			}
 		]
@@ -159,96 +162,9 @@ DIFFICULTY_DATA.forEach(function(diffGroup, diff) { // for each difficulty
 			if (data.hasOwnProperty("conditions"))
 				data.condition = data.conditions.join(" and ");
 			if (data.hasOwnProperty("retryConditions"))
-				data.retryCondition = data.retryConditions.join(" and ");
+				data.retryCondition = data.retryConditions.join(" or ");
 		}); // end for each choice
 
 	}, diffGroup); // end for each type
 
 }); // end for each difficulty
-
-/*
-class Choice {
-    constructor(diff, isMain=false) {
-        this.which = isMain ? "main" : "choices";
-        this.diff = diff;
-		this.data = undefined;
-    }
-
-	get id() {
-		return [
-			this.diff,
-			this.which.charAt(0),
-			DIFFICULTY_DATA[this.diff][this.which].indexOf(this.data)
-		].join(".");
-	}
-}
-
-function _genSingleChoiceTile(diff, group, mainNumber) {
-
-	mainNumber = +mainNumber;
-
-	var choice = TileRegistry.getRandomTileData(diff);
-	var choicesSoFar = group.choices;
-
-	var reRoll = () => TileRegistry.getRandomTileData(diff);
-
-	//called before adding any more elements, preventing going over max
-	var hasMax = function(choices) { // currently limited to one option with maxCount; need some sort of ID system to determine which choice is which
-		var count = 0;
-		var max = 0;
-		return choices.some(function(c){
-			if (c.maxCount !== undefined) {
-				if (max === 0) max = c.maxCount;
-				if (max > 0 && max === ++count) return true;
-			}
-		});
-	};
-
-	var success = false;
-	while (!success && ((choice.condition !== undefined) || (choice.maxCount !== undefined))) {
-		success = true;
-		while (choice.condition !== undefined && math.eval(choice.condition, {mainNumber}) === false) {
-			choice = reRoll();
-			success = false;
-		}
-		while (choice.maxCount !== undefined && hasMax(choicesSoFar)) {
-			choice = reRoll();
-			success = false;
-		}
-	}
-	return choice;
-}
-
-function getRandomTileData(difficulty, isMain=false) {
-
-	var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
-
-	// get the random choice from the diff data
-	var choice = Utils.pickWeightedRandom(choices);
-
-	// compute the value using given limits and type
-	var value = undefined;
-	switch (choice.type) {
-		case "integer":
-			value = Utils.rand(...choice.limits);
-			break;
-		case "fraction":
-			break;
-		case "power":
-		case "exponent":
-			value = `${Utils.rand(...choice.baseLimits)} ^ ${choice.power || Utils.rand(...choice.powerLimits)}`;
-			break;
-		default:
-			value = NaN;
-	}
-
-	var operation = isMain ? "" : choice.operation;
-
-	return {
-		value,
-		valueString: operation+value,
-		operation,
-		condition: choice.condition,
-		maxCount: choice.maxCount
-	};
-}*/

@@ -17,13 +17,13 @@ var TileRegistry = (function () {
 		this.choiceTileCount = choiceTileCount;
 
 		this.mainTile = undefined;
-		this.choiceTileMap = {};
+		this.groups = {};
 	}
 
 	_createClass(TileRegistry, [{
 		key: "_initGroup",
 		value: function _initGroup(name) {
-			var parentSelector = arguments.length <= 1 || arguments[1] === undefined ? this.choiceTileMap[name].parentSelector : arguments[1];
+			var parentSelector = arguments.length <= 1 || arguments[1] === undefined ? this.groups[name].parentSelector : arguments[1];
 			return (function () {
 				Utils.assert(typeof name === "string" && name.length > 0, "Invalid parameter: name " + (name === undefined ? "" : name));
 
@@ -32,9 +32,10 @@ var TileRegistry = (function () {
 
 				$(parentSelector).find(".tile").remove();
 
-				var me = this;
+				var registry = this;
 
-				this.choiceTileMap[name] = Object.defineProperties({
+				this.groups[name] = Object.defineProperties({
+					registry: registry,
 					name: name,
 					parentSelector: parentSelector,
 					tiles: []
@@ -45,7 +46,7 @@ var TileRegistry = (function () {
 							var valuesWithOperators = (this.choices || this.tiles).map(function (c) {
 								return c.operation + " (" + c.value + ")";
 							});
-							var mathString = me.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
+							var mathString = registry.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
 							return math.eval(mathString);
 						},
 						configurable: true,
@@ -79,7 +80,7 @@ var TileRegistry = (function () {
 	}, {
 		key: "_genChoiceTiles",
 		value: function _genChoiceTiles(groupName, diff, mainNumber) {
-			Utils.assert(typeof groupName === "string" && this.choiceTileMap[groupName] !== undefined, "Invalid group: " + groupName);
+			Utils.assert(typeof groupName === "string" && this.groups[groupName] !== undefined, "Invalid group: " + groupName);
 
 			if (diff === undefined) {
 				this.clearGroup(groupName);
@@ -89,22 +90,26 @@ var TileRegistry = (function () {
 			Utils.assert(mainNumber !== undefined, "_genChoiceTiles(...) must be called after main number is generated");
 			Utils.assert(typeof mainNumber === "string" || typeof mainNumber === "number", "Invalid mainNumber: " + mainNumber);
 
-			var group = this.choiceTileMap[groupName];
+			var group = this.groups[groupName];
 
 			group.tiles.forEach(function (t) {
 				return t.remove();
 			});
 			group.tiles = [];
 
-			for (group.choices = []; group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;) {}
+			for ( // generate the tiles
+			group.choices = []; group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;) {}
 
-			for (var a = group.choices, rand = undefined, i = a.length; i > 0; rand = Randomizer.rand(0, --i), (_ref = [a[rand], a[i]], a[i] = _ref[0], a[rand] = _ref[1], _ref)) {
+			for ( // shuffle the order
+			var a = group.choices, rand = undefined, i = a.length; i > 0; rand = Randomizer.rand(0, --i), (_ref = [a[rand], a[i]], a[i] = _ref[0], a[rand] = _ref[1], _ref)) {
 				var _ref;
 			}
 
 			group.tiles = group.choices.map(function (c) {
-				return new Tile(c.valueString, group.parentSelector);
+				return c.toTile(group.parentSelector);
 			});
+
+			$(group.parentSelector).attr("data-totalValue", group.totalValue);
 		}
 	}, {
 		key: "generateTiles",
@@ -112,7 +117,7 @@ var TileRegistry = (function () {
 			var _this = this;
 
 			this._genMainTile(diff);
-			Object.keys(this.choiceTileMap).forEach(function (g) {
+			Object.keys(this.groups).forEach(function (g) {
 				return _this._genChoiceTiles(g, diff, _this.mainTile.value);
 			});
 		}
