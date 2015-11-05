@@ -9,6 +9,8 @@ class TileRegistry {
 
 		this.mainTile = undefined;
 		this.groups = {};
+
+		this.maxGroup = undefined;
 	}
 
 	_initGroup(name, parentSelector=this.groups[name].parentSelector) {
@@ -26,9 +28,18 @@ class TileRegistry {
 			name,
 			parentSelector,
 			tiles: [],
-			get totalValue() { // TODO this is janky and needs improvement
+			get totalValue() {
+				// TODO where should the parenthesis be placed?
+				// should PEMDAS be used or should each operation effect the previous total?
+
+				// leave it to PEMDAS. ex: "7 * (11) + (49) - (39) + (23)"
 				var valuesWithOperators = (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`);
-				var mathString = registry.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
+				var mathString = registry.mainTile.value + " " + valuesWithOperators.join(" ");
+
+				// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) - 39) + 23 )"
+				// parenthesis before = choice count
+				// one after each choice
+
 				return math.eval(mathString);
 			}
 		};
@@ -82,11 +93,11 @@ class TileRegistry {
 			group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
 		) {}
 
-		/*for( // shuffle the order
+		for( // shuffle the order
 			let a = group.choices, rand, i = a.length;
 			i > 0;
 			rand = Randomizer.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
-		) {}*/
+		) {}
 
 		group.tiles = group.choices.map(c => c.toTile(group.parentSelector));
 
@@ -94,7 +105,14 @@ class TileRegistry {
 	}
 
 	generateTiles(diff) {
+		$(".max").removeClass("max");
+
 		this._genMainTile(diff);
 		Object.keys(this.groups).forEach(g => this._genChoiceTiles(g, diff, this.mainTile.value));
+
+		var totals = [];
+		Utils.forEachIn((name,data) => { totals.push(data.totalValue) }, this.groups);
+		this.maxGroup = this.groups[Object.keys(this.groups)[totals.indexOf(math.max(totals))]]
+		$(this.maxGroup.parentSelector).addClass("max");
 	}
 }

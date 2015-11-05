@@ -53,8 +53,6 @@ class Randomizer {
 			finalIndex: group.registry.choiceTileCount
 		});
 
-		console.log(group.totalValue);
-
 		while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
 			choice = reRoll();
 		}
@@ -72,8 +70,7 @@ class Randomizer {
 		var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
 
 		var rand = Randomizer.pickWeightedRandom(choices);
-			var choice = new RandomChoice(rand);
-
+		var choice = new RandomChoice(rand);
 		choice.randomize();
 
 		return choice;

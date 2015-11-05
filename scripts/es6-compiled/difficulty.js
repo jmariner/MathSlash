@@ -33,8 +33,10 @@ var DIFFICULTY_DATA = [null,
 		type: "integer",
 		weight: 1,
 		limits: [1, 50],
-		operation: "sub",
-		retryConditions: ["valueSoFar < me and myIndex == 0"]
+		operation: "sub" /*,
+                   retryConditions: [
+                   "valueSoFar < me and myIndex == 0"
+                   ]*/
 	}]
 },
 
@@ -54,8 +56,10 @@ var DIFFICULTY_DATA = [null,
 		type: "integer",
 		weight: 1,
 		limits: [1, 500],
-		operation: "sub",
-		retryConditions: ["valueSoFar < me and myIndex == 0"]
+		operation: "sub" /*,
+                   retryConditions: [
+                   "valueSoFar < me and myIndex == 0"
+                   ]*/
 	}]
 },
 

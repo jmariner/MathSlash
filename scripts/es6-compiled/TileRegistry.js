@@ -18,6 +18,8 @@ var TileRegistry = (function () {
 
 		this.mainTile = undefined;
 		this.groups = {};
+
+		this.maxGroup = undefined;
 	}
 
 	_createClass(TileRegistry, [{
@@ -42,11 +44,19 @@ var TileRegistry = (function () {
 				}, {
 					totalValue: {
 						get: function get() {
-							// TODO this is janky and needs improvement
+							// TODO where should the parenthesis be placed?
+							// should PEMDAS be used or should each operation effect the previous total?
+
+							// leave it to PEMDAS. ex: "7 * (11) + (49) - (39) + (23)"
 							var valuesWithOperators = (this.choices || this.tiles).map(function (c) {
 								return c.operation + " (" + c.value + ")";
 							});
-							var mathString = registry.mainTile.value + " " + valuesWithOperators.join(" "); // ex: "7 * (11) + (49) - (39) + (23)"
+							var mathString = registry.mainTile.value + " " + valuesWithOperators.join(" ");
+
+							// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) - 39) + 23 )"
+							// parenthesis before = choice count
+							// one after each choice
+
 							return math.eval(mathString);
 						},
 						configurable: true,
@@ -100,11 +110,10 @@ var TileRegistry = (function () {
 			for ( // generate the tiles
 			group.choices = []; group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;) {}
 
-			/*for( // shuffle the order
-   	let a = group.choices, rand, i = a.length;
-   	i > 0;
-   	rand = Randomizer.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
-   ) {}*/
+			for ( // shuffle the order
+			var a = group.choices, rand = undefined, i = a.length; i > 0; rand = Randomizer.rand(0, --i), (_ref = [a[rand], a[i]], a[i] = _ref[0], a[rand] = _ref[1], _ref)) {
+				var _ref;
+			}
 
 			group.tiles = group.choices.map(function (c) {
 				return c.toTile(group.parentSelector);
@@ -117,10 +126,19 @@ var TileRegistry = (function () {
 		value: function generateTiles(diff) {
 			var _this = this;
 
+			$(".max").removeClass("max");
+
 			this._genMainTile(diff);
 			Object.keys(this.groups).forEach(function (g) {
 				return _this._genChoiceTiles(g, diff, _this.mainTile.value);
 			});
+
+			var totals = [];
+			Utils.forEachIn(function (name, data) {
+				totals.push(data.totalValue);
+			}, this.groups);
+			this.maxGroup = this.groups[Object.keys(this.groups)[totals.indexOf(math.max(totals))]];
+			$(this.maxGroup.parentSelector).addClass("max");
 		}
 	}]);
 
