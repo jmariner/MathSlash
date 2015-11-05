@@ -100,10 +100,11 @@ var TileRegistry = (function () {
 			for ( // generate the tiles
 			group.choices = []; group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;) {}
 
-			for ( // shuffle the order
-			var a = group.choices, rand = undefined, i = a.length; i > 0; rand = Randomizer.rand(0, --i), (_ref = [a[rand], a[i]], a[i] = _ref[0], a[rand] = _ref[1], _ref)) {
-				var _ref;
-			}
+			/*for( // shuffle the order
+   	let a = group.choices, rand, i = a.length;
+   	i > 0;
+   	rand = Randomizer.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
+   ) {}*/
 
 			group.tiles = group.choices.map(function (c) {
 				return c.toTile(group.parentSelector);

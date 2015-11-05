@@ -53,12 +53,15 @@ class Randomizer {
 			finalIndex: group.registry.choiceTileCount
 		});
 
+		console.log(group.totalValue);
+
 		while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
 			choice = reRoll();
 		}
 		while (choice.retryCondition !== undefined && math.eval(choice.retryCondition, scope()) ) {
-			console.log(choice.retryCondition + " is true. scope:");
-			console.log(scope());
+			//console.log(choice.retryCondition + " is true. scope:");
+			//console.log(scope());
+			// TODO final answer is sometimes still negative despite the conditions
 			choice.randomize(); // ex: if subtracting will make the result negative, reRoll the subtracted value
 		}
 		return choice;
