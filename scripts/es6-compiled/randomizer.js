@@ -43,6 +43,7 @@ var Randomizer = (function () {
 	}, {
 		key: "genSingleChoiceTile",
 		value: function genSingleChoiceTile(diff, group, mainNumber) {
+			var _this = this;
 
 			mainNumber = +mainNumber;
 
@@ -67,7 +68,8 @@ var Randomizer = (function () {
 					myCount: count(choice.id),
 					valueSoFar: group.totalValue,
 					myIndex: group.choices.length,
-					finalIndex: group.registry.choiceTileCount
+					finalIndex: group.registry.choiceTileCount,
+					previous: group.choices[_this.myIndex - 1]
 				};
 			};
 

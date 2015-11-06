@@ -92,11 +92,13 @@ var DIFFICULTY_DATA = [null,
 		choices: [
 			{
 				type: "integer",
-				limits: [1,12],
+				limits: [2,12],
 				weight: 20,
 				operation: "multi",
 				conditions: [
 					"mainNumber <= 12",
+					"previous.value <= 12",
+					"previous.operation != -",
 					"myCount < 1"
 				]
 			},

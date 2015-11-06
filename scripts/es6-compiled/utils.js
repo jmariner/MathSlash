@@ -133,23 +133,86 @@ Utils.buildFraction = function () {
 		};
 	})();
 };
-/*
-if (op.result === undefined) {
-	this.denominator = op.denominator;
-	this.numerator = op.numerator;
-	this.result = this.denominator / this.numerator;
-}
-if (op.numerator === undefined) {
-	this.denominator = op.denominator;
-	this.result = op.result;
-	this.numerator = this.result * this.denominator;
-}
-if (op.denominator === undefined) {
-	this.result = op.result;
-	this.numerator = op.numerator;
-	this.denominator = this.numerator / this.result;
-}
 
-this.toString = function() { return this.numerator + "/" + this.denominator; };)*/
+Utils.compare = function (condition, scope) {
+
+	// TODO parse parenthesis in this (don't split if parenthesis maybe?)
+	// other way: check each condition independently and run and/or logic on that
+	//            use math.eval with trues/falses - accounts for parenthesis already
+
+	var parts = condition.split(/or|\|\|/) // split into array of "or" parts
+	.map(function (part) {
+		return part.split(/and|&&/);
+	}); // split each "or" part into "and" parts
+
+	var boolean = false;
+
+	for (var j = 0, orPart = undefined; (orPart = parts[j]) !== undefined; j++) {
+		// for each "or" part: only one of these must be true
+
+		var innerBoolean = false;
+
+		for (var i = 0, part = undefined; (part = orPart[i]) !== undefined; i++) {
+			// for each "and" part: all of these must be true
+			if (part.trim().toLowerCase() === "true") {
+				innerBoolean = true;
+				break;
+			} else if (part.trim().toLowerCase() === "false") {
+				innerBoolean = false;
+			} else if (Utils.simpleCompare(part, scope)) {
+				innerBoolean = true;
+				break;
+			} else {
+				innerBoolean = false;
+			}
+		}
+
+		// TODO Utils.compare("true and false || false or false and false") == true ?
+		if (innerBoolean) {
+			boolean = true;
+			break;
+		}
+	}
+
+	return boolean;
+};
+
+Utils.simpleCompare = function (singleCondition, scope) {
+	var comparers = /(?:<|>|==)=?|!==?/;
+	var parts = /[^=!<>\s]+/;
+
+	var condRegex = new RegExp("^\\s*(" + parts.source + ")\\s*(" + comparers.source + ")\\s*(" + parts.source + ")\\s*$").exec(singleCondition).slice(1);
+
+	var literalRegex = /^'(.+)'|"(.+)"|([0-9]+)|(true|false)$/;
+
+	var left = (literalRegex.exec(condRegex[0]) || []).sort(function (a, b) {
+		return +(b === undefined);
+	})[1] || _.get(scope, condRegex[0]);
+
+	var logicOp = condRegex[1];
+
+	var right = (literalRegex.exec(condRegex[2]) || []).sort(function (a, b) {
+		return +(b === undefined);
+	})[1] || _.get(scope, condRegex[2]);
+
+	switch (logicOp) {
+		case ">":
+			return left > right;
+		case "<":
+			return left < right;
+		case ">=":
+			return left >= right;
+		case "<=":
+			return left <= right;
+		case "==":
+			return left == right;
+		case "!=":
+			return left != right;
+		case "===":
+			return left === right;
+		case "!==":
+			return left !== right;
+	}
+};
 
 //# sourceMappingURL=utils.js.map

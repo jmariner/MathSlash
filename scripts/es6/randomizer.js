@@ -50,7 +50,8 @@ class Randomizer {
 			myCount: count(choice.id),
 			valueSoFar: group.totalValue,
 			myIndex: group.choices.length,
-			finalIndex: group.registry.choiceTileCount
+			finalIndex: group.registry.choiceTileCount,
+			previous: group.choices[this.myIndex-1]
 		});
 
 		while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {

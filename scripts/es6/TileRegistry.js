@@ -32,15 +32,24 @@ class TileRegistry {
 				// TODO where should the parenthesis be placed?
 				// should PEMDAS be used or should each operation effect the previous total?
 
-				// leave it to PEMDAS. ex: "7 * (11) + (49) - (39) + (23)"
-				var valuesWithOperators = (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`);
-				var mathString = registry.mainTile.value + " " + valuesWithOperators.join(" ");
+				var mathString = [
 
-				// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) - 39) + 23 )"
-				// parenthesis before = choice count
-				// one after each choice
+				// leave it to PEMDAS. ex: "7 * (11) + (49) / (39) + (23)"
+					registry.mainTile.value + " " + (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`).join(" "),
 
-				return math.eval(mathString);
+				// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) / 39) + 23 )"
+					new Array(registry.choiceTileCount+1).join("( ") + registry.mainTile.value + " " +
+						(this.choices || this.tiles).map(c => `${c.operation} ${c.value} )`).join(" ")
+
+				];
+
+				var choice = 0;
+
+				var answer = math.eval(mathString[choice]);
+
+				$(this.parentSelector).attr("title", mathString[choice]+" = "+answer);
+
+				return answer;
 			}
 		};
 	}
@@ -112,7 +121,7 @@ class TileRegistry {
 
 		var totals = [];
 		Utils.forEachIn((name,data) => { totals.push(data.totalValue) }, this.groups);
-		this.maxGroup = this.groups[Object.keys(this.groups)[totals.indexOf(math.max(totals))]]
+		this.maxGroup = this.groups[Object.keys(this.groups)[totals.indexOf(math.max(totals))]];
 		$(this.maxGroup.parentSelector).addClass("max");
 	}
 }

@@ -47,17 +47,25 @@ var TileRegistry = (function () {
 							// TODO where should the parenthesis be placed?
 							// should PEMDAS be used or should each operation effect the previous total?
 
-							// leave it to PEMDAS. ex: "7 * (11) + (49) - (39) + (23)"
-							var valuesWithOperators = (this.choices || this.tiles).map(function (c) {
+							var mathString = [
+
+							// leave it to PEMDAS. ex: "7 * (11) + (49) / (39) + (23)"
+							registry.mainTile.value + " " + (this.choices || this.tiles).map(function (c) {
 								return c.operation + " (" + c.value + ")";
-							});
-							var mathString = registry.mainTile.value + " " + valuesWithOperators.join(" ");
+							}).join(" "),
 
-							// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) - 39) + 23 )"
-							// parenthesis before = choice count
-							// one after each choice
+							// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) / 39) + 23 )"
+							new Array(registry.choiceTileCount + 1).join("( ") + registry.mainTile.value + " " + (this.choices || this.tiles).map(function (c) {
+								return c.operation + " " + c.value + " )";
+							}).join(" ")];
 
-							return math.eval(mathString);
+							var choice = 0;
+
+							var answer = math.eval(mathString[choice]);
+
+							$(this.parentSelector).attr("title", mathString[choice] + " = " + answer);
+
+							return answer;
 						},
 						configurable: true,
 						enumerable: true
