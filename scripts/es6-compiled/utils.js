@@ -137,8 +137,17 @@ Utils.buildFraction = function () {
 Utils.compare = function (condition, scope) {
 
 	// TODO parse parenthesis in this (don't split if parenthesis maybe?)
-	// other way: check each condition independently and run and/or logic on that
-	//            use math.eval with trues/falses - accounts for parenthesis already
+
+	//preprocess by checking for parenthesis and sending the contents back to this function
+	//then putting "true" or "false" in place of the contents and parenthesis
+
+	var parenGroups = [];
+	condition = condition.replace(/\(([^\(\)]+)\)/g, function (nul, g) {
+		parenGroups.push(g);return "" + Utils.compare(g, scope);
+	});
+
+	var trySimple = Utils.simpleCompare(condition);
+	if (trySimple !== undefined) return trySimple;
 
 	var parts = condition.split(/or|\|\|/) // split into array of "or" parts
 	.map(function (part) {
@@ -154,20 +163,10 @@ Utils.compare = function (condition, scope) {
 
 		for (var i = 0, part = undefined; (part = orPart[i]) !== undefined; i++) {
 			// for each "and" part: all of these must be true
-			if (part.trim().toLowerCase() === "true") {
-				innerBoolean = true;
-				break;
-			} else if (part.trim().toLowerCase() === "false") {
-				innerBoolean = false;
-			} else if (Utils.simpleCompare(part, scope)) {
-				innerBoolean = true;
-				break;
-			} else {
-				innerBoolean = false;
-			}
+			innerBoolean = Utils.simpleCompare(part, scope);
+			if (!innerBoolean) break;
 		}
 
-		// TODO Utils.compare("true and false || false or false and false") == true ?
 		if (innerBoolean) {
 			boolean = true;
 			break;
@@ -177,11 +176,24 @@ Utils.compare = function (condition, scope) {
 	return boolean;
 };
 
+Utils.compare2 = function (condition, scope) {
+	// other way: check each condition independently and run and/or logic on that
+	//            use math.eval with trues/falses - accounts for parenthesis already
+	//			  send each group (wrapped in parenthesis) back to Utils.compare(...)
+
+	var condRegex = /^\s*([^=!<>\(\)\s]+)\s*((?:<|>|==)=?|!==?)\s*([^=!<>\(\)\s]+)\s*?=\)?$/;
+};
+
 Utils.simpleCompare = function (singleCondition, scope) {
+
+	if (singleCondition.trim().toLowerCase() === "true") return true;
+	if (singleCondition.trim().toLowerCase() === "false") return false;
+
 	var comparers = /(?:<|>|==)=?|!==?/;
 	var parts = /[^=!<>\s]+/;
 
-	var condRegex = new RegExp("^\\s*(" + parts.source + ")\\s*(" + comparers.source + ")\\s*(" + parts.source + ")\\s*$").exec(singleCondition).slice(1);
+	var condRegex = new RegExp("^\\s*(" + parts.source + ")\\s*(" + comparers.source + ")\\s*(" + parts.source + ")\\s*$").exec(singleCondition);
+	if (condRegex === null) return undefined;else condRegex = condRegex.slice(1);
 
 	var literalRegex = /^'(.+)'|"(.+)"|([0-9]+)|(true|false)$/;
 
