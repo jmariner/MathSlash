@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,YAAa;EAEZ,gBAAgB,EAAE,wCAAwC;EAE1D,sBAAY;IACX,SAAS,EAAE,6BAA6B;;AAM1C,mBAOC;EANA,IAAK;IACJ,mBAAmB,EAAE,GAAG;EAEzB,EAAG;IACF,mBAAmB,EAAE,OAAO",
+"sources": ["scss/bgscroll.scss"],
+"names": [],
+"file": "bgscroll.css"
+}

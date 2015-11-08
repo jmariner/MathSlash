@@ -1,0 +1,19 @@
+#graphicArea {
+	//noinspection CssUnknownTarget
+	background-image: url("../images/castleBackground4x3.jpg");
+
+	&.scrolling {
+		animation: bgScroll steps(1) 5s infinite;
+	}
+
+
+}
+
+@keyframes bgScroll {
+	from {
+		background-position: 0 0;
+	}
+	to {
+		background-position: -100% 0;
+	}
+}
