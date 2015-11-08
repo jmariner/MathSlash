@@ -1,12 +1,15 @@
 #graphicArea {
-  background-image: url("../images/castleBackground4x3.jpg"); }
-  #graphicArea.scrolling {
-    animation: bgScroll steps(1) 5s infinite; }
+  overflow: hidden; }
+  #graphicArea > img {
+    height: 100%;
+    position: absolute; }
+  #graphicArea.scrolling > img {
+    animation: bgScroll 5s infinite linear; }
 
 @keyframes bgScroll {
   from {
-    background-position: 0 0; }
+    left: 0; }
   to {
-    background-position: -100% 0; } }
+    left: -100%; } }
 
 /*# sourceMappingURL=bgscroll.css.map */
