@@ -106,7 +106,7 @@ kbd {
 .arrow.right {
   transform: rotate(90deg); }
 
-#left button {
+.side button {
   min-width: 50%;
   font-size: 1.25em;
   margin: .5em 0; }

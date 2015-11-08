@@ -11,7 +11,7 @@ $graphicAreaWidth: 100%;
 $gameAreaWidth: (4/3) * $graphicAreaHeight;
 $gameAreaHeight: 100vh;
 
-#left button {
+.side button {
 	min-width: 50%;
 	font-size: 1.25em;
 	margin: .5em 0;
