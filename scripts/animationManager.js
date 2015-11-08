@@ -170,4 +170,4 @@ AnimationManager.Animation.prototype.setDuration = function(dur) {
 
     this.duration = dur;
     this._generateStyles();
-}
+};

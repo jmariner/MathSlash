@@ -118,10 +118,15 @@ var TileRegistry = (function () {
 			for ( // generate the tiles
 			group.choices = []; group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;) {}
 
-			for ( // shuffle the order
-			var a = group.choices, rand = undefined, i = a.length; i > 0; rand = Randomizer.rand(0, --i), (_ref = [a[rand], a[i]], a[i] = _ref[0], a[rand] = _ref[1], _ref)) {
-				var _ref;
+			var shuffle = false;
+			if (shuffle) {
+				for ( // shuffle the order
+				var a = group.choices, rand = undefined, i = a.length; i > 0; rand = Randomizer.rand(0, --i), (_ref = [a[rand], a[i]], a[i] = _ref[0], a[rand] = _ref[1], _ref)) {
+					var _ref;
+				}
 			}
+
+			// TODO load next tiles before timer ends so that all are ready to show at same time
 
 			group.tiles = group.choices.map(function (c) {
 				return c.toTile(group.parentSelector);

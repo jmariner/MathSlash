@@ -54,15 +54,15 @@
 	<body>
 		<div id="left">
 			<button onclick='try { new Tile(prompt("Enter operation (eg +, sub, multiply, over):") + prompt("Enter value (eg 104, 10/4, 10^4):"), ".tileRow"+prompt("Enter row (1-3):")) } catch (e) { alert(e); }'>Generate Custom Tile...</button>
-			<button onclick="reg.generateTiles(1)">Generate Tiles (difficulty=1)</button>
+			<button class="hidden" onclick="reg.generateTiles(1)">Generate Tiles (difficulty=1)</button>
 			<button onclick="reg.generateTiles(2)">Generate Tiles (difficulty=2)</button>
-			<button onclick="reg.generateTiles(3)">Generate Tiles (difficulty=3)</button>
-			<button onclick="reg.generateTiles(4)">Generate Tiles (difficulty=4)</button>
-			<button onclick="reg.generateTiles(5)">Generate Tiles (difficulty=5)</button>
+			<button class="hidden" onclick="reg.generateTiles(3)">Generate Tiles (difficulty=3)</button>
+			<button class="hidden" onclick="reg.generateTiles(4)">Generate Tiles (difficulty=4)</button>
+			<button class="hidden" onclick="reg.generateTiles(5)">Generate Tiles (difficulty=5)</button>
 			<button onclick='$(".tile").remove();'>Clear</button>
 		</div>
 		<div id="game">
-			<div id="graphicArea" style="visibility:hidden">
+			<div id="graphicArea">
 				<!--<img src="/images/castleBackground4x3.jpg" class="background">-->
 			</div>
 			<div id="barArea">

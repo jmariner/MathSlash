@@ -20,7 +20,10 @@ var DIFFICULTY_DATA = [null,
 	},
 
 //----------------------DIFFICULTY 2-----------------------------
-		{
+	{
+		options: {
+			timeLimit: 60 //seconds
+		},
 		main: [
 			{
 				type: "integer",
@@ -77,28 +80,36 @@ var DIFFICULTY_DATA = [null,
 
 //----------------------DIFFICULTY 4-----------------------------
 	{
+		options: {
+			// TODO difficulty-specific options
+			shuffle: false
+		},
 		main: [
 			{
 				type: "integer",
 				weight: 10,
-				limits: [1, 25]
+				limits: [1, 12]
 			},
 			{
 				type: "integer",
-				weight: 1,
+				weight: 0,
 				limits: [1, 99]
 			}
 		],
-		choices: [
+		choices: [ /* IDEA: store a copy of diff data and set weight to 0 if conditions are not met (PREcondtitions maybe?)
+				            reset the copy for each new tile created - this will remove the need to reRoll a tile forever because it will never roll to the same one again
+				            this still doesn't fix the fact that having too many conditions greatly reduces the chance of a choice being picked
+				            maybe increase chances if condition is met? this needs a lot more work to be fully modular
+				            */
 			{
 				type: "integer",
 				limits: [2,12],
-				weight: 20,
+				weight: 5,
 				operation: "multi",
-				conditions: [
-					"mainNumber <= 12",
+				conditions: [ // TODO this is nearly impossible to have these 4 all true - make it so it changes main number or previous instead of itself
+					"mainNumber <= 12",         // 5x the weight seems to counter it pretty well though - more than 2/3 of the first ones are this
 					"previous.value <= 12",
-					"previous.operation != -",
+					"previous.operation != '-'",
 					"myCount < 1"
 				]
 			},
@@ -129,14 +140,14 @@ var DIFFICULTY_DATA = [null,
 				type: "power",
 				baseLimits: [2,12],
 				power: 2,
-				weight: 50,
+				weight: 5,
 				operation: "add"
 			},
 			{
 				type: "fraction",
 				resultLimits: [2,12],
 				denominatorLimits: [2,12],
-				weight: 500,
+				weight: 5,
 				operation: "add"
 			},
 			{
@@ -159,13 +170,15 @@ DIFFICULTY_DATA.forEach(function(diffGroup, diff) { // for each difficulty
 
 	Utils.forEachIn(function (type, typeData) { // for each type (main/choices)
 
-		typeData.forEach(function (data) { // for each choice
-			data.id = [diff, type, typeData.indexOf(data)].join("_");
-			if (data.hasOwnProperty("conditions"))
-				data.condition = data.conditions.join(" and ");
-			if (data.hasOwnProperty("retryConditions"))
-				data.retryCondition = data.retryConditions.join(" or ");
-		}); // end for each choice
+		if (/^main|choices$/.test(type)) {
+			typeData.forEach(function (data) { // for each choice
+				data.id = [diff, type, typeData.indexOf(data)].join("_");
+				if (data.hasOwnProperty("conditions"))
+					data.condition = data.conditions.join(" and ");
+				if (data.hasOwnProperty("retryConditions"))
+					data.retryCondition = data.retryConditions.join(" or ");
+			}); // end for each choice
+		}
 
 	}, diffGroup); // end for each type
 

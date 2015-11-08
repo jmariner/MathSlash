@@ -53,15 +53,15 @@ body {
 		> div { width: 100%; }
 		#graphicArea {
 			//noinspection CssUnknownTarget
-			background: url("../images/castleBackground4x3.jpg");
+			//background: url("../images/castleBackground4x3.jpg");
 			background-size: contain;
 			position: relative;
 			height: 70%;
 		}
 		#barArea {
 			height: 5%;
-			background: linear-gradient(#c7004c,red);
-			padding: 8px 0;
+			background: black;
+			padding: 4px 0;
 			@include flex(row, flex-start, center);
 			.barSegment {
 				width: 3%;

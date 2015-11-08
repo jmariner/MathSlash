@@ -102,11 +102,17 @@ class TileRegistry {
 			group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
 		) {}
 
-		for( // shuffle the order
-			let a = group.choices, rand, i = a.length;
-			i > 0;
-			rand = Randomizer.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
-		) {}
+
+		var shuffle = false;
+		if (shuffle) {
+			for ( // shuffle the order
+				let a = group.choices, rand, i = a.length;
+				i > 0;
+				rand = Randomizer.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
+			) {}
+		}
+
+		// TODO load next tiles before timer ends so that all are ready to show at same time
 
 		group.tiles = group.choices.map(c => c.toTile(group.parentSelector));
 

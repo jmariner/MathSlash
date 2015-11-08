@@ -200,12 +200,14 @@ Utils.simpleCompare = function (singleCondition, scope) {
 	var left = (literalRegex.exec(condRegex[0]) || []).sort(function (a, b) {
 		return +(b === undefined);
 	})[1] || _.get(scope, condRegex[0]);
+	if (/^\d+$/.test(left)) left = +left;
 
 	var logicOp = condRegex[1];
 
 	var right = (literalRegex.exec(condRegex[2]) || []).sort(function (a, b) {
 		return +(b === undefined);
 	})[1] || _.get(scope, condRegex[2]);
+	if (/^\d+$/.test(right)) right = +right;
 
 	switch (logicOp) {
 		case ">":

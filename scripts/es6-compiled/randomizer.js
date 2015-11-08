@@ -38,12 +38,9 @@ var Randomizer = (function () {
 			}
 			return ret;
 		}
-		//test
-
 	}, {
 		key: "genSingleChoiceTile",
 		value: function genSingleChoiceTile(diff, group, mainNumber) {
-			var _this = this;
 
 			mainNumber = +mainNumber;
 
@@ -64,19 +61,19 @@ var Randomizer = (function () {
 			var scope = function scope() {
 				return {
 					mainNumber: mainNumber,
-					me: choice.value,
+					me: choice,
 					myCount: count(choice.id),
 					valueSoFar: group.totalValue,
 					myIndex: group.choices.length,
 					finalIndex: group.registry.choiceTileCount,
-					previous: group.choices[_this.myIndex - 1]
+					previous: group.choices[group.choices.length - 1] || group.registry.mainTile
 				};
 			};
 
-			while (choice.condition !== undefined && false === math.eval(choice.condition, scope())) {
+			while (choice.condition !== undefined && false === Utils.compare(choice.condition, scope())) {
 				choice = reRoll();
 			}
-			while (choice.retryCondition !== undefined && math.eval(choice.retryCondition, scope())) {
+			while (choice.retryCondition !== undefined && Utils.compare(choice.retryCondition, scope())) {
 				choice.randomize();
 			}
 			return choice;

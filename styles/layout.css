@@ -145,14 +145,13 @@ body {
     body #game > div {
       width: 100%; }
     body #game #graphicArea {
-      background: url("../images/castleBackground4x3.jpg");
       background-size: contain;
       position: relative;
       height: 70%; }
     body #game #barArea {
       height: 5%;
-      background: linear-gradient(#c7004c, red);
-      padding: 8px 0;
+      background: black;
+      padding: 4px 0;
       display: flex;
       flex-flow: row nowrap;
       justify-content: flex-start;
