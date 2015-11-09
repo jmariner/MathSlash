@@ -18,7 +18,7 @@ class Game {
 
 }
 
-class Display {
+class Display { // TODO this needs work
 	constructor(barSegmentCount) {
 
 		this.barSegmentCount = barSegmentCount;
