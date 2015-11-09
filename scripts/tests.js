@@ -13,8 +13,5 @@
 //});
 
 $(function() {
-	window.reg = new TileRegistry(".bigTileArea");
-	reg.addGroup("row1", ".tileRow1");
-	reg.addGroup("row2", ".tileRow2");
-	reg.addGroup("row3", ".tileRow3");
+	window.game = new Game();
 });
