@@ -1,11 +1,11 @@
 class Game {
 	constructor() {
-		this.display = new Display(30);
-
 		this.registry = new TileRegistry(".bigTileArea");
 		this.registry.addGroup("row1", ".tileRow1");
 		this.registry.addGroup("row2", ".tileRow2");
 		this.registry.addGroup("row3", ".tileRow3");
+
+		this.display = new Display(this.registry, 30);
 
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
 	}
@@ -15,17 +15,23 @@ class Game {
 		this.registry.generateTiles(diff);
 	}
 
-
+	chooseRow(rowNumber) {
+		$(".highlight").removeClass("highlight red green");
+		// TODO this is not a good way to do this - more js and less css
+		$(this.registry.groups["row"+rowNumber].parentSelector).addClass("highlight green");
+	}
 }
 
 class Display { // TODO this needs work
-	constructor(barSegmentCount) {
+	constructor(registry, barSegmentCount) {
 
+		this.registry = registry;
 		this.barSegmentCount = barSegmentCount;
 		this.barArea = undefined;
 		this.fader = new DisplayFader(this);
 
 		this.initBar();
+		this.initHighlights();
 
 	}
 
@@ -35,6 +41,16 @@ class Display { // TODO this needs work
 		for (var i=0; i < this.barSegmentCount; i++) {
 			$(this.barArea).append($("<div>").addClass("barSegment"))
 		}
+	}
+
+	initHighlights() {
+		Utils.forEachIn((k, group) =>
+			{ $(group.parentSelector)
+				.append($("<div>").addClass("highlighter"))
+				.on("animationend", function() {
+					$(this).removeClass("highlight red green");
+			})},
+			this.registry.groups);
 	}
 
 	startCountdown(seconds) {

@@ -8,12 +8,12 @@ var Game = (function () {
 	function Game() {
 		_classCallCheck(this, Game);
 
-		this.display = new Display(30);
-
 		this.registry = new TileRegistry(".bigTileArea");
 		this.registry.addGroup("row1", ".tileRow1");
 		this.registry.addGroup("row2", ".tileRow2");
 		this.registry.addGroup("row3", ".tileRow3");
+
+		this.display = new Display(this.registry, 30);
 
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
 	}
@@ -24,6 +24,13 @@ var Game = (function () {
 			var options = this.difficultyData[diff].options;
 			this.registry.generateTiles(diff);
 		}
+	}, {
+		key: "chooseRow",
+		value: function chooseRow(rowNumber) {
+			$(".highlight").removeClass("highlight red green");
+			// TODO this is not a good way to do this - more js and less css
+			$(this.registry.groups["row" + rowNumber].parentSelector).addClass("highlight green");
+		}
 	}]);
 
 	return Game;
@@ -32,14 +39,16 @@ var Game = (function () {
 var Display = (function () {
 	// TODO this needs work
 
-	function Display(barSegmentCount) {
+	function Display(registry, barSegmentCount) {
 		_classCallCheck(this, Display);
 
+		this.registry = registry;
 		this.barSegmentCount = barSegmentCount;
 		this.barArea = undefined;
 		this.fader = new DisplayFader(this);
 
 		this.initBar();
+		this.initHighlights();
 	}
 
 	_createClass(Display, [{
@@ -50,6 +59,15 @@ var Display = (function () {
 			for (var i = 0; i < this.barSegmentCount; i++) {
 				$(this.barArea).append($("<div>").addClass("barSegment"));
 			}
+		}
+	}, {
+		key: "initHighlights",
+		value: function initHighlights() {
+			Utils.forEachIn(function (k, group) {
+				$(group.parentSelector).append($("<div>").addClass("highlighter")).on("animationend", function () {
+					$(this).removeClass("highlight red green");
+				});
+			}, this.registry.groups);
 		}
 	}, {
 		key: "startCountdown",

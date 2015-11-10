@@ -92,8 +92,24 @@ body {
 					height: 31%;
 					width: 100%;
 					@include flex(row, flex-start, center);
+
+					.highlighter {
+						position: absolute;
+						top: 0; left: 0; right: 0; bottom: 0;
+						border: solid transparent 5px;
+					}
+					&.highlight .highlighter { animation: highlightFade 1s 1; }
+					&.highlight.red .highlighter { border-color: red; }
+					&.highlight.green .highlighter { border-color: green; }
+
+					@keyframes highlightFade {
+						from { opacity: 1; }
+						to { opacity: 0; }
+					}
+
 					> img, > div { margin-right: 32px; }
 					.arrow { height: 100%; }
+
 					&::after {
 						content: "=" attr(data-totalValue);
 						position: absolute;

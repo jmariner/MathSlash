@@ -193,6 +193,24 @@ body {
           flex-flow: row nowrap;
           justify-content: flex-start;
           align-items: center; }
+          body #game #tileArea #rightArea .row .highlighter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: solid transparent 5px; }
+          body #game #tileArea #rightArea .row.highlight .highlighter {
+            animation: highlightFade 1s 1; }
+          body #game #tileArea #rightArea .row.highlight.red .highlighter {
+            border-color: red; }
+          body #game #tileArea #rightArea .row.highlight.green .highlighter {
+            border-color: green; }
+@keyframes highlightFade {
+  from {
+    opacity: 1; }
+  to {
+    opacity: 0; } }
           body #game #tileArea #rightArea .row > img, body #game #tileArea #rightArea .row > div {
             margin-right: 32px; }
           body #game #tileArea #rightArea .row .arrow {
