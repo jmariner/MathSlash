@@ -5,6 +5,6 @@
     stroke-width: 25px;
 }
 
-.arrow.active.up polyline { fill: green; }
+.arrow.active.top polyline { fill: green; }
 .arrow.active.down polyline { fill: blue; }
 .arrow.active.right polyline { fill: purple; }

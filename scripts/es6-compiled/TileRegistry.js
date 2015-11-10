@@ -73,10 +73,23 @@ var TileRegistry = (function () {
 				});
 			}).apply(this, arguments);
 		}
+
+		// TODO getGroup(name) => this.groups[name]
+		// TODO getGroupEl(name) => $(this.groups[name].parentSelector).get(0)
 	}, {
 		key: "addGroup",
 		value: function addGroup(name, parentSelector) {
 			this._initGroup(name, parentSelector);
+		}
+	}, {
+		key: "getGroup",
+		value: function getGroup(name) {
+			return this.groups[name];
+		}
+	}, {
+		key: "getGroupEl",
+		value: function getGroupEl(name) {
+			return $(this.groups[name].parentSelector).get(0);
 		}
 	}, {
 		key: "clearGroup",

@@ -16,6 +16,8 @@ var Game = (function () {
 		this.display = new Display(this.registry, 30);
 
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
+
+		this._timeouts = {};
 	}
 
 	_createClass(Game, [{
@@ -28,8 +30,17 @@ var Game = (function () {
 	}, {
 		key: "chooseRow",
 		value: function chooseRow(rowNumber) {
-			// TODO this.display.activateArrow(rowNumber);
-			// TODO this.display.deactivateArrow(1, 2, 3);
+			var _this = this;
+
+			clearTimeout(this._timeouts.arrowBlink);
+
+			this.display.deactivateArrow(1, 2, 3);
+			this.display.activateArrow(rowNumber);
+
+			this._timeouts.arrowBlink = setTimeout(function () {
+				_this.display.deactivateArrow(rowNumber);
+			}, 500);
+
 			// TO-DO this is not a good way to do this - more js and less css
 			//$(this.registry.groups["row"+rowNumber].parentSelector).addClass("highlight green");
 		}
@@ -78,22 +89,37 @@ var Display = (function () {
 	}, {
 		key: "initArrows",
 		value: function initArrows() {
+			var rowHeight = $(".arrow").parent().height();
 			$.get("images/arrow.svg", function (data) {
-				$(".arrow").html($(data).children());
+				$(".arrow").html($(data).children()).width(rowHeight);
 			});
 		}
 	}, {
 		key: "activateArrow",
-		value: function activateArrow(rowNumber) {
+		value: function activateArrow() {
+			var _this2 = this;
+
+			for (var _len = arguments.length, rowNumbers = Array(_len), _key = 0; _key < _len; _key++) {
+				rowNumbers[_key] = arguments[_key];
+			}
+
 			// TODO allow for varargs for multiple rows
-			var rowSel = this.registry.groups["row" + rowNumber].parentSelector;
-			$(rowSel).find(".arrow").addClass("active");
+			rowNumbers.forEach(function (rowNumber) {
+				$(_this2.registry.getGroupEl("row" + rowNumber)).find(".arrow").addClass("active");
+			});
 		}
 	}, {
-		key: "deactiveateArrow",
-		value: function deactiveateArrow(rowNumber) {
-			var rowSel = this.registry.groups["row" + rowNumber].parentSelector;
-			$(rowSel).find(".arrow").removeClass("active");
+		key: "deactivateArrow",
+		value: function deactivateArrow() {
+			var _this3 = this;
+
+			for (var _len2 = arguments.length, rowNumbers = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+				rowNumbers[_key2] = arguments[_key2];
+			}
+
+			rowNumbers.forEach(function (rowNumber) {
+				$(_this3.registry.getGroupEl("row" + rowNumber)).find(".arrow").removeClass("active");
+			});
 		}
 	}, {
 		key: "startCountdown",

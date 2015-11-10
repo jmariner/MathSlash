@@ -54,8 +54,18 @@ class TileRegistry {
 		};
 	}
 
+	// TODO getGroup(name) => this.groups[name]
+	// TODO getGroupEl(name) => $(this.groups[name].parentSelector).get(0)
 	addGroup(name, parentSelector) {
 		this._initGroup(name, parentSelector);
+	}
+
+	getGroup(name) {
+		return this.groups[name];
+	}
+
+	getGroupEl(name) {
+		return $(this.groups[name].parentSelector).get(0)
 	}
 
 	clearGroup(name) {
