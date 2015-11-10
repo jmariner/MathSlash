@@ -23,30 +23,43 @@ class Display { // TODO this needs work
 
 		this.barSegmentCount = barSegmentCount;
 		this.barArea = undefined;
-		this.barFadeInterval = undefined;
+		this.fader = new DisplayFader(this);
 
-		//this.initBar();
+		this.initBar();
 
 	}
 
 	initBar() {
-		for(
-			this.barArea = $("#barArea").get(0);
-			$(this.barArea).append($("<div>").addClass("barSegment")).find(".barSegment").length < this.barSegmentCount;
-		) {}
+		this.barArea = $("#barArea").get(0);
+		$(this.barArea).find(".barSegment").remove();
+		for (var i=0; i < this.barSegmentCount; i++) {
+			$(this.barArea).append($("<div>").addClass("barSegment"))
+		}
 	}
 
 	startCountdown(seconds) {
-		var fadeSpeed = seconds / this.barSegmentCount;
+		this.fader.fade(seconds);
+	}
+}
 
-		var fadeNext;
-		(fadeNext = () => {
-			$(this.barArea).find(".barSegment:last-child")
-				.fadeOut(fadeSpeed * 1000, function () {
-					$(this).remove();
-					fadeNext();
-				}
-			);
-		})();
+class DisplayFader {
+	constructor(display) {
+		this._display = display;
+	}
+
+	fade(seconds, loop) {
+		if (!loop) this.stop();
+		var speed = seconds / this._display.barSegmentCount;
+		var fader = this;
+		$(this._display.barArea).find(".barSegment:last-child")
+		.fadeOut(speed*1000, function() {
+				$(this).remove();
+				fader.fade(seconds, true);
+			});
+	}
+
+	stop() {
+		$(this._display.barArea).find(".barSegment").stop();
+		this._display.initBar();
 	}
 }

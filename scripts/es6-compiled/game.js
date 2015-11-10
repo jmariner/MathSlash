@@ -30,39 +30,64 @@ var Game = (function () {
 })();
 
 var Display = (function () {
+	// TODO this needs work
+
 	function Display(barSegmentCount) {
 		_classCallCheck(this, Display);
 
 		this.barSegmentCount = barSegmentCount;
 		this.barArea = undefined;
-		this.barFadeInterval = undefined;
+		this.fader = new DisplayFader(this);
 
-		//this.initBar();
+		this.initBar();
 	}
 
 	_createClass(Display, [{
 		key: "initBar",
 		value: function initBar() {
-			for (this.barArea = $("#barArea").get(0); $(this.barArea).append($("<div>").addClass("barSegment")).find(".barSegment").length < this.barSegmentCount;) {}
+			this.barArea = $("#barArea").get(0);
+			$(this.barArea).find(".barSegment").remove();
+			for (var i = 0; i < this.barSegmentCount; i++) {
+				$(this.barArea).append($("<div>").addClass("barSegment"));
+			}
 		}
 	}, {
 		key: "startCountdown",
 		value: function startCountdown(seconds) {
-			var _this = this;
-
-			var fadeSpeed = seconds / this.barSegmentCount;
-
-			var fadeNext;
-			(fadeNext = function () {
-				$(_this.barArea).find(".barSegment:last-child").fadeOut(fadeSpeed * 1000, function () {
-					$(this).remove();
-					fadeNext();
-				});
-			})();
+			this.fader.fade(seconds);
 		}
 	}]);
 
 	return Display;
+})();
+
+var DisplayFader = (function () {
+	function DisplayFader(display) {
+		_classCallCheck(this, DisplayFader);
+
+		this._display = display;
+	}
+
+	_createClass(DisplayFader, [{
+		key: "fade",
+		value: function fade(seconds, loop) {
+			if (!loop) this.stop();
+			var speed = seconds / this._display.barSegmentCount;
+			var fader = this;
+			$(this._display.barArea).find(".barSegment:last-child").fadeOut(speed * 1000, function () {
+				$(this).remove();
+				fader.fade(seconds, true);
+			});
+		}
+	}, {
+		key: "stop",
+		value: function stop() {
+			$(this._display.barArea).find(".barSegment").stop();
+			this._display.initBar();
+		}
+	}]);
+
+	return DisplayFader;
 })();
 
 //# sourceMappingURL=game.js.map

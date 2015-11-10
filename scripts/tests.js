@@ -14,4 +14,5 @@
 
 $(function() {
 	window.game = new Game();
+	window.reg = game.registry;
 });
