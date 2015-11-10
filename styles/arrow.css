@@ -1,0 +1,10 @@
+.arrow polyline {
+    fill: white;
+    stroke: black;
+    stroke-linejoin: round;
+    stroke-width: 25px;
+}
+
+.arrow.active.up polyline { fill: green; }
+.arrow.active.down polyline { fill: blue; }
+.arrow.active.right polyline { fill: purple; }

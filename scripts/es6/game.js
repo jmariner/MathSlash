@@ -13,16 +13,18 @@ class Game {
 	startRound(diff) {
 		var options = this.difficultyData[diff].options;
 		this.registry.generateTiles(diff);
+		this.display.startCountdown(options.timeLimit);
 	}
 
 	chooseRow(rowNumber) {
-		$(".highlight").removeClass("highlight red green");
-		// TODO this is not a good way to do this - more js and less css
-		$(this.registry.groups["row"+rowNumber].parentSelector).addClass("highlight green");
+		// TODO this.display.activateArrow(rowNumber);
+		// TODO this.display.deactivateArrow(1, 2, 3);
+		// TO-DO this is not a good way to do this - more js and less css
+		//$(this.registry.groups["row"+rowNumber].parentSelector).addClass("highlight green");
 	}
 }
 
-class Display { // TODO this needs work
+class Display {
 	constructor(registry, barSegmentCount) {
 
 		this.registry = registry;
@@ -30,9 +32,14 @@ class Display { // TODO this needs work
 		this.barArea = undefined;
 		this.fader = new DisplayFader(this);
 
+		this.init();
+
+	}
+
+	init() {
 		this.initBar();
 		this.initHighlights();
-
+		this.initArrows();
 	}
 
 	initBar() {
@@ -51,6 +58,22 @@ class Display { // TODO this needs work
 					$(this).removeClass("highlight red green");
 			})},
 			this.registry.groups);
+	}
+
+	initArrows() {
+		$.get("images/arrow.svg", function(data) {
+			$(".arrow").html($(data).children());
+		})
+	}
+
+	activateArrow(rowNumber) { // TODO allow for varargs for multiple rows
+		var rowSel = this.registry.groups["row"+rowNumber].parentSelector;
+		$(rowSel).find(".arrow").addClass("active");
+	}
+
+	deactiveateArrow(rowNumber) {
+		var rowSel = this.registry.groups["row"+rowNumber].parentSelector;
+		$(rowSel).find(".arrow").removeClass("active");
 	}
 
 	startCountdown(seconds) {

@@ -23,13 +23,15 @@ var Game = (function () {
 		value: function startRound(diff) {
 			var options = this.difficultyData[diff].options;
 			this.registry.generateTiles(diff);
+			this.display.startCountdown(options.timeLimit);
 		}
 	}, {
 		key: "chooseRow",
 		value: function chooseRow(rowNumber) {
-			$(".highlight").removeClass("highlight red green");
-			// TODO this is not a good way to do this - more js and less css
-			$(this.registry.groups["row" + rowNumber].parentSelector).addClass("highlight green");
+			// TODO this.display.activateArrow(rowNumber);
+			// TODO this.display.deactivateArrow(1, 2, 3);
+			// TO-DO this is not a good way to do this - more js and less css
+			//$(this.registry.groups["row"+rowNumber].parentSelector).addClass("highlight green");
 		}
 	}]);
 
@@ -37,8 +39,6 @@ var Game = (function () {
 })();
 
 var Display = (function () {
-	// TODO this needs work
-
 	function Display(registry, barSegmentCount) {
 		_classCallCheck(this, Display);
 
@@ -47,11 +47,17 @@ var Display = (function () {
 		this.barArea = undefined;
 		this.fader = new DisplayFader(this);
 
-		this.initBar();
-		this.initHighlights();
+		this.init();
 	}
 
 	_createClass(Display, [{
+		key: "init",
+		value: function init() {
+			this.initBar();
+			this.initHighlights();
+			this.initArrows();
+		}
+	}, {
 		key: "initBar",
 		value: function initBar() {
 			this.barArea = $("#barArea").get(0);
@@ -68,6 +74,26 @@ var Display = (function () {
 					$(this).removeClass("highlight red green");
 				});
 			}, this.registry.groups);
+		}
+	}, {
+		key: "initArrows",
+		value: function initArrows() {
+			$.get("images/arrow.svg", function (data) {
+				$(".arrow").html($(data).children());
+			});
+		}
+	}, {
+		key: "activateArrow",
+		value: function activateArrow(rowNumber) {
+			// TODO allow for varargs for multiple rows
+			var rowSel = this.registry.groups["row" + rowNumber].parentSelector;
+			$(rowSel).find(".arrow").addClass("active");
+		}
+	}, {
+		key: "deactiveateArrow",
+		value: function deactiveateArrow(rowNumber) {
+			var rowSel = this.registry.groups["row" + rowNumber].parentSelector;
+			$(rowSel).find(".arrow").removeClass("active");
 		}
 	}, {
 		key: "startCountdown",
