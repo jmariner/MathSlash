@@ -9,14 +9,16 @@ class Game {
 
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
 
+
 		this._timeouts = {};
+
+		this.display.fader.onEnd = () => { this.nextLevel(); };
 	}
 
 	startRound(diff) {
 		var options = this.difficultyData[diff].options;
 		this.current = {diff, options};
 		this.nextLevel();
-		this.display.fader.onEnd = () => { this.nextLevel(); };
  	}
 
 	nextLevel() {
@@ -26,21 +28,34 @@ class Game {
 
 	chooseRow(rowNumber) {
 
-		clearTimeout(this._timeouts.arrowBlink);
+		var rowName = "row"+rowNumber;
+
 
 		this.display.deactivateArrow(1,2,3);
 		this.display.activateArrow(rowNumber);
 
+		clearTimeout(this._timeouts.arrowBlink);
 		this._timeouts.arrowBlink = setTimeout(() => {
 			this.display.deactivateArrow(rowNumber);
 		}, 250);
 
-		this.display.deselectRow(1, 2, 3);
+		/*this.display.deselectRow(1, 2, 3);
 		this.display.selectRow(rowNumber);
 
+		clearTimeout(this._timeouts.rowBlink);
 		this._timeouts.rowBlink = setTimeout(() => {
 			this.display.deselectRow(rowNumber);
-		}, 250);
+		}, 250);*/
+
+
+
+		if (this.registry.isMaxGroup(rowName)) {
+			this.display.blinkRow("green", rowNumber);
+			this.nextLevel();
+		}
+		else {
+			this.display.blinkRow("red", rowNumber);
+		}
 	}
 }
 
@@ -86,7 +101,7 @@ class Display {
 		});
 	}
 
-	activateArrow(...rowNumbers) { // TODO allow for varargs for multiple rows
+	activateArrow(...rowNumbers) {
 		rowNumbers.forEach(rowNumber => {
 			$(this.registry.getGroupEl("row"+rowNumber)).find(".arrow").addClass("active");
 
@@ -99,15 +114,16 @@ class Display {
 		});
 	}
 
-	selectRow(...rowNumbers) {
+	blinkRow(color, ...rowNumbers) {
 		rowNumbers.forEach(rowNumber => {
-			$(this.registry.getGroupEl("row"+rowNumber)).addClass("selected");
-		});
-	}
-
-	deselectRow(...rowNumbers) {
-		rowNumbers.forEach(rowNumber => {
-			$(this.registry.getGroupEl("row"+rowNumber)).removeClass("selected");
+			$(this.registry.getGroupEl("row"+rowNumber)).find(".highlighter")
+				.animate(
+					{borderColor:color},
+					{duration:250, queue:true}
+				).animate(
+					{borderColor:"transparent"},
+					{duration:250, queue:true}
+				);
 		});
 	}
 
@@ -129,12 +145,8 @@ class DisplayFader {
 
 		var $segments = $("#barArea").find(".barSegment");
 
-		if (!loop) window.start = _.now();
-
 		if ($segments.length === 0) {
 			this.onEnd();
-			var end = _.now() - window.start;
-			console.info(`ended after ${end/1000} seconds`);
 		}
 		else {
 			$segments.last().fadeOut(speed * 1000, function () {

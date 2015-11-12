@@ -1,0 +1,7 @@
+body .side {
+    display: none !important;
+}
+
+body.debug .side {
+    display: flex !important;
+}

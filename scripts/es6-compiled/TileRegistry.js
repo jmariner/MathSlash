@@ -40,7 +40,10 @@ var TileRegistry = (function () {
 					registry: registry,
 					name: name,
 					parentSelector: parentSelector,
-					tiles: []
+					tiles: [],
+					isMax: function isMax() {
+						return registry.maxGroup.name === this.name;
+					}
 				}, {
 					totalValue: {
 						get: function get() {
@@ -73,9 +76,6 @@ var TileRegistry = (function () {
 				});
 			}).apply(this, arguments);
 		}
-
-		// TODO getGroup(name) => this.groups[name]
-		// TODO getGroupEl(name) => $(this.groups[name].parentSelector).get(0)
 	}, {
 		key: "addGroup",
 		value: function addGroup(name, parentSelector) {
@@ -90,6 +90,11 @@ var TileRegistry = (function () {
 		key: "getGroupEl",
 		value: function getGroupEl(name) {
 			return $(this.groups[name].parentSelector).get(0);
+		}
+	}, {
+		key: "isMaxGroup",
+		value: function isMaxGroup(name) {
+			return this.getGroup(name).isMax();
 		}
 	}, {
 		key: "clearGroup",

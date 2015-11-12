@@ -6,6 +6,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Game = (function () {
 	function Game() {
+		var _this = this;
+
 		_classCallCheck(this, Game);
 
 		this.registry = new TileRegistry(".bigTileArea");
@@ -18,19 +20,18 @@ var Game = (function () {
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
 
 		this._timeouts = {};
+
+		this.display.fader.onEnd = function () {
+			_this.nextLevel();
+		};
 	}
 
 	_createClass(Game, [{
 		key: "startRound",
 		value: function startRound(diff) {
-			var _this = this;
-
 			var options = this.difficultyData[diff].options;
 			this.current = { diff: diff, options: options };
 			this.nextLevel();
-			this.display.fader.onEnd = function () {
-				_this.nextLevel();
-			};
 		}
 	}, {
 		key: "nextLevel",
@@ -43,21 +44,29 @@ var Game = (function () {
 		value: function chooseRow(rowNumber) {
 			var _this2 = this;
 
-			clearTimeout(this._timeouts.arrowBlink);
+			var rowName = "row" + rowNumber;
 
 			this.display.deactivateArrow(1, 2, 3);
 			this.display.activateArrow(rowNumber);
 
+			clearTimeout(this._timeouts.arrowBlink);
 			this._timeouts.arrowBlink = setTimeout(function () {
 				_this2.display.deactivateArrow(rowNumber);
 			}, 250);
 
-			this.display.deselectRow(1, 2, 3);
-			this.display.selectRow(rowNumber);
+			/*this.display.deselectRow(1, 2, 3);
+   this.display.selectRow(rowNumber);
+   	clearTimeout(this._timeouts.rowBlink);
+   this._timeouts.rowBlink = setTimeout(() => {
+   	this.display.deselectRow(rowNumber);
+   }, 250);*/
 
-			this._timeouts.rowBlink = setTimeout(function () {
-				_this2.display.deselectRow(rowNumber);
-			}, 250);
+			if (this.registry.isMaxGroup(rowName)) {
+				this.display.blinkRow("green", rowNumber);
+				this.nextLevel();
+			} else {
+				this.display.blinkRow("red", rowNumber);
+			}
 		}
 	}]);
 
@@ -117,7 +126,6 @@ var Display = (function () {
 				rowNumbers[_key] = arguments[_key];
 			}
 
-			// TODO allow for varargs for multiple rows
 			rowNumbers.forEach(function (rowNumber) {
 				$(_this3.registry.getGroupEl("row" + rowNumber)).find(".arrow").addClass("active");
 			});
@@ -136,29 +144,16 @@ var Display = (function () {
 			});
 		}
 	}, {
-		key: "selectRow",
-		value: function selectRow() {
+		key: "blinkRow",
+		value: function blinkRow(color) {
 			var _this5 = this;
 
-			for (var _len3 = arguments.length, rowNumbers = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-				rowNumbers[_key3] = arguments[_key3];
+			for (var _len3 = arguments.length, rowNumbers = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+				rowNumbers[_key3 - 1] = arguments[_key3];
 			}
 
 			rowNumbers.forEach(function (rowNumber) {
-				$(_this5.registry.getGroupEl("row" + rowNumber)).addClass("selected");
-			});
-		}
-	}, {
-		key: "deselectRow",
-		value: function deselectRow() {
-			var _this6 = this;
-
-			for (var _len4 = arguments.length, rowNumbers = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-				rowNumbers[_key4] = arguments[_key4];
-			}
-
-			rowNumbers.forEach(function (rowNumber) {
-				$(_this6.registry.getGroupEl("row" + rowNumber)).removeClass("selected");
+				$(_this5.registry.getGroupEl("row" + rowNumber)).find(".highlighter").animate({ borderColor: color }, { duration: 250, queue: true }).animate({ borderColor: "transparent" }, { duration: 250, queue: true });
 			});
 		}
 	}, {
@@ -188,12 +183,8 @@ var DisplayFader = (function () {
 
 			var $segments = $("#barArea").find(".barSegment");
 
-			if (!loop) window.start = _.now();
-
 			if ($segments.length === 0) {
 				this.onEnd();
-				var end = _.now() - window.start;
-				console.info("ended after " + end / 1000 + " seconds");
 			} else {
 				$segments.last().fadeOut(speed * 1000, function () {
 					$(this).remove();

@@ -28,6 +28,9 @@ class TileRegistry {
 			name,
 			parentSelector,
 			tiles: [],
+			isMax() {
+				return registry.maxGroup.name === this.name;
+			},
 			get totalValue() {
 				// TODO where should the parenthesis be placed?
 				// should PEMDAS be used or should each operation effect the previous total?
@@ -54,8 +57,6 @@ class TileRegistry {
 		};
 	}
 
-	// TODO getGroup(name) => this.groups[name]
-	// TODO getGroupEl(name) => $(this.groups[name].parentSelector).get(0)
 	addGroup(name, parentSelector) {
 		this._initGroup(name, parentSelector);
 	}
@@ -66,6 +67,10 @@ class TileRegistry {
 
 	getGroupEl(name) {
 		return $(this.groups[name].parentSelector).get(0)
+	}
+
+	isMaxGroup(name) {
+		return this.getGroup(name).isMax();
 	}
 
 	clearGroup(name) {
