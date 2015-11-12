@@ -22,7 +22,7 @@ var DIFFICULTY_DATA = [null,
 //----------------------DIFFICULTY 2-----------------------------
 	{
 		options: {
-			timeLimit: 60 //seconds
+			timeLimit: 20 //seconds
 		},
 		main: [
 			{

@@ -14,8 +14,14 @@ class Game {
 
 	startRound(diff) {
 		var options = this.difficultyData[diff].options;
-		this.registry.generateTiles(diff);
-		this.display.startCountdown(options.timeLimit);
+		this.current = {diff, options};
+		this.nextLevel();
+		this.display.fader.onEnd = () => { this.nextLevel(); };
+ 	}
+
+	nextLevel() {
+		this.registry.generateTiles(this.current.diff);
+		this.display.startCountdown(this.current.options.timeLimit);
 	}
 
 	chooseRow(rowNumber) {
@@ -27,10 +33,14 @@ class Game {
 
 		this._timeouts.arrowBlink = setTimeout(() => {
 			this.display.deactivateArrow(rowNumber);
-		}, 500);
+		}, 250);
 
-		// TO-DO this is not a good way to do this - more js and less css
-		//$(this.registry.groups["row"+rowNumber].parentSelector).addClass("highlight green");
+		this.display.deselectRow(1, 2, 3);
+		this.display.selectRow(rowNumber);
+
+		this._timeouts.rowBlink = setTimeout(() => {
+			this.display.deselectRow(rowNumber);
+		}, 250);
 	}
 }
 
@@ -55,19 +65,18 @@ class Display {
 	initBar() {
 		this.barArea = $("#barArea").get(0);
 		$(this.barArea).find(".barSegment").remove();
+		var eachWidth = $(this.barArea).width() / this.barSegmentCount;
 		for (var i=0; i < this.barSegmentCount; i++) {
-			$(this.barArea).append($("<div>").addClass("barSegment"))
+			$(this.barArea).append($("<div>").addClass("barSegment").width(eachWidth))
 		}
 	}
 
 	initHighlights() {
-		Utils.forEachIn((k, group) =>
-			{ $(group.parentSelector)
-				.append($("<div>").addClass("highlighter"))
-				.on("animationend", function() {
-					$(this).removeClass("highlight red green");
-			})},
-			this.registry.groups);
+		Utils.forEachIn((k, group) => {
+				$(group.parentSelector)
+					.removeClass("selected")
+					.append($("<div>").addClass("highlighter"))
+			}, this.registry.groups);
 	}
 
 	initArrows() {
@@ -90,6 +99,18 @@ class Display {
 		});
 	}
 
+	selectRow(...rowNumbers) {
+		rowNumbers.forEach(rowNumber => {
+			$(this.registry.getGroupEl("row"+rowNumber)).addClass("selected");
+		});
+	}
+
+	deselectRow(...rowNumbers) {
+		rowNumbers.forEach(rowNumber => {
+			$(this.registry.getGroupEl("row"+rowNumber)).removeClass("selected");
+		});
+	}
+
 	startCountdown(seconds) {
 		this.fader.fade(seconds);
 	}
@@ -98,17 +119,29 @@ class Display {
 class DisplayFader {
 	constructor(display) {
 		this._display = display;
+		this.onEnd = () => {};
 	}
 
 	fade(seconds, loop) {
 		if (!loop) this.stop();
 		var speed = seconds / this._display.barSegmentCount;
 		var fader = this;
-		$(this._display.barArea).find(".barSegment:last-child")
-		.fadeOut(speed*1000, function() {
-				$(this).remove();
-				fader.fade(seconds, true);
+
+		var $segments = $("#barArea").find(".barSegment");
+
+		if (!loop) window.start = _.now();
+
+		if ($segments.length === 0) {
+			this.onEnd();
+			var end = _.now() - window.start;
+			console.info(`ended after ${end/1000} seconds`);
+		}
+		else {
+			$segments.last().fadeOut(speed * 1000, function () {
+					$(this).remove();
+					fader.fade(seconds, true);
 			});
+		}
 	}
 
 	stop() {

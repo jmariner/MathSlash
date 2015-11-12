@@ -9,7 +9,6 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
 		<link rel="stylesheet" href="styles/layout.css">
 		<link rel="stylesheet" href="styles/bgscroll.css">
-		<link rel="stylesheet" href="styles/arrow.css">
 
 		<template id="spriteSheet_template">
 			.animated {
@@ -55,11 +54,12 @@
 	<body>
 		<div class="side" id="left">
 			<button onclick='try { new Tile(prompt("Enter operation (eg +, sub, multiply, over):") + prompt("Enter value (eg 104, 10/4, 10^4):"), ".tileRow"+prompt("Enter row (1-3):")) } catch (e) { alert(e); }'>Generate Custom Tile...</button>
-			<button class="" onclick="reg.generateTiles(1)">Generate Tiles (difficulty=1)</button>
-			<button onclick="reg.generateTiles(2)">Generate Tiles (difficulty=2)</button>
-			<button class="" onclick="reg.generateTiles(3)">Generate Tiles (difficulty=3)</button>
-			<button class="" onclick="reg.generateTiles(4)">Generate Tiles (difficulty=4)</button>
-			<button class="" onclick="reg.generateTiles(5)">Generate Tiles (difficulty=5)</button>
+			<form>
+				<button type="button" onclick='game.registry.generateTiles(+this.form.difficulty.value);'>
+					Generate for Difficulty
+				</button>
+				<input style="width:1.5em;" type="number" name="difficulty" min="1" max="5" value="1">
+			</form>
 			<button onclick='$(".tile").remove();'>Clear</button>
 		</div>
 		<div id="game">
@@ -73,7 +73,7 @@
 				</div>
 				<div id="rightArea">
 					<div class="tileRow1 row">
-						<div class="arrow top"></div>
+						<div class="arrow up"></div>
 					</div>
 					<div class="tileRow2 row">
 						<div class="arrow right"></div>
@@ -86,7 +86,11 @@
 		</div>
 		<div class="side" id="right">
 			<button onclick='$("#graphicArea").toggleClass("scrolling")'>Toggle Scrolling Background</button>
-			<button onclick='game.display.startCountdown(20)'>Start countdown (20s)</button>
+			<form>
+				<button type="button" onclick='game.display.startCountdown(+this.form.countdown.value)'>Start countdown: </button>
+				<input style="width:2.5em;" type="number" name="countdown" min="5" max="300" step="5" value="20">s
+			</form>
+			<button onclick='game.startRound(2);'>Start Round (diff=2)</button>
 		</div>
 	</body>
 </html>

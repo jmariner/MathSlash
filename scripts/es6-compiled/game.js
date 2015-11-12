@@ -23,14 +23,25 @@ var Game = (function () {
 	_createClass(Game, [{
 		key: "startRound",
 		value: function startRound(diff) {
+			var _this = this;
+
 			var options = this.difficultyData[diff].options;
-			this.registry.generateTiles(diff);
-			this.display.startCountdown(options.timeLimit);
+			this.current = { diff: diff, options: options };
+			this.nextLevel();
+			this.display.fader.onEnd = function () {
+				_this.nextLevel();
+			};
+		}
+	}, {
+		key: "nextLevel",
+		value: function nextLevel() {
+			this.registry.generateTiles(this.current.diff);
+			this.display.startCountdown(this.current.options.timeLimit);
 		}
 	}, {
 		key: "chooseRow",
 		value: function chooseRow(rowNumber) {
-			var _this = this;
+			var _this2 = this;
 
 			clearTimeout(this._timeouts.arrowBlink);
 
@@ -38,11 +49,15 @@ var Game = (function () {
 			this.display.activateArrow(rowNumber);
 
 			this._timeouts.arrowBlink = setTimeout(function () {
-				_this.display.deactivateArrow(rowNumber);
-			}, 500);
+				_this2.display.deactivateArrow(rowNumber);
+			}, 250);
 
-			// TO-DO this is not a good way to do this - more js and less css
-			//$(this.registry.groups["row"+rowNumber].parentSelector).addClass("highlight green");
+			this.display.deselectRow(1, 2, 3);
+			this.display.selectRow(rowNumber);
+
+			this._timeouts.rowBlink = setTimeout(function () {
+				_this2.display.deselectRow(rowNumber);
+			}, 250);
 		}
 	}]);
 
@@ -73,17 +88,16 @@ var Display = (function () {
 		value: function initBar() {
 			this.barArea = $("#barArea").get(0);
 			$(this.barArea).find(".barSegment").remove();
+			var eachWidth = $(this.barArea).width() / this.barSegmentCount;
 			for (var i = 0; i < this.barSegmentCount; i++) {
-				$(this.barArea).append($("<div>").addClass("barSegment"));
+				$(this.barArea).append($("<div>").addClass("barSegment").width(eachWidth));
 			}
 		}
 	}, {
 		key: "initHighlights",
 		value: function initHighlights() {
 			Utils.forEachIn(function (k, group) {
-				$(group.parentSelector).append($("<div>").addClass("highlighter")).on("animationend", function () {
-					$(this).removeClass("highlight red green");
-				});
+				$(group.parentSelector).removeClass("selected").append($("<div>").addClass("highlighter"));
 			}, this.registry.groups);
 		}
 	}, {
@@ -97,7 +111,7 @@ var Display = (function () {
 	}, {
 		key: "activateArrow",
 		value: function activateArrow() {
-			var _this2 = this;
+			var _this3 = this;
 
 			for (var _len = arguments.length, rowNumbers = Array(_len), _key = 0; _key < _len; _key++) {
 				rowNumbers[_key] = arguments[_key];
@@ -105,20 +119,46 @@ var Display = (function () {
 
 			// TODO allow for varargs for multiple rows
 			rowNumbers.forEach(function (rowNumber) {
-				$(_this2.registry.getGroupEl("row" + rowNumber)).find(".arrow").addClass("active");
+				$(_this3.registry.getGroupEl("row" + rowNumber)).find(".arrow").addClass("active");
 			});
 		}
 	}, {
 		key: "deactivateArrow",
 		value: function deactivateArrow() {
-			var _this3 = this;
+			var _this4 = this;
 
 			for (var _len2 = arguments.length, rowNumbers = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
 				rowNumbers[_key2] = arguments[_key2];
 			}
 
 			rowNumbers.forEach(function (rowNumber) {
-				$(_this3.registry.getGroupEl("row" + rowNumber)).find(".arrow").removeClass("active");
+				$(_this4.registry.getGroupEl("row" + rowNumber)).find(".arrow").removeClass("active");
+			});
+		}
+	}, {
+		key: "selectRow",
+		value: function selectRow() {
+			var _this5 = this;
+
+			for (var _len3 = arguments.length, rowNumbers = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+				rowNumbers[_key3] = arguments[_key3];
+			}
+
+			rowNumbers.forEach(function (rowNumber) {
+				$(_this5.registry.getGroupEl("row" + rowNumber)).addClass("selected");
+			});
+		}
+	}, {
+		key: "deselectRow",
+		value: function deselectRow() {
+			var _this6 = this;
+
+			for (var _len4 = arguments.length, rowNumbers = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+				rowNumbers[_key4] = arguments[_key4];
+			}
+
+			rowNumbers.forEach(function (rowNumber) {
+				$(_this6.registry.getGroupEl("row" + rowNumber)).removeClass("selected");
 			});
 		}
 	}, {
@@ -136,6 +176,7 @@ var DisplayFader = (function () {
 		_classCallCheck(this, DisplayFader);
 
 		this._display = display;
+		this.onEnd = function () {};
 	}
 
 	_createClass(DisplayFader, [{
@@ -144,10 +185,21 @@ var DisplayFader = (function () {
 			if (!loop) this.stop();
 			var speed = seconds / this._display.barSegmentCount;
 			var fader = this;
-			$(this._display.barArea).find(".barSegment:last-child").fadeOut(speed * 1000, function () {
-				$(this).remove();
-				fader.fade(seconds, true);
-			});
+
+			var $segments = $("#barArea").find(".barSegment");
+
+			if (!loop) window.start = _.now();
+
+			if ($segments.length === 0) {
+				this.onEnd();
+				var end = _.now() - window.start;
+				console.info("ended after " + end / 1000 + " seconds");
+			} else {
+				$segments.last().fadeOut(speed * 1000, function () {
+					$(this).remove();
+					fader.fade(seconds, true);
+				});
+			}
 		}
 	}, {
 		key: "stop",

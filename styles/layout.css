@@ -100,16 +100,43 @@ kbd {
 .arrow.up {
   transform: rotate(0deg); }
 
-.arrow.down {
-  transform: rotate(180deg); }
-
 .arrow.right {
   transform: rotate(90deg); }
 
-.side button {
+.arrow.down {
+  transform: rotate(180deg); }
+
+.arrow polyline {
+  fill: white;
+  stroke: black;
+  stroke-linejoin: round;
+  stroke-width: 25px; }
+
+.arrow.active.left polyline {
+  fill: white; }
+
+.arrow.active.up polyline {
+  fill: red; }
+
+.arrow.active.right polyline {
+  fill: green; }
+
+.arrow.active.down polyline {
+  fill: blue; }
+
+.side * {
+  font-size: 1.5rem; }
+
+.side button, .side form {
   min-width: 50%;
-  font-size: 1.25em;
-  margin: .5em 0; }
+  margin: .5em 0;
+  display: inline-block; }
+
+.side input[type='number'] {
+  font-size: 1.5rem;
+  margin: 0 .5em;
+  display: inline;
+  text-align: center; }
 
 * {
   padding: 0;
@@ -157,12 +184,11 @@ body {
       justify-content: flex-start;
       align-items: center; }
       body #game #barArea .barSegment {
-        width: 3%;
         height: 100%;
         background-color: #21ff00;
         border: solid 4px green; }
     body #game #tileArea {
-      background: linear-gradient(#ff0028, #ff9a00);
+      background: black;
       height: 25%;
       display: flex;
       flex-flow: row nowrap;
@@ -193,28 +219,22 @@ body {
           flex-flow: row nowrap;
           justify-content: flex-start;
           align-items: center; }
-          body #game #tileArea #rightArea .row .highlighter {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border: solid transparent 5px; }
-          body #game #tileArea #rightArea .row.highlight .highlighter {
-            animation: highlightFade 1s 1; }
-          body #game #tileArea #rightArea .row.highlight.red .highlighter {
-            border-color: red; }
-          body #game #tileArea #rightArea .row.highlight.green .highlighter {
-            border-color: green; }
-@keyframes highlightFade {
-  from {
-    opacity: 1; }
-  to {
-    opacity: 0; } }
           body #game #tileArea #rightArea .row > img, body #game #tileArea #rightArea .row > div {
             margin-right: 32px; }
           body #game #tileArea #rightArea .row .arrow {
             height: 100%; }
+          body #game #tileArea #rightArea .row .highlighter {
+            margin: 0;
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: 0;
+            bottom: -5px;
+            border: solid 5px transparent; }
+          body #game #tileArea #rightArea .row.selected.max .highlighter {
+            border-color: green; }
+          body #game #tileArea #rightArea .row.selected:not(.max) .highlighter {
+            border-color: red; }
           body #game #tileArea #rightArea .row::after {
             content: "=" attr(data-totalValue);
             position: absolute;
@@ -222,7 +242,7 @@ body {
       body #game #tileArea .tile {
         color: white;
         position: relative;
-        background: #000;
+        background: gray;
         display: flex;
         flex-flow: column nowrap;
         justify-content: center;
