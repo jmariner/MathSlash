@@ -15,11 +15,11 @@ var Game = (function () {
 		this.registry.addGroup("row2", ".tileRow2");
 		this.registry.addGroup("row3", ".tileRow3");
 
-		this.display = new Display(this.registry, 30);
+		this.display = new Display(this.registry, 30, { fill: "black", stroke: "white" });
 
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
 
-		this._timeouts = {};
+		this.playing = false;
 
 		this.display.fader.onEnd = function () {
 			_this.nextLevel();
@@ -32,6 +32,7 @@ var Game = (function () {
 			var options = this.difficultyData[diff].options;
 			this.current = { diff: diff, options: options };
 			this.nextLevel();
+			this.playing = true;
 		}
 	}, {
 		key: "nextLevel",
@@ -42,26 +43,12 @@ var Game = (function () {
 	}, {
 		key: "chooseRow",
 		value: function chooseRow(rowNumber) {
-			var _this2 = this;
 
 			var rowName = "row" + rowNumber;
 
-			this.display.deactivateArrow(1, 2, 3);
-			this.display.activateArrow(rowNumber);
+			this.display.blinkArrow("lightgray", rowNumber);
 
-			clearTimeout(this._timeouts.arrowBlink);
-			this._timeouts.arrowBlink = setTimeout(function () {
-				_this2.display.deactivateArrow(rowNumber);
-			}, 250);
-
-			/*this.display.deselectRow(1, 2, 3);
-   this.display.selectRow(rowNumber);
-   	clearTimeout(this._timeouts.rowBlink);
-   this._timeouts.rowBlink = setTimeout(() => {
-   	this.display.deselectRow(rowNumber);
-   }, 250);*/
-
-			if (this.registry.isMaxGroup(rowName)) {
+			if (this.playing && this.registry.isMaxGroup(rowName)) {
 				this.display.blinkRow("green", rowNumber);
 				this.nextLevel();
 			} else {
@@ -74,7 +61,7 @@ var Game = (function () {
 })();
 
 var Display = (function () {
-	function Display(registry, barSegmentCount) {
+	function Display(registry, barSegmentCount, arrowColors) {
 		_classCallCheck(this, Display);
 
 		this.registry = registry;
@@ -82,12 +69,15 @@ var Display = (function () {
 		this.barArea = undefined;
 		this.fader = new DisplayFader(this);
 
+		this.arrowColors = arrowColors;
+
 		this.init();
 	}
 
 	_createClass(Display, [{
 		key: "init",
 		value: function init() {
+			this.fader.stop();
 			this.initBar();
 			this.initHighlights();
 			this.initArrows();
@@ -112,48 +102,37 @@ var Display = (function () {
 	}, {
 		key: "initArrows",
 		value: function initArrows() {
+			var _this2 = this;
+
 			var rowHeight = $(".arrow").parent().height();
 			$.get("images/arrow.svg", function (data) {
-				$(".arrow").html($(data).children()).width(rowHeight);
+				$(".arrow").html($(data).children()).width(rowHeight).find("polyline").attr("fill", _this2.arrowColors.fill).attr("stroke", _this2.arrowColors.stroke);
 			});
 		}
 	}, {
-		key: "activateArrow",
-		value: function activateArrow() {
+		key: "blinkArrow",
+		value: function blinkArrow(color) {
 			var _this3 = this;
 
-			for (var _len = arguments.length, rowNumbers = Array(_len), _key = 0; _key < _len; _key++) {
-				rowNumbers[_key] = arguments[_key];
+			for (var _len = arguments.length, rowNumbers = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+				rowNumbers[_key - 1] = arguments[_key];
 			}
 
 			rowNumbers.forEach(function (rowNumber) {
-				$(_this3.registry.getGroupEl("row" + rowNumber)).find(".arrow").addClass("active");
-			});
-		}
-	}, {
-		key: "deactivateArrow",
-		value: function deactivateArrow() {
-			var _this4 = this;
-
-			for (var _len2 = arguments.length, rowNumbers = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-				rowNumbers[_key2] = arguments[_key2];
-			}
-
-			rowNumbers.forEach(function (rowNumber) {
-				$(_this4.registry.getGroupEl("row" + rowNumber)).find(".arrow").removeClass("active");
+				$(_this3.registry.getGroupEl("row" + rowNumber)).find(".arrow").find("polyline").animate({ svgFill: color }, { duration: 250, queue: true }).animate({ svgFill: _this3.arrowColors.fill }, { duration: 250, queue: true });
 			});
 		}
 	}, {
 		key: "blinkRow",
 		value: function blinkRow(color) {
-			var _this5 = this;
+			var _this4 = this;
 
-			for (var _len3 = arguments.length, rowNumbers = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-				rowNumbers[_key3 - 1] = arguments[_key3];
+			for (var _len2 = arguments.length, rowNumbers = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+				rowNumbers[_key2 - 1] = arguments[_key2];
 			}
 
 			rowNumbers.forEach(function (rowNumber) {
-				$(_this5.registry.getGroupEl("row" + rowNumber)).find(".highlighter").animate({ borderColor: color }, { duration: 250, queue: true }).animate({ borderColor: "transparent" }, { duration: 250, queue: true });
+				$(_this4.registry.getGroupEl("row" + rowNumber)).find(".highlighter").animate({ borderColor: color }, { duration: 250, queue: true }).animate({ borderColor: "transparent" }, { duration: 250, queue: true });
 			});
 		}
 	}, {

@@ -50,11 +50,14 @@ body {
 	overflow: hidden;
 	background: #444;
 
-	#game, #left, #right {
+	#game, .side {
 		height: 100%;
 		@include flex(column, center, center);
 		position: relative;
 	}
+
+	&.debug .side { display: flex; }
+	&:not(.debug) .side { display: none !important; }
 
 	#left, #right { width: calc((100vw - #{$gameAreaWidth})/2); }
 

@@ -4,13 +4,6 @@
 .arrow.down  { transform: rotate(180deg); }
 
 .arrow polyline {
-	fill: white;
-	stroke: black;
 	stroke-linejoin: round;
 	stroke-width: 25px;
 }
-
-.arrow.active.left polyline { fill: white; }
-.arrow.active.up polyline { fill: red; }
-.arrow.active.right polyline { fill: green; }
-.arrow.active.down polyline { fill: blue; }

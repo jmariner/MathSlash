@@ -2,6 +2,9 @@ var DIFFICULTY_DATA = [null,
 
 //----------------------DIFFICULTY 1-----------------------------
 	{
+		options: {
+			timeLimit: 10
+		},
 		main: [
 			{
 				type: "integer",

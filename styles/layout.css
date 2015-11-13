@@ -107,22 +107,8 @@ kbd {
   transform: rotate(180deg); }
 
 .arrow polyline {
-  fill: white;
-  stroke: black;
   stroke-linejoin: round;
   stroke-width: 25px; }
-
-.arrow.active.left polyline {
-  fill: white; }
-
-.arrow.active.up polyline {
-  fill: red; }
-
-.arrow.active.right polyline {
-  fill: green; }
-
-.arrow.active.down polyline {
-  fill: blue; }
 
 .side * {
   font-size: 1.5rem; }
@@ -157,13 +143,17 @@ body {
   align-items: center;
   overflow: hidden;
   background: #444; }
-  body #game, body #left, body #right {
+  body #game, body .side {
     height: 100%;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
     position: relative; }
+  body.debug .side {
+    display: flex; }
+  body:not(.debug) .side {
+    display: none !important; }
   body #left, body #right {
     width: calc((100vw - 93.33333vh)/2); }
   body #game {

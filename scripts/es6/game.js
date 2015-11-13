@@ -5,12 +5,11 @@ class Game {
 		this.registry.addGroup("row2", ".tileRow2");
 		this.registry.addGroup("row3", ".tileRow3");
 
-		this.display = new Display(this.registry, 30);
+		this.display = new Display(this.registry, 30, {fill:"black",stroke:"white"});
 
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
 
-
-		this._timeouts = {};
+		this.playing = false;
 
 		this.display.fader.onEnd = () => { this.nextLevel(); };
 	}
@@ -19,6 +18,7 @@ class Game {
 		var options = this.difficultyData[diff].options;
 		this.current = {diff, options};
 		this.nextLevel();
+		this.playing = true;
  	}
 
 	nextLevel() {
@@ -30,26 +30,9 @@ class Game {
 
 		var rowName = "row"+rowNumber;
 
+		this.display.blinkArrow("lightgray", rowNumber);
 
-		this.display.deactivateArrow(1,2,3);
-		this.display.activateArrow(rowNumber);
-
-		clearTimeout(this._timeouts.arrowBlink);
-		this._timeouts.arrowBlink = setTimeout(() => {
-			this.display.deactivateArrow(rowNumber);
-		}, 250);
-
-		/*this.display.deselectRow(1, 2, 3);
-		this.display.selectRow(rowNumber);
-
-		clearTimeout(this._timeouts.rowBlink);
-		this._timeouts.rowBlink = setTimeout(() => {
-			this.display.deselectRow(rowNumber);
-		}, 250);*/
-
-
-
-		if (this.registry.isMaxGroup(rowName)) {
+		if (this.playing && this.registry.isMaxGroup(rowName)) {
 			this.display.blinkRow("green", rowNumber);
 			this.nextLevel();
 		}
@@ -60,18 +43,21 @@ class Game {
 }
 
 class Display {
-	constructor(registry, barSegmentCount) {
+	constructor(registry, barSegmentCount, arrowColors) {
 
 		this.registry = registry;
 		this.barSegmentCount = barSegmentCount;
 		this.barArea = undefined;
 		this.fader = new DisplayFader(this);
 
+		this.arrowColors = arrowColors;
+
 		this.init();
 
 	}
 
 	init() {
+		this.fader.stop();
 		this.initBar();
 		this.initHighlights();
 		this.initArrows();
@@ -96,21 +82,26 @@ class Display {
 
 	initArrows() {
 		var rowHeight = $(".arrow").parent().height();
-		$.get("images/arrow.svg", function(data) {
-			$(".arrow").html($(data).children()).width(rowHeight);
+		$.get("images/arrow.svg", data => {
+			$(".arrow").html($(data).children())
+				.width(rowHeight)
+				.find("polyline")
+				.attr("fill",   this.arrowColors.fill)
+				.attr("stroke", this.arrowColors.stroke);
 		});
 	}
 
-	activateArrow(...rowNumbers) {
+	blinkArrow(color, ...rowNumbers) {
 		rowNumbers.forEach(rowNumber => {
-			$(this.registry.getGroupEl("row"+rowNumber)).find(".arrow").addClass("active");
-
-		});
-	}
-
-	deactivateArrow(...rowNumbers) {
-		rowNumbers.forEach(rowNumber => {
-			$(this.registry.getGroupEl("row"+rowNumber)).find(".arrow").removeClass("active");
+			$(this.registry.getGroupEl("row"+rowNumber))
+				.find(".arrow").find("polyline")
+				.animate(
+				{svgFill: color},
+				{duration:250, queue:true}
+			).animate(
+				{svgFill: this.arrowColors.fill},
+				{duration:250, queue:true}
+			);
 		});
 	}
 

@@ -6,6 +6,7 @@
 - leaderboards in localStorage + maybe some leaderboard server (NODEjs, PHP?)
 - TUTORIAL
 - use same image for tile area and bar area (no seperation between them)
+- definitely will need a cooldown to prevent spamming random arrows
 
 # Ideas
 
