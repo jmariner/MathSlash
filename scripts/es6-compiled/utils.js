@@ -136,11 +136,6 @@ Utils.buildFraction = function () {
 
 Utils.compare = function (condition, scope) {
 
-	// TODO parse parenthesis in this (don't split if parenthesis maybe?)
-
-	//preprocess by checking for parenthesis and sending the contents back to this function
-	//then putting "true" or "false" in place of the contents and parenthesis
-
 	var parenGroups = [];
 	condition = condition.replace(/\(([^\(\)]+)\)/g, function (nul, g) {
 		parenGroups.push(g);return "" + Utils.compare(g, scope);
@@ -174,14 +169,6 @@ Utils.compare = function (condition, scope) {
 	}
 
 	return boolean;
-};
-
-Utils.compare2 = function (condition, scope) {
-	// other way: check each condition independently and run and/or logic on that
-	//            use math.eval with trues/falses - accounts for parenthesis already
-	//			  send each group (wrapped in parenthesis) back to Utils.compare(...)
-
-	var condRegex = /^\s*([^=!<>\(\)\s]+)\s*((?:<|>|==)=?|!==?)\s*([^=!<>\(\)\s]+)\s*?=\)?$/;
 };
 
 Utils.simpleCompare = function (singleCondition, scope) {

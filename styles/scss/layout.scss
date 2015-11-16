@@ -21,6 +21,10 @@ $gameAreaHeight: 100vh;
 	display: inline-block;
 }
 
+.side form {
+	@include flex(column, center, center);
+}
+
 .side input[type='number'] {
 	font-size: 1.5rem;
 	margin: 0 .5em;

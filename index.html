@@ -90,12 +90,18 @@
 		<div class="side" id="right">
 			<button onclick='$("#graphicArea").toggleClass("scrolling")'>Toggle Scrolling Background</button>
 			<form>
-				<button type="button" onclick='game.display.startCountdown(+this.form.countdown.value)'>Start countdown: </button>
-				<input style="width:2.5em;" type="number" name="countdown" min="5" max="300" step="5" value="20">s
-			</form>
-			<form>
-				<button type="button" onclick='game.startRound(+this.form.difficulty.value)'>Start round with diff =</button>
-				<input style="width:1.5em" type="number" name="difficulty" min="1" max="2" value="2">
+				<div>
+					<button type="button" onclick='game.display.startCountdown(+this.form.countdown.value)'>Start countdown: </button>
+					<input style="width:2.5em;" type="number" name="countdown" min="5" max="300" step="5" value="20">s
+				</div>
+				<div>
+					<button type="button" onclick='game.startRound(+this.form.difficulty.value)'>Start round with diff =</button>
+					<input style="width:1.5em" type="number" name="difficulty" min="1" max="2" value="2">
+				</div>
+				<div>
+					<button type="button" onclick='var s = this.form.addTime.value, t = +s; if (Number.isNaN(t) || t === 0) { alert("Invalid input: " + s); } else game.display.fader.addTime(t)'>Add Time: </button>
+					<input style="width:2.5em" type="text" name="addTime" value="5">s
+				</div>
 			</form>
 			<button onclick="game.display.init(); $('.tile').remove();">Reset Display</button>
 		</div>

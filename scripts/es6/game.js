@@ -22,8 +22,10 @@ class Game {
  	}
 
 	nextLevel() {
-		this.registry.generateTiles(this.current.diff);
-		this.display.startCountdown(this.current.options.timeLimit);
+		if (this.playing) {
+			this.registry.generateTiles(this.current.diff);
+			this.display.startCountdown(this.current.options.timeLimit);
+		}
 	}
 
 	chooseRow(rowNumber) {
@@ -32,12 +34,14 @@ class Game {
 
 		this.display.blinkArrow("lightgray", rowNumber);
 
-		if (this.playing && this.registry.isMaxGroup(rowName)) {
-			this.display.blinkRow("green", rowNumber);
-			this.nextLevel();
-		}
-		else {
-			this.display.blinkRow("red", rowNumber);
+		if (this.playing) {
+			if (this.registry.isMaxGroup(rowName)) {
+				this.display.blinkRow("green", rowNumber);
+				this.nextLevel();
+			}
+			else {
+				this.display.blinkRow("red", rowNumber);
+			}
 		}
 	}
 }
@@ -126,24 +130,46 @@ class Display {
 class DisplayFader {
 	constructor(display) {
 		this._display = display;
+		this.current = {};
+		this.$barArea = $("#barArea");
 		this.onEnd = () => {};
 	}
 
 	fade(seconds, loop) {
-		if (!loop) this.stop();
+		if (!loop) {
+			this.stop();
+			this.current.time = seconds;
+		}
+
 		var speed = seconds / this._display.barSegmentCount;
+		this.current.total = seconds;
+		this.current.speed = speed;
+
 		var fader = this;
 
-		var $segments = $("#barArea").find(".barSegment");
+		var $segments = this.$barArea.find(".barSegment");
 
 		if ($segments.length === 0) {
 			this.onEnd();
 		}
 		else {
 			$segments.last().fadeOut(speed * 1000, function () {
-					$(this).remove();
-					fader.fade(seconds, true);
+				$(this).remove();
+				fader.current.time -= speed;
+				fader.fade(seconds, true);
 			});
+		}
+	}
+
+	addTime(seconds) {
+		if (this.current.time + seconds < this.current.total) {
+			this.current.time += seconds;
+			var barsToAdd = seconds * this.current.speed;
+			this.$barArea.append(
+				new Array(barsToAdd+1).join(
+					$("<div>").addClass("barSegment").get(0).outerHTML
+				)
+			);
 		}
 	}
 
