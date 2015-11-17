@@ -1,6 +1,6 @@
-.idea/
-node_modules
-libsass
+.idea/**
+node_modules/**
+libsass/**
 scripts/es6-compiled
 styles/*.css
 styles/*.css.map
