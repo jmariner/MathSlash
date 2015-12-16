@@ -154,7 +154,7 @@ AnimationManager.Animation.prototype.playOnce = function() { this._play(); };
 AnimationManager.Animation.prototype.loop = function(dur) { this._play(dur || -1); };
 
 AnimationManager.Animation.prototype.stop = function() {
-	if (this.isStopped()) {
+	if (!this.isStopped()) {
 		this.character.$element
 			.removeClass(this.name)
 			.removeClass(AnimationManager.playingClass);
