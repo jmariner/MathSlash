@@ -61,7 +61,7 @@
 			<button onclick='$("#graphicArea").toggleClass("scrolling")'>Toggle Scrolling Background</button>
 			<button type="button" onclick='var time = prompt("Enter time (s):","30"); game.display.startCountdown(+time)'>Start countdown...</button>
 			<button type="button" onclick='var d = prompt("Enter difficulty:","2"); game.startRound(+d)'>Start round with diff...</button>
-			<button type="button" onclick='game.display.fader.addTime(5)'>Add Time (5s)</button>
+			<button class="hidden" type="button" onclick='game.display.fader.addTime(5)'>Add Time (5s)</button>
 			<button onclick="game.display.init(); $('.tile').remove();">Reset Display</button>
 		</div>
 		<div id="game">
