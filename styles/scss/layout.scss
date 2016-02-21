@@ -158,10 +158,13 @@ body {
 			top: $graphicAreaHeight;
 			bottom: 0;
 			width: 100%;
-			&:not(.correct):not(.failed), > div {
+			> div {
 				display: none;
 			}
-			&.correct > div.correct, &.failed > div.failed {
+			&.correct > .correct,
+			&.failed > .failed,
+			&.win > .win,
+			&.lose > .lose {
 				display: inline-block;
 			}
 		}

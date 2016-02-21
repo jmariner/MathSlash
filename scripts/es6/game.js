@@ -5,62 +5,100 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.registry.addGroup("row2", ".tileRow2");
 		this.registry.addGroup("row3", ".tileRow3");
 
-		this.display = new Display(this.registry, 30, {fill:"black",stroke:"white"});
+		this.display = new Display(this, this.registry, 30, {fill:"black",stroke:"white"});
 
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
 
 		this.playing = false;
+		this.waiting = true;
 
-		this.display.fader.onEnd = () => { this.onRoundEnd(); };
+		this.display.fader.onEnd = () => { this.onTimeOut(); };
 
-		this.preRoundDelay = 3000;
+		this.preRoundDelay = 1000;
+		this.afterLevelDelay = 5000;
 		this.timeouts = {};
-		this.tempCounter = 0;
+
+		this.player = {
+			baseHealth: 100,
+			baseDamage: 20
+		};
+
+		this.enemy = {
+			baseHealth: 200,
+			baseDamage: 25
+		};
 	}
 
 	startLevel(diff, delay) {
 		var options = this.difficultyData[diff].options;
 		this.current = {diff, options};
-		this.tempCounter = 0;
 		this.playing = true;
+		this.player.health = this.player.baseHealth;
+		this.enemy.health = this.enemy.baseHealth;
 		this.nextRound(delay);
  	}
 
-	nextRound(delay) {
+	nextRound(delay, correct) {
 		if (this.playing) {
+
+			if (correct !== undefined) { // during round
+				Display.showBottomOverlay(correct ? "correct" : "failed");
+				if (correct) {
+					this.enemy.health -= this.player.baseDamage;
+				}
+				else if (!correct) {
+					this.player.health -= this.enemy.baseDamage;
+				}
+
+				this.display.updateHealth();
+
+				if (this.player.health === 0) {
+					this.onLevelOver(false);
+					return;
+				}
+				else if (this.enemy.health === 0) {
+					this.onLevelOver(true);
+					return;
+				}
+			}
+			else { // first round
+
+			}
+
 			this.display.fader.clear();
 			this.registry.generateTiles(this.current.diff);
+			this.waiting = true;
 			this.timeouts.roundDelay = setTimeout(() => {
+				this.waiting = false;
 				Display.hideBottomOverlay();
+				if (correct === undefined) this.display.updateHealth();
 				this.display.startCountdown(this.current.options.timeLimit);
 				this.registry.showTiles();
 			}, delay);
 		}
 	}
 
-	onRoundEnd() {
-		Display.showBottomOverlay(false);
-		alert(`You got ${this.tempCounter} correct in a row!`);
-		//window.location.reload();
-		this.startLevel(2, 5000);
+	onTimeOut() {
+		this.nextRound(this.preRoundDelay, false);
 	}
 
-	chooseRow(rowNumber) { // TODO cooldown after each time this is called to limit spamming?
+	onLevelOver(playerWon) {
+		Display.showBottomOverlay(playerWon ? "win" : "lose");
+		this.startLevel(this.current.diff, this.afterLevelDelay);
+	}
+
+	chooseRow(rowNumber) {
 
 		var rowName = "row"+rowNumber;
 
 		this.display.blinkArrow("lightgray", rowNumber);
 
-		if (this.playing) {
+		if (this.playing && !this.waiting) {
 			if (this.registry.isMaxGroup(rowName)) {
-				this.display.blinkRow("green", rowNumber);
 				// correct answer is chosen, damage the enemy and load next round
-				this.tempCounter++;
-				Display.showBottomOverlay(true);
-				this.nextRound(this.preRoundDelay);
+				this.nextRound(this.preRoundDelay, true);
 			}
 			else {
-				this.display.blinkRow("red", rowNumber);
 				// wrong answer is chosen, decrease time by 50% of start
 				this.display.fader.subtractTime(this.current.options.timeLimit / 2);
 			}
@@ -69,8 +107,9 @@ class Game { // level = each enemy, round = each collection of tiles
 }
 
 class Display {
-	constructor(registry, barSegmentCount, arrowColors) {
+	constructor(game, registry, barSegmentCount, arrowColors) {
 
+		this.game = game;
 		this.registry = registry;
 		this.barSegmentCount = barSegmentCount;
 		this.barArea = undefined;
@@ -144,12 +183,18 @@ class Display {
 		});
 	}
 
-	static showBottomOverlay(isCorrect) {
-		$("#bottomOverlay").addClass(isCorrect ? "correct" : "failed")
+	updateHealth() {
+		$("#playerHealth").find("span").text(this.game.player.health);
+		$("#enemyHealth").find("span").text(this.game.enemy.health);
+	}
+
+	static showBottomOverlay(type) {
+		Display.hideBottomOverlay();
+		$("#bottomOverlay")._show().addClass(type)
 	}
 
 	static hideBottomOverlay() {
-		$("#bottomOverlay").removeClass("correct failed");
+		$("#bottomOverlay").removeAttr("class")._hide();
 	}
 
 	startCountdown(seconds) {

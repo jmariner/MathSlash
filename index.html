@@ -84,15 +84,22 @@
 					</div>
 				</div>
 			</div>
-			<div id="bottomOverlay">
+			<div class="hidden" id="bottomOverlay">
 				<div class="correct">CORRECT!</div>
 				<div class="failed">OUT OF TIME!</div>
+				<div class="win">YOU WIN!</div>
+				<div class="lose">YOU LOST!</div>
 			</div>
 		</div>
 		<div class="side" id="right">
+			<div id="playerHealth">Player Health: <span></span></div>
+			<div id="enemyHealth">Boss Health: <span></span></div>
+
 			<button type="button" onclick='game.startLevel(2)'>Play Example</button>
 			<button class="hidden" onclick="a.characters.jane.loopAnimation('idle');">Start Test Anim</button>
 			<button class="hidden" onclick="a.characters.jane.stopAnimation('idle');">Stop Test Anim</button>
+
+			<div>Instructions: Use the arrow keys to select the row with the highest sum</div>
 		</div>
 	</body>
 </html>
