@@ -127,8 +127,6 @@ class TileRegistry {
 			) {}
 		}
 
-		// TODO load next tiles before timer ends so that all are ready to show at same time
-
 		group.tiles = group.choices.map(c => c.toTile(group.parentSelector));
 
 		$(group.parentSelector).attr("data-totalValue", group.totalValue);

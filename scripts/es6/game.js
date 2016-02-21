@@ -1,4 +1,4 @@
-class Game {
+class Game { // level = each enemy, round = each collection of tiles
 	constructor() {
 		this.registry = new TileRegistry(".bigTileArea");
 		this.registry.addGroup("row1", ".tileRow1");
@@ -11,21 +11,29 @@ class Game {
 
 		this.playing = false;
 
-		this.display.fader.onEnd = () => { this.nextLevel(); };
+		this.display.fader.onEnd = () => { this.onRoundEnd(); }
+
+		//this.timeouts = {};
+		this.tempCounter = 0;
 	}
 
-	startRound(diff) {
+	startLevel(diff) {
 		var options = this.difficultyData[diff].options;
 		this.current = {diff, options};
-		this.nextLevel();
 		this.playing = true;
+		this.nextRound();
  	}
 
-	nextLevel() {
+	nextRound() {
 		if (this.playing) {
 			this.registry.generateTiles(this.current.diff);
 			this.display.startCountdown(this.current.options.timeLimit);
 		}
+	}
+
+	onRoundEnd() {
+		alert(`You got ${this.tempCounter} correct in a row!`);
+		window.location.reload();
 	}
 
 	chooseRow(rowNumber) {
@@ -37,11 +45,17 @@ class Game {
 		if (this.playing) {
 			if (this.registry.isMaxGroup(rowName)) {
 				this.display.blinkRow("green", rowNumber);
-				this.nextLevel();
+				// correct answer is chosen, damage the enemy and load next round
+				this.tempCounter++;
+				this.nextRound();
 			}
 			else {
 				this.display.blinkRow("red", rowNumber);
+				// wrong answer is chosen, decrease time by 50% of start
+				this.display.fader.subtractTime(this.current.options.timeLimit / 2);
 			}
+
+
 		}
 	}
 }
@@ -61,7 +75,7 @@ class Display {
 	}
 
 	init() {
-		this.fader.stop();
+		this.fader.clear();
 		this.initBar();
 		this.initHighlights();
 		this.initArrows();
@@ -137,10 +151,12 @@ class DisplayFader {
 
 	fade(seconds, loop) {
 		if (!loop) {
-			this.stop();
+			this.clear();
+			this.init();
 			this.current.time = seconds;
 		}
 
+		// this is seconds per bar - 60 seconds and 30 bars = 2 sec each
 		var speed = seconds / this._display.barSegmentCount;
 		this.current.total = seconds;
 		this.current.speed = speed;
@@ -161,20 +177,23 @@ class DisplayFader {
 		}
 	}
 
-	addTime(seconds) {
-		if (this.current.time + seconds < this.current.total) {
-			this.current.time += seconds;
-			var barsToAdd = seconds * this.current.speed;
-			this.$barArea.append(
-				new Array(barsToAdd+1).join(
-					$("<div>").addClass("barSegment").get(0).outerHTML
-				)
-			);
+	subtractTime(seconds) {
+		if (seconds > this.current.time) {
+			this.clear();
+			this.onEnd();
+		}
+		else if (seconds > 0) {
+			this.current.time -= seconds;
+			var barsToRemove = seconds / this.current.speed;
+			this.$barArea.find(".barSegment").slice(0, barsToRemove).remove();
 		}
 	}
 
-	stop() {
-		$(this._display.barArea).find(".barSegment").stop();
+	clear() {
+		$(this.$barArea).find(".barSegment").stop().remove();
+	}
+
+	init() {
 		this._display.initBar();
 	}
 }

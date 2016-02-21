@@ -60,8 +60,8 @@ body {
 		position: relative;
 	}
 
-	&.debug .side { display: flex; }
-	&:not(.debug) .side { display: none !important; }
+	&.debug #left { display: flex; }
+	&:not(.debug) #left { visibility: hidden !important; }
 
 	#left, #right { width: calc((100vw - #{$gameAreaWidth})/2); }
 

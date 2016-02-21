@@ -1,17 +1,3 @@
-//$(function() {
-//	window.animManager = new AnimationManager("ken.png");
-//	var ken = animManager.registerCharacter("ken", {
-//		selector: ".ken",
-//		startY: 0,
-//		size: "70x80",
-//		position: {top: "50%", left: "50%"},
-//		styles: {transform: "scale(2)"}
-//	});
-//	ken.registerAnimation("idle" , {index:1, frames:4, duration:500});
-//	ken.registerAnimation("punch", {index:2, frames:3, duration:400});
-//	ken.registerAnimation("kick" , {index:4, frames:5, duration:600});
-//});
-
 $(function() {
 	window.game = new Game();
 	window.reg = game.registry;
@@ -28,6 +14,18 @@ $(function() {
 			if (keyToRow.hasOwnProperty(e.which || e.keyCode)) {
 				game.chooseRow(keyToRow[e.which || e.keyCode])
 			}
-		})
+		});
+
+		/*window.a = new AnimationManager("jane/idle.png");
+
+		a.registerCharacter("jane", {
+			selector:".jane",
+			startY:0,
+			size:"50x70",
+			position:{ top:"70%", left:"10%"},
+			styles:{transform:"scale(2)"}
+		});
+
+		a.characters["jane"].registerAnimation("idle", {index:0, frames:4, duration:1400});*/
 	})
 });

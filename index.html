@@ -51,23 +51,21 @@
 		<script src="scripts/es6-compiled/game.js"></script>
 		<script src="scripts/es6-compiled/tests.js"></script>
 		<script src="scripts/animationManager.js"></script>
-		<script src="scripts/test.js"></script>
 	</head>
 
-	<body class="debug">
+	<body>
 		<div class="side" id="left">
 			<button onclick='try { new Tile(prompt("Enter operation (eg +, sub, multiply, over):","+") + prompt("Enter value (eg 104, 10/4, 10^4):","10"), ".tileRow"+prompt("Enter row (1-3):","1")) } catch (e) { alert(e); }'>Generate Custom Tile...</button>
 			<button onclick='var d = prompt("Enter difficulty:","2"); game.registry.generateTiles(+d);'>Generate for Difficulty</button>
 			<button onclick='$("#graphicArea").toggleClass("scrolling")'>Toggle Scrolling Background</button>
 			<button type="button" onclick='var time = prompt("Enter time (s):","30"); game.display.startCountdown(+time)'>Start countdown...</button>
-			<button type="button" onclick='var d = prompt("Enter difficulty:","2"); game.startRound(+d)'>Start round with diff...</button>
-			<button class="hidden" type="button" onclick='game.display.fader.addTime(5)'>Add Time (5s)</button>
+			<button type="button" onclick='var d = prompt("Enter difficulty:","2"); game.startLevel(+d)'>Start round with diff...</button>
 			<button onclick="game.display.init(); $('.tile').remove();">Reset Display</button>
 		</div>
 		<div id="game">
 			<div id="graphicArea">
 				<img src="images/castleBackgroundTiled.jpg" class="background">
-				<div class="jane"></div>
+				<div class="hidden jane"></div>
 			</div>
 			<div id="barArea"></div>
 			<div id="tileArea">
@@ -88,8 +86,9 @@
 			</div>
 		</div>
 		<div class="side" id="right">
-			<button onclick="a.characters.jane.loopAnimation('idle');">Start Test Anim</button>
-			<button onclick="a.characters.jane.stopAnimation('idle');">Stop Test Anim</button>
+			<button type="button" onclick='game.startLevel(2)'>Play Example</button>
+			<button class="hidden" onclick="a.characters.jane.loopAnimation('idle');">Start Test Anim</button>
+			<button class="hidden" onclick="a.characters.jane.stopAnimation('idle');">Stop Test Anim</button>
 		</div>
 	</body>
 </html>
