@@ -17,6 +17,9 @@ $(function() {
 			if (!game.playing && e.which === 32) {
 				game.startLevel(2);
 			}
+			if (e.which === keyCharToCode.F4) {
+				$("body").toggleClass("easterEgg");
+			}
 		});
 
 		/*window.a = new AnimationManager("jane/idle.png");

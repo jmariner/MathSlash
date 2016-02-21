@@ -54,6 +54,12 @@ body {
 	overflow: hidden;
 	background: #444;
 
+	&.easterEgg * {
+		font-family: 'Comic Sans MS', sans-serif;
+		color: red !important;
+		text-shadow: 2px 2px 8px green;
+	}
+
 	#game, .side {
 		height: 100%;
 		@include flex(column, center, center);
@@ -120,11 +126,11 @@ body {
 					}
 					&.selected.max .highlighter { border-color: green; }
 					&.selected:not(.max) .highlighter { border-color: red; }
-					&::after {
+					/*&::after {
 						content: "=" attr(data-totalValue);
 						position: absolute;
 						right: 0;
-					}
+					}*/
 				}
 			}
 			.tile {

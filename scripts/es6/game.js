@@ -61,9 +61,6 @@ class Game { // level = each enemy, round = each collection of tiles
 					return;
 				}
 			}
-			else { // first round
-
-			}
 
 			this.display.fader.clear();
 			this.registry.generateTiles(this.current.diff);
