@@ -14,6 +14,9 @@ $(function() {
 			if (keyToRow.hasOwnProperty(e.which || e.keyCode)) {
 				game.chooseRow(keyToRow[e.which || e.keyCode])
 			}
+			if (!game.playing && e.which === 32) {
+				game.startLevel(2);
+			}
 		});
 
 		/*window.a = new AnimationManager("jane/idle.png");

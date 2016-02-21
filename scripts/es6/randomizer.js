@@ -91,7 +91,7 @@ class RandomChoice {
 	}
 
 	toTile(parentSel) {
-		return new Tile(this.valueString, parentSel);
+		return new Tile(this.valueString, parentSel, true);
 	}
 
 	get operation() {

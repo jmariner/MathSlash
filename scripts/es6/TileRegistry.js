@@ -86,7 +86,8 @@ class TileRegistry {
 		if (diff !== undefined) {
 			this.mainTile = new Tile(
 				Randomizer.getRandomTileData(diff, true).valueString,
-				this.mainParentSelector
+				this.mainParentSelector,
+				true
 			);
 		}
 
@@ -117,7 +118,6 @@ class TileRegistry {
 			group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
 		) {}
 
-
 		var shuffle = false;
 		if (shuffle) {
 			for ( // shuffle the order
@@ -142,5 +142,10 @@ class TileRegistry {
 		Utils.forEachIn((name,data) => { totals.push(data.totalValue) }, this.groups);
 		this.maxGroup = this.groups[Object.keys(this.groups)[totals.indexOf(math.max(totals))]];
 		$(this.maxGroup.parentSelector).addClass("max");
+	}
+
+	showTiles() {
+		this.mainTile.show();
+		Object.keys(this.groups).forEach(g => this.getGroup(g).tiles.forEach(t => t.show()));
 	}
 }

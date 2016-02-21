@@ -1,5 +1,5 @@
 class Tile {
-	constructor(value, parentSelector, size="100%") {
+	constructor(value, parentSelector, startHidden, size="100%") {
 
 		Utils.assert(typeof value === "string", "Invalid parameter: value" + ((value !== undefined) ? ` (${value})` : ""));
 
@@ -60,7 +60,7 @@ class Tile {
 
 			var ready = () => {
 				Utils.scaleToFit(this.$element, ".math");
-				this.show();
+				if (!startHidden) this.show();
 			};
 
 			if (!isInteger) {

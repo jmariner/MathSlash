@@ -68,13 +68,14 @@ body {
 	#game {
 		width: $gameAreaWidth;
 		height: $gameAreaHeight;
+		position: relative;
 		> div { width: 100%; }
 		#graphicArea {
 			//noinspection CssUnknownTarget
 			//background: url("../images/castleBackground4x3.jpg");
 			background-size: contain;
 			position: relative;
-			height: 70%;
+			height: $graphicAreaHeight;
 		}
 		#barArea {
 			height: 5%;
@@ -146,6 +147,22 @@ body {
 				}
 				&[data-operation="/"]::before { content: "÷"; }
 				&[data-operation="*"]::before { content: "×"; }
+			}
+		}
+		#bottomOverlay {
+			@include flex(row, center, center);
+			font-size: 50px;
+			color: white;
+			background: black;
+			position: absolute;
+			top: $graphicAreaHeight;
+			bottom: 0;
+			width: 100%;
+			&:not(.correct):not(.failed), > div {
+				display: none;
+			}
+			&.correct > div.correct, &.failed > div.failed {
+				display: inline-block;
 			}
 		}
 	}

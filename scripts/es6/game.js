@@ -11,32 +11,40 @@ class Game { // level = each enemy, round = each collection of tiles
 
 		this.playing = false;
 
-		this.display.fader.onEnd = () => { this.onRoundEnd(); }
+		this.display.fader.onEnd = () => { this.onRoundEnd(); };
 
-		//this.timeouts = {};
+		this.preRoundDelay = 3000;
+		this.timeouts = {};
 		this.tempCounter = 0;
 	}
 
-	startLevel(diff) {
+	startLevel(diff, delay) {
 		var options = this.difficultyData[diff].options;
 		this.current = {diff, options};
 		this.playing = true;
-		this.nextRound();
+		this.nextRound(delay);
  	}
 
-	nextRound() {
+	nextRound(delay) {
 		if (this.playing) {
+			this.display.fader.clear();
 			this.registry.generateTiles(this.current.diff);
-			this.display.startCountdown(this.current.options.timeLimit);
+			this.timeouts.roundDelay = setTimeout(() => {
+				Display.hideBottomOverlay();
+				this.display.startCountdown(this.current.options.timeLimit);
+				this.registry.showTiles();
+			}, delay);
 		}
 	}
 
 	onRoundEnd() {
+		Display.showBottomOverlay(false);
 		alert(`You got ${this.tempCounter} correct in a row!`);
-		window.location.reload();
+		//window.location.reload();
+		this.startLevel(2, 5000);
 	}
 
-	chooseRow(rowNumber) {
+	chooseRow(rowNumber) { // TODO cooldown after each time this is called to limit spamming?
 
 		var rowName = "row"+rowNumber;
 
@@ -47,15 +55,14 @@ class Game { // level = each enemy, round = each collection of tiles
 				this.display.blinkRow("green", rowNumber);
 				// correct answer is chosen, damage the enemy and load next round
 				this.tempCounter++;
-				this.nextRound();
+				Display.showBottomOverlay(true);
+				this.nextRound(this.preRoundDelay);
 			}
 			else {
 				this.display.blinkRow("red", rowNumber);
 				// wrong answer is chosen, decrease time by 50% of start
 				this.display.fader.subtractTime(this.current.options.timeLimit / 2);
 			}
-
-
 		}
 	}
 }
@@ -134,6 +141,14 @@ class Display {
 					{duration:250, queue:true}
 				);
 		});
+	}
+
+	static showBottomOverlay(isCorrect) {
+		$("#bottomOverlay").addClass(isCorrect ? "correct" : "failed")
+	}
+
+	static hideBottomOverlay() {
+		$("#bottomOverlay").removeClass("correct failed");
 	}
 
 	startCountdown(seconds) {
