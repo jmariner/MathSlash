@@ -21,6 +21,7 @@ class Game { // level = each enemy, round = each collection of tiles
 	startLevel(diff, delay) {
 		var options = this.difficultyData[diff].options;
 		this.current = {diff, options};
+		this.tempCounter = 0;
 		this.playing = true;
 		this.nextRound(delay);
  	}
