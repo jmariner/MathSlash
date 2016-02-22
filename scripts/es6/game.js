@@ -5,7 +5,7 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.registry.addGroup("row2", ".tileRow2");
 		this.registry.addGroup("row3", ".tileRow3");
 
-		this.display = new Display(this, this.registry, 30, {fill:"black",stroke:"white"});
+		this.display = new Display(this, this.registry, 30, 10, {fill:"black",stroke:"white"});
 
 		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
 
@@ -35,6 +35,8 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.playing = true;
 		this.player.health = this.player.baseHealth;
 		this.enemy.health = this.enemy.baseHealth;
+		this.player.damageMod = 1;
+		this.enemy.damageMod = 1;
 		this.nextRound(delay);
  	}
 
@@ -42,13 +44,10 @@ class Game { // level = each enemy, round = each collection of tiles
 		if (this.playing) {
 
 			if (correct !== undefined) { // during round
+
 				Display.showBottomOverlay(correct ? "correct" : "failed");
-				if (correct) {
-					this.enemy.health -= this.player.baseDamage;
-				}
-				else if (!correct) {
-					this.player.health -= this.enemy.baseDamage;
-				}
+				if (correct) this.damageEnemy();
+				else if (!correct) this.damagePlayer();
 
 				this.display.updateHealth();
 
@@ -101,16 +100,31 @@ class Game { // level = each enemy, round = each collection of tiles
 			}
 		}
 	}
+
+	damagePlayer() {
+		this.player.health -= (this.enemy.baseDamage * this.enemy.damageMod);
+		// do animation stuff
+	}
+
+	damageEnemy() {
+		this.enemy.health -= (this.player.baseDamage * this.player.damageMod);
+		// do animation stuff
+	}
 }
 
 class Display {
-	constructor(game, registry, barSegmentCount, arrowColors) {
+	constructor(game, registry, barSegmentCount, healthSegmentCount, arrowColors) {
 
 		this.game = game;
 		this.registry = registry;
+
 		this.barSegmentCount = barSegmentCount;
-		this.barArea = undefined;
+		this.$barArea = $("#barArea");
 		this.fader = new DisplayFader(this);
+
+		this.healthSegmentCount = healthSegmentCount;
+		this.$playerHealth = $("#playerHealth");
+		this.$enemyHealth = $("#enemyHealth");
 
 		this.arrowColors = arrowColors;
 
@@ -120,18 +134,36 @@ class Display {
 
 	init() {
 		this.fader.clear();
-		this.initBar();
+		this.initTimerBar();
+		this.initHealthbars();
 		this.initHighlights();
 		this.initArrows();
 	}
 
-	initBar() {
-		this.barArea = $("#barArea").get(0);
-		$(this.barArea).find(".barSegment").remove();
-		var eachWidth = $(this.barArea).width() / this.barSegmentCount;
+	initTimerBar() {
+		this.$barArea.find(".barSegment").remove();
+		var eachWidth = this.$barArea.width() / this.barSegmentCount;
 		for (var i=0; i < this.barSegmentCount; i++) {
-			$(this.barArea).append($("<div>").addClass("barSegment").width(eachWidth))
+			this.$barArea.append($("<div>").addClass("barSegment").width(eachWidth))
 		}
+	}
+
+	showTimerBar(no) {
+		if (no) this.$barArea.find(".barSegment")._hide();
+		else this.$barArea.find(".barSegment")._show();
+	}
+
+	initHealthbars() {
+		this.$playerHealth.add(this.$enemyHealth).find(".barSegment").remove();
+		var eachHeight = this.$playerHealth.height() / this.healthSegmentCount;
+		for (var i=0; i < this.healthSegmentCount; i++) {
+			this.$playerHealth.add(this.$enemyHealth).append($("<div>").addClass("barSegment").height(eachHeight));
+		}
+	}
+
+	showHealthbars(no) {
+		if (no) this.$playerHealth.add(this.$enemyHealth).find(".barSegment")._hide();
+		else this.$playerHealth.add(this.$enemyHealth).find(".barSegment")._show();
 	}
 
 	initHighlights() {
@@ -181,8 +213,9 @@ class Display {
 	}
 
 	updateHealth() {
-		$("#playerHealth").find("span").text(this.game.player.health);
-		$("#enemyHealth").find("span").text(this.game.enemy.health);
+		$("#_playerHealth").find("span").text(this.game.player.health);
+		$("#_enemyHealth").find("span").text(this.game.enemy.health);
+
 	}
 
 	static showBottomOverlay(type) {
@@ -252,6 +285,6 @@ class DisplayFader {
 	}
 
 	init() {
-		this._display.initBar();
+		this._display.initTimerBar();
 	}
 }

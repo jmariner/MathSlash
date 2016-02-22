@@ -69,7 +69,10 @@ body {
 	&.debug #left { display: flex; }
 	&:not(.debug) #left { visibility: hidden !important; }
 
-	#left, #right { width: calc((100vw - #{$gameAreaWidth})/2); }
+	.side {
+		width: calc((100vw - #{$gameAreaWidth})/2);
+		text-align: center;
+	}
 
 	#game {
 		width: $gameAreaWidth;
@@ -77,11 +80,26 @@ body {
 		position: relative;
 		> div { width: 100%; }
 		#graphicArea {
-			//noinspection CssUnknownTarget
-			//background: url("../images/castleBackground4x3.jpg");
 			background-size: contain;
 			position: relative;
 			height: $graphicAreaHeight;
+			border: solid 5px black;
+			.healthbar {
+				height: 50%;
+				width: 5%;
+				position: absolute;
+				top: 0;
+				@include flex(column, flex-start, center);
+				border: none 5px black;
+				border-bottom-style: solid;
+				.barSegment {
+					width: 100%;
+					background-color: #ff0000;
+					border: solid 4px #800800;
+				}
+			}
+			#playerHealth { left: 0; border-right-style: solid; }
+			#enemyHealth { right: 0; border-left-style: solid; }
 		}
 		#barArea {
 			height: 5%;
