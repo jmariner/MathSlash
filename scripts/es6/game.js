@@ -19,11 +19,13 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.timeouts = {};
 
 		this.player = {
+			sel: "#playerHealth",
 			baseHealth: 100,
 			baseDamage: 20
 		};
 
 		this.enemy = {
+			sel: "#enemyHealth",
 			baseHealth: 200,
 			baseDamage: 25
 		};
@@ -215,7 +217,20 @@ class Display {
 	updateHealth() {
 		$("#_playerHealth").find("span").text(this.game.player.health);
 		$("#_enemyHealth").find("span").text(this.game.enemy.health);
+		this._updateHealth(this.game.player);
+		this._updateHealth(this.game.enemy);
+	}
 
+	_updateHealth(data) {
+		var $el = $(data.sel);
+		var healthPerSegment = data.baseHealth / this.healthSegmentCount;
+		var fullSegments = Math.floor(data.health / healthPerSegment);
+		var fadeLast = data.health % healthPerSegment !== 0;
+		$el.find(".barSegment").slice(fullSegments+fadeLast).remove();
+		if (fadeLast) {
+			var opacity = (data.health % healthPerSegment) / healthPerSegment;
+			$el.find(".barSegment").last().css("opacity", opacity);
+		}
 	}
 
 	static showBottomOverlay(type) {
