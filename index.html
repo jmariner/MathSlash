@@ -60,6 +60,8 @@
 			<button onclick='$("#graphicArea").toggleClass("scrolling")'>Toggle Scrolling Background</button>
 			<button onclick='var time = prompt("Enter time (s):","30"); game.display.startCountdown(+time)'>Start countdown...</button>
 			<button onclick='var d = prompt("Enter difficulty:","2"); game.startLevel(+d)'>Start round with diff...</button>
+			<button onclick='game.onCorrect()'>Force "Correct"</button>
+			<button onclick='game.onTimeOut()'>Force "Out of Time"</button>
 			<button onclick="game.display.init(); $('.tile').remove();">Reset Display</button>
 			<div id="_playerHealth">Player Health: <span></span></div>
 			<div id="_enemyHealth">Boss Health: <span></span></div>

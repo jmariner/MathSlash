@@ -39,11 +39,12 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.enemy.health = this.enemy.baseHealth;
 		this.player.damageMod = 1;
 		this.enemy.damageMod = 1;
-		this.nextRound(delay);
+		this.nextRound(delay, undefined, true);
  	}
 
-	nextRound(delay, correct) {
-		if (this.playing) {
+	nextRound(delay, correct, firstRound) {
+		if (firstRound) this.waiting = false;
+		if (this.playing && !this.waiting) {
 
 			if (correct !== undefined) { // during round
 
@@ -62,7 +63,6 @@ class Game { // level = each enemy, round = each collection of tiles
 					return;
 				}
 			}
-
 			this.display.fader.clear();
 			this.registry.generateTiles(this.current.diff);
 			this.waiting = true;
@@ -70,14 +70,11 @@ class Game { // level = each enemy, round = each collection of tiles
 				this.waiting = false;
 				Display.hideBottomOverlay();
 				if (correct === undefined) this.display.updateHealth();
+				if (firstRound)	this.display.initHealthbars();
 				this.display.startCountdown(this.current.options.timeLimit);
 				this.registry.showTiles();
 			}, delay);
 		}
-	}
-
-	onTimeOut() {
-		this.nextRound(this.preRoundDelay, false);
 	}
 
 	onLevelOver(playerWon) {
@@ -92,15 +89,22 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.display.blinkArrow("lightgray", rowNumber);
 
 		if (this.playing && !this.waiting) {
-			if (this.registry.isMaxGroup(rowName)) {
-				// correct answer is chosen, damage the enemy and load next round
-				this.nextRound(this.preRoundDelay, true);
-			}
-			else {
-				// wrong answer is chosen, decrease time by 50% of start
-				this.display.fader.subtractTime(this.current.options.timeLimit / 2);
-			}
+			if (this.registry.isMaxGroup(rowName)) this.onCorrect();
+			else this.onWrong();
 		}
+
+	}
+
+	onTimeOut() {
+		this.nextRound(this.preRoundDelay, false);
+	}
+
+	onCorrect() { // correct answer is chosen, damage the enemy and load next round
+		this.nextRound(this.preRoundDelay, true);
+	}
+
+	onWrong() { // wrong answer is chosen, decrease time by this.current.options.wrongPenalty of start
+		this.display.fader.subtractTime(this.current.options.timeLimit * this.current.options.wrongPenalty);
 	}
 
 	damagePlayer() {

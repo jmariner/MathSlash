@@ -25,7 +25,8 @@ var DIFFICULTY_DATA = [null,
 //----------------------DIFFICULTY 2-----------------------------
 	{
 		options: {
-			timeLimit: 20 //seconds
+			timeLimit: 20, //seconds
+			wrongPenalty: 0.75 // ratio of initial time to remove on wrong answer
 		},
 		main: [
 			{
