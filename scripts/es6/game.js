@@ -1,6 +1,6 @@
 class Game { // level = each enemy, round = each collection of tiles
 	constructor() {
-		this.registry = new TileRegistry(".bigTileArea");
+		this.registry = new TileRegistry();
 		this.registry.addGroup("row1", ".tileRow1");
 		this.registry.addGroup("row2", ".tileRow2");
 		this.registry.addGroup("row3", ".tileRow3");
@@ -32,6 +32,7 @@ class Game { // level = each enemy, round = each collection of tiles
 	}
 
 	startLevel(diff, delay) {
+		if (diff > 3) throw "Difficulties > 3 are not supported";
 		var options = this.difficultyData[diff].options;
 		this.current = {diff, options};
 		this.playing = true;

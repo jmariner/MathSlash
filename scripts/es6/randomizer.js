@@ -30,13 +30,15 @@ class Randomizer {
 		return ret;
 	}
 
-	static genSingleChoiceTile(diff, group, mainNumber) {
+	static genSingleChoiceTile(diff/*, group, mainNumber*/) {
 
-		mainNumber = +mainNumber;
-
+		//noinspection UnnecessaryLocalVariableJS
 		var choice = Randomizer.getRandomTileData(diff);
 
-		var reRoll = () => Randomizer.getRandomTileData(diff);
+		/* Retry conditions have been disabled until more work is done
+		 mainNumber = +mainNumber;
+
+		 var reRoll = () => Randomizer.getRandomTileData(diff);
 
 		var count = function(id) {
 			let count = 0;
@@ -59,7 +61,7 @@ class Randomizer {
 		}
 		while (choice.retryCondition !== undefined && Utils.compare(choice.retryCondition, scope()) ) {
 			choice.randomize();
-		}
+		}*/
 		return choice;
 	}
 

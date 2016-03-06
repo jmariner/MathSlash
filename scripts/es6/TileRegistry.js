@@ -1,10 +1,17 @@
 class TileRegistry {
 
 	constructor(mainParentSelector, choiceTileCount=4) {
-		Utils.assert($(mainParentSelector).length > 0, "Invalid parameter: parentSelector" + ((mainParentSelector !== undefined) ? ` (${mainParentSelector})` : ""));
-		Utils.assert($(mainParentSelector).length === 1, `Invalid parentSelector (too many matches): ${mainParentSelector}`);
 
-		this.mainParentSelector = mainParentSelector;
+		if (mainParentSelector !== undefined) {
+			Utils.assert($(mainParentSelector).length > 0, "Invalid parameter: parentSelector" + ((mainParentSelector !== undefined) ? ` (${mainParentSelector})` : ""));
+			Utils.assert($(mainParentSelector).length === 1, `Invalid parentSelector (too many matches): ${mainParentSelector}`);
+			this.mainParentSelector = mainParentSelector;
+		}
+		else {
+			this.mainParentSelector = "";
+			$("body").addClass("noMainTile");
+		}
+
 		this.choiceTileCount = choiceTileCount;
 
 		this.mainTile = undefined;
@@ -35,22 +42,23 @@ class TileRegistry {
 				// TODO where should the parenthesis be placed?
 				// should PEMDAS be used or should each operation effect the previous total?
 
-				var mathString = [
+				var mathString = "";
 
-				// leave it to PEMDAS. ex: "7 * (11) + (49) / (39) + (23)"
-					registry.mainTile.value + " " + (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`).join(" "),
+				if (registry.mainParentSelector !== "") {
+					// leave it to PEMDAS. ex: "7 * (11) + (49) / (39) + (23)"
+					mathString = registry.mainTile.value + " " + (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`).join(" ");
 
-				// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) / 39) + 23 )"
-					new Array(registry.choiceTileCount+1).join("( ") + registry.mainTile.value + " " +
-						(this.choices || this.tiles).map(c => `${c.operation} ${c.value} )`).join(" ")
+					// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) / 39) + 23 )"
+					//var mathString = new Array(registry.choiceTileCount + 1).join("( ") + registry.mainTile.value + " " +
+					//	(this.choices || this.tiles).map(c => `${c.operation} ${c.value} )`).join(" ");
+				}
+				else {
+					mathString = (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`).join(" ");
+				}
 
-				];
+				var answer = math.eval(mathString);
 
-				var choice = 0;
-
-				var answer = math.eval(mathString[choice]);
-
-				$(this.parentSelector).attr("title", mathString[choice]+" = "+answer);
+				$(this.parentSelector).attr("title", mathString + " = " + answer);
 
 				return answer;
 			}
@@ -90,7 +98,6 @@ class TileRegistry {
 				true
 			);
 		}
-
 	}
 
 	_genChoiceTiles(groupName, diff, mainNumber) {
@@ -102,10 +109,10 @@ class TileRegistry {
 			return;
 		}
 
-		Utils.assert(mainNumber !== undefined,
-			"_genChoiceTiles(...) must be called after main number is generated");
-		Utils.assert(typeof mainNumber === "string" || typeof mainNumber === "number",
-			`Invalid mainNumber: ${mainNumber}`);
+		if (mainNumber !== undefined) {
+			Utils.assert(typeof mainNumber === "string" || typeof mainNumber === "number",
+				`Invalid mainNumber: ${mainNumber}`);
+		}
 
 
 		var group = this.groups[groupName];
@@ -135,8 +142,13 @@ class TileRegistry {
 	generateTiles(diff) {
 		$(".max").removeClass("max");
 
-		this._genMainTile(diff);
-		Object.keys(this.groups).forEach(g => this._genChoiceTiles(g, diff, this.mainTile.value));
+		if (this.mainParentSelector !== "") {
+			this._genMainTile(diff);
+			Object.keys(this.groups).forEach(g => this._genChoiceTiles(g, diff, this.mainTile.value));
+		}
+		else {
+			Object.keys(this.groups).forEach(g => this._genChoiceTiles(g, diff));
+		}
 
 		var totals = [];
 		Utils.forEachIn((name,data) => { totals.push(data.totalValue) }, this.groups);
@@ -145,7 +157,7 @@ class TileRegistry {
 	}
 
 	showTiles() {
-		this.mainTile.show();
+		if (this.mainParentSelector !== "") this.mainTile.show();
 		Object.keys(this.groups).forEach(g => this.getGroup(g).tiles.forEach(t => t.show()));
 	}
 }

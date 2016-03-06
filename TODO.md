@@ -12,6 +12,7 @@
 - streaks like in OSU with popups saying "good!" "great!" "mathematical!" "UNREAL" "IRRATIONAL!!"
 - trig mode with unit circle relationships
 - **couple second delay after each round ends, during which tiles are loaded hidden. this will require changes to tile.js since new Tile(...) adds it on the spot**
+- **support for different modes and if they need the main tile**
 
 # Ideas
 

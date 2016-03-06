@@ -60,6 +60,15 @@ body {
 		text-shadow: 2px 2px 8px green;
 	}
 
+	&.noMainTile {
+		#leftArea {
+			display: none !important;
+		}
+		#rightArea {
+			width: 80% !important;
+		}
+	}
+
 	#game, .side {
 		height: 100%;
 		@include flex(column, center, center);
