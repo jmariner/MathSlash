@@ -22,16 +22,16 @@ $(function() {
 			}
 		});
 
-		/*window.a = new AnimationManager("jane/idle.png");
+		window.a = new AnimationManager("jane/idle.png");
 
 		a.registerCharacter("jane", {
 			selector:".jane",
 			startY:0,
 			size:"50x70",
-			position:{ top:"70%", left:"10%"},
-			styles:{transform:"scale(2)"}
+			position:{ bottom:"25%", left:"15%"},
+			styles:{transform:"scale(4)"}
 		});
 
-		a.characters["jane"].registerAnimation("idle", {index:0, frames:4, duration:1400});*/
+		a.characters["jane"].registerAnimation("idle", {index:0, frames:4, duration:1400});
 	})
 });

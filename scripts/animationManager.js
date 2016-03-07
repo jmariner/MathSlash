@@ -76,6 +76,14 @@ AnimationManager.Character.prototype.loopAnimation = function(name, loopDuration
 		this.animations[name].loop(loopDuration);
 };
 
+AnimationManager.Character.prototype.toggleLoopAnimation = function(name) {
+	if (name) {
+		var anim = this.animations[name];
+		if (anim.isStopped()) anim.loop();
+		else if (anim.isLooping()) anim.stop();
+	}
+};
+
 AnimationManager.Character.prototype.stopAnimation = function() {
 	if (this._currentAnimation) {
 		this._currentAnimation.stop();

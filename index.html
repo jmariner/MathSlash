@@ -72,7 +72,7 @@
 				<img src="images/backgroundTiled.jpg" class="background">
 				<div class="healthbar" id="playerHealth"></div>
 				<div class="healthbar" id="enemyHealth"></div>
-				<div class="hidden jane"></div>
+				<div class="jane"></div>
 			</div>
 			<div id="barArea"></div>
 			<div id="tileArea">
@@ -100,6 +100,7 @@
 		</div>
 		<div class="side" id="right">
 			<button onclick='game.startLevel(2)'>Play Example</button>
+			<button onclick='a.characters.jane.toggleLoopAnimation("idle");'>Animate Character</button>
 			<button class="hidden" onclick="a.characters.jane.loopAnimation('idle');">Start Test Anim</button>
 			<button class="hidden" onclick="a.characters.jane.stopAnimation('idle');">Stop Test Anim</button>
 
