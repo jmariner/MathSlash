@@ -9,29 +9,27 @@ $(function() {
 
 	var keyToRow = {[keyCharToCode.Up]: 1, [keyCharToCode.Right]: 2, [keyCharToCode.Down]: 3};
 
-	$(function() {
-		$(document).keydown(function(e) {
-			if (keyToRow.hasOwnProperty(e.which || e.keyCode)) {
-				game.chooseRow(keyToRow[e.which || e.keyCode])
-			}
-			if (!game.playing && e.which === 32) {
-				game.startLevel(2);
-			}
-			if (e.which === keyCharToCode.F4) {
-				$("body").toggleClass("easterEgg");
-			}
-		});
+	$(document).keydown(function(e) {
+		if (keyToRow.hasOwnProperty(e.which || e.keyCode)) {
+			game.chooseRow(keyToRow[e.which || e.keyCode])
+		}
+		if (!game.playing && e.which === 32) {
+			game.startLevel(2);
+		}
+		if (e.which === keyCharToCode.F4) {
+			$("body").toggleClass("easterEgg");
+		}
+	});
 
-		window.a = new AnimationManager("jane/idle.png");
+	window.a = new AnimationManager("jane/idle.png");
 
-		a.registerCharacter("jane", {
-			selector:".jane",
-			startY:0,
-			size:"50x70",
-			position:{ bottom:"25%", left:"15%"},
-			styles:{transform:"scale(4)"}
-		});
+	a.registerCharacter("jane", {
+		selector:".jane",
+		startY:0,
+		size:"50x70",
+		position:{ bottom:"25%", left:"15%"},
+		styles:{transform:"scale(4)"}
+	});
 
-		a.characters["jane"].registerAnimation("idle", {index:0, frames:4, duration:1400});
-	})
+	a.characters["jane"].registerAnimation("idle", {index:0, frames:4, duration:1400});
 });

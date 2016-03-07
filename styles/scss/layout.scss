@@ -75,8 +75,9 @@ body {
 		position: relative;
 	}
 
-	&.debug #left { display: flex; }
-	&:not(.debug) #left { visibility: hidden !important; }
+	//&.debug .debugOnly { display: flex; }
+	&:not(.debug) .debugOnlyHidden { visibility: hidden !important; }
+	&:not(.debug) .debugOnly { display: none !important; }
 
 	.side {
 		width: calc((100vw - #{$gameAreaWidth})/2);
