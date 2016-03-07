@@ -94,6 +94,9 @@ body {
 			position: relative;
 			height: $graphicAreaHeight;
 			border: solid 5px black;
+			.pixelArt {
+				image-rendering: pixelated;
+			}
 			.healthbar {
 				height: 50%;
 				width: 5%;
