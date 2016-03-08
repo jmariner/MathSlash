@@ -27,8 +27,8 @@ $(function() {
 		selector:".jane",
 		startY:0,
 		size:"50x70",
-		position:{ bottom:"25%", left:"15%"},
-		styles:{transform:"scale(4)"}
+		position:{ bottom:"12.5%", left:"7.5%"},
+		styles:{transform:"scale(2)"}
 	});
 
 	a.characters["jane"].registerAnimation("idle", {index:0, frames:4, duration:1400});
