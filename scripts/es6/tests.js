@@ -32,4 +32,15 @@ $(function() {
 	});
 
 	a.characters["jane"].registerAnimation("idle", {index:0, frames:4, duration:1400});
+
+
+	$(".knight").css({
+		"background-image": 'url("images/knight.png")',
+		right: "15%",
+		bottom: "25%",
+		transform: "scale(-4, 4)",
+		width: "40px",
+		height: "60px",
+		position: "absolute"
+	})
 });
