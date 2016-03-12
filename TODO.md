@@ -1,7 +1,7 @@
 # TODO
 
 - ~~need to work on parsing other difficulty data (fractions, exponents/powers, iif maintile is something)~~
-- difficulty stuff needs a total rework. see comments in [the file](/scripts/es6/difficulty.js) for more info
+- difficulty stuff needs a total rework. see comments in [the file](http://git.jmariner.com/mathslash/blob/master/scripts/es6/difficulty.js) for more info
 - ~~delay /~~ preload tiles that use mathjax to skip the parsing
 - leaderboards in localStorage + maybe some leaderboard server (NODEjs, PHP?)
 - TUTORIAL on seperate page
