@@ -49,16 +49,20 @@ body {
 	}
 
 	.side {
+		color: white;
 		height: 100%;
 		@include flex(column, center, center);
 		position: relative;
 		* {
 			font-size: 1.5rem;
 		}
-		button, form {
+		button, form, div {
 			min-width: 50%;
 			margin: .5em 0;
 			display: inline-block;
+		}
+		div {
+			line-height: 1.2em;
 		}
 		form {
 			@include flex(column, center, center);
