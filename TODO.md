@@ -3,8 +3,8 @@
 - ~~delay /~~ preload tiles that use mathjax to skip the parsing
 - leaderboards in localStorage + maybe some leaderboard server (NODEjs, PHP?)
 - TUTORIAL on seperate page
-- use same image for tile area and bar area (no seperation between them)
-- definitely will need a cooldown to prevent spamming random arrows
+- ~~use same image for tile area and bar area (no seperation between them)~~
+- ~~definitely will need a cooldown to prevent spamming random arrows~~
 - **warning message if in IE (or maybe firefox, depends on if we test on it or not)**
 - lower int limits overall
 - streaks like in OSU with popups saying "good!" "great!" "mathematical!" "UNREAL" "IRRATIONAL!!"

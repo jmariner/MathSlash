@@ -11,27 +11,6 @@ $graphicAreaWidth: 100%;
 $gameAreaWidth: (4/3) * $graphicAreaHeight;
 $gameAreaHeight: 100vh;
 
-.side * {
-	font-size: 1.5rem;
-}
-
-.side button, .side form {
-	min-width: 50%;
-	margin: .5em 0;
-	display: inline-block;
-}
-
-.side form {
-	@include flex(column, center, center);
-}
-
-.side input[type='number'] {
-	font-size: 1.5rem;
-	margin: 0 .5em;
-	display: inline;
-	text-align: center;
-}
-
 * {
 	padding: 0;
 	margin: 0;
@@ -41,7 +20,7 @@ $gameAreaHeight: 100vh;
 }
 body {
 	font: {
-		family: 'Roboto', 'Helvetica', sans-serif;
+		family: 'Press Start 2P', 'Helvetica', sans-serif;
 		size: 16px;
 	}
 	margin: 0;
@@ -69,10 +48,28 @@ body {
 		}
 	}
 
-	#game, .side {
+	.side {
 		height: 100%;
 		@include flex(column, center, center);
 		position: relative;
+		* {
+			font-size: 1.5rem;
+		}
+		button, form {
+			min-width: 50%;
+			margin: .5em 0;
+			display: inline-block;
+		}
+		form {
+			@include flex(column, center, center);
+		}
+		input[type='number'] {
+			font-size: 1.5rem;
+			margin: 0 .5em;
+			display: inline;
+			text-align: center;
+		}
+
 	}
 
 	//&.debug .debugOnly { display: flex; }
@@ -88,12 +85,13 @@ body {
 		width: $gameAreaWidth;
 		height: $gameAreaHeight;
 		position: relative;
+		border: solid 5px black;
+		@include flex(column, center, center);
 		> div { width: 100%; }
 		#graphicArea {
 			background-size: contain;
 			position: relative;
 			height: $graphicAreaHeight;
-			border: solid 5px black;
 			.pixelArt {
 				image-rendering: pixelated;
 			}
@@ -114,86 +112,93 @@ body {
 			#playerHealth { left: 0; border-right-style: solid; }
 			#enemyHealth { right: 0; border-left-style: solid; }
 		}
-		#barArea {
-			height: 5%;
-			background: black;
-			padding: 4px 0;
-			@include flex(row, flex-start, center);
-			.barSegment {
-				height: 100%;
-				background-color: #21ff00;
-				border: solid 4px green;
-			}
-		}
-		#tileArea { // TODO AR here is 1:3.74
-			background: black;
-			height: 25%;
-			@include flex(row, space-around, center);
-			#leftArea {
-				width: 28%;
-				height: 100%;
-				@include flex(column, center, center);
-				.bigTileArea {
-					height: 95%;
-					width: 95%;
-				}
-			} // TODO background for tile area and bar area same image
-			#rightArea {
-				width: 71%;
-				height: 100%;
-				@include flex(column, space-around, flex-start);
-				.row {
-					position: relative;
-					height: 31%;
-					width: 100%;
-					@include flex(row, flex-start, center);
-					> img, > div { margin-right: 32px; }
-					.arrow { height: 100%; }
-					.highlighter {
-						margin: 0;
-						position:  absolute;
-						top: -5px; left: -5px; right: 0; bottom: -5px;
-						border: solid 5px transparent;
-					}
-					&.selected.max .highlighter { border-color: green; }
-					&.selected:not(.max) .highlighter { border-color: red; }
-					/*&::after {
-						content: "=" attr(data-totalValue);
-						position: absolute;
-						right: 0;
-					}*/
-				}
-			}
-			.tile {
-				color: white;
-				position: relative;
-				background: gray;
-				@include flex(column, center, center);
-				&.text { text-align: center; }
-				&:last-child { margin-right: 0; }
-				&[data-operation]::before {
-					content: attr(data-operation);
-					position: absolute;
-					right: 100%;
-					bottom: 0;
+		#bottomArea {
+			height: 30%;
+			background: rgb(0, 0, 40);
+			position: relative;
+			@include flex(column, center, center);
+			> div { width: 100%; }
+			#barArea {
+				height: 16.5%;
+				padding: 4px 0;
+				@include flex(row, flex-start, center);
+				.barSegment {
 					height: 100%;
-					width: 50%;
-					text-align: center;
-					vertical-align: middle;
-					@include flex(column, center, center);
-					font-size: 32px;
+					background-color: #21ff00;
+					border: solid 4px green;
 				}
-				&[data-operation="/"]::before { content: "÷"; }
-				&[data-operation="*"]::before { content: "×"; }
+			}
+			#tileArea { // TODO AR here is 1:3.74
+				height: 83.5%;
+				@include flex(row, space-around, center);
+				#leftArea {
+					width: 28%;
+					height: 100%;
+					@include flex(column, center, center);
+					.bigTileArea {
+						height: 95%;
+						width: 95%;
+					}
+				} // TODO background for tile area and bar area same image
+				#rightArea {
+					width: 71%;
+					height: 100%;
+					@include flex(column, space-around, flex-start);
+					.row {
+						position: relative;
+						height: 31%;
+						width: 100%;
+						@include flex(row, flex-start, center);
+						> img, > div { margin-right: 32px; }
+						.arrow { height: 100%; }
+						.highlighter {
+							margin: 0;
+							position:  absolute;
+							top: -5px; left: -5px; right: 0; bottom: -5px;
+							border: solid 5px transparent;
+						}
+						&.selected.max .highlighter { border-color: green; }
+						&.selected:not(.max) .highlighter { border-color: red; }
+						/*&::after {
+							content: "=" attr(data-totalValue);
+							position: absolute;
+							right: 0;
+						}*/
+					}
+				}
+				.tile {
+					font-family: 'MathJax_Main', sans-serif;
+					color: white;
+					position: relative;
+					background: gray;
+					@include flex(column, center, center);
+					&.text { text-align: center; }
+					&:last-child { margin-right: 0; }
+					&[data-operation]::before {
+						content: attr(data-operation);
+						position: absolute;
+						right: 100%;
+						bottom: 0;
+						height: 100%;
+						width: 50%;
+						text-align: center;
+						vertical-align: middle;
+						@include flex(column, center, center);
+						font-size: 32px;
+					}
+					.math > span:last-child { border-left-style: none !important; }
+					&[data-operation="/"]::before { content: "÷"; }
+					&[data-operation="*"]::before { content: "×"; }
+				}
 			}
 		}
 		#bottomOverlay {
 			@include flex(row, center, center);
-			font-size: 50px;
+			font-size: 45px;
 			color: white;
 			background: black;
 			position: absolute;
-			top: $graphicAreaHeight;
+			top: 0;
 			bottom: 0;
 			width: 100%;
 			> div {

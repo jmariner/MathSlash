@@ -18,6 +18,8 @@ class Game { // level = each enemy, round = each collection of tiles
 
 		this.preRoundDelay = 1000;
 		this.afterLevelDelay = 5000;
+		this.keypressTimeout = 500; //ms
+		this.blockInput = false;
 		this.timeouts = {};
 
 		this.player = {
@@ -80,9 +82,20 @@ class Game { // level = each enemy, round = each collection of tiles
 		}
 	}
 
-	onLevelOver(playerWon) {
-		Display.showBottomOverlay(playerWon ? "win" : "lose");
-		this.startLevel(this.current.diff, this.afterLevelDelay);
+	onKeyDown(keyCode) {
+		var keyToRow = {38:1, 39:2, 40:3}; // up, right, down, respectively
+
+		if (keyCode === 32) // space
+			this.startLevel(2);
+
+		else if (keyToRow[keyCode] && !this.blockInput) { // up/down/right
+			this.chooseRow(keyToRow[keyCode]);
+			this.blockInput = true;
+			clearTimeout(this.timeouts.keypressCooldown);
+			this.timeouts.keypressCooldown = setTimeout(
+				() => { this.blockInput = false; },
+				this.keypressTimeout);
+		}
 	}
 
 	chooseRow(rowNumber) {
@@ -96,6 +109,11 @@ class Game { // level = each enemy, round = each collection of tiles
 			else this.onWrong();
 		}
 
+	}
+
+	onLevelOver(playerWon) {
+		Display.showBottomOverlay(playerWon ? "win" : "lose");
+		this.startLevel(this.current.diff, this.afterLevelDelay);
 	}
 
 	onTimeOut() {
@@ -195,28 +213,30 @@ class Display {
 	}
 
 	blinkArrow(color, ...rowNumbers) {
+		var dur = this.game.keypressTimeout/2;
 		rowNumbers.forEach(rowNumber => {
 			$(this.registry.getGroupEl("row"+rowNumber))
 				.find(".arrow").find("polyline")
 				.animate(
-				{svgFill: color},
-				{duration:250, queue:true}
-			).animate(
-				{svgFill: this.arrowColors.fill},
-				{duration:250, queue:true}
-			);
+					{svgFill: color},
+					{duration:dur, queue:true}
+				).animate(
+					{svgFill: this.arrowColors.fill},
+					{duration:dur, queue:true}
+				);
 		});
 	}
 
 	blinkRow(color, ...rowNumbers) {
+		var dur = this.game.keypressTimeout/2;
 		rowNumbers.forEach(rowNumber => {
 			$(this.registry.getGroupEl("row"+rowNumber)).find(".highlighter")
 				.animate(
 					{borderColor:color},
-					{duration:250, queue:true}
+					{duration:dur, queue:true}
 				).animate(
 					{borderColor:"transparent"},
-					{duration:250, queue:true}
+					{duration:dur, queue:true}
 				);
 		});
 	}

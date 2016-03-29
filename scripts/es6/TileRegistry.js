@@ -30,7 +30,7 @@ class TileRegistry {
 			},
 			get totalValue() {
 				if (!isMainGroup && registry.gameMode === GAME_MODES.GREATEST_SUM) {
-					var numbers = (this.choices || this.tiles).map(c => c.value);
+					var numbers = (/*this.choices || */this.tiles).map(c => c.computedValue);
 
 					var answer = math.sum(numbers);
 
@@ -90,6 +90,7 @@ class TileRegistry {
 				// generate the mail tile value
 			}
 			else if (modeOptions.mainTileText !== undefined) {
+				if (this.mainGroup.tiles.length > 0) this.mainGroup.tiles[0].remove();
 				this.mainGroup.tiles = [new StringTile(modeOptions.mainTileText)];
 			}
 		}
