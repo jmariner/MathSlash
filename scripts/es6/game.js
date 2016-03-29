@@ -1,13 +1,15 @@
 class Game { // level = each enemy, round = each collection of tiles
-	constructor() {
-		this.registry = new TileRegistry();
+	constructor(gameMode) {
+		this.gameMode = gameMode;
+		this.registry = new TileRegistry(gameMode);
 		this.registry.addGroup("row1", ".tileRow1");
 		this.registry.addGroup("row2", ".tileRow2");
 		this.registry.addGroup("row3", ".tileRow3");
+		this.registry.addMainGroup("main", ".bigTileArea");
 
 		this.display = new Display(this, this.registry, 30, 10, {fill:"black",stroke:"white"});
 
-		this.difficultyData = $.extend(true, [], DIFFICULTY_DATA);
+		this.difficultyData = $.extend(true, [], GAME_DATA[this.gameMode]);
 
 		this.playing = false;
 		this.waiting = true;

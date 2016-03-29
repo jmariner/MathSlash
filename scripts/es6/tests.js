@@ -1,5 +1,5 @@
 $(function() {
-	window.game = new Game();
+	window.game = new Game(GAME_MODES.GREATEST_SUM);
 	window.reg = game.registry;
 
 	//from http://stackoverflow.com/a/12476699

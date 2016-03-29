@@ -169,6 +169,7 @@ body {
 				position: relative;
 				background: gray;
 				@include flex(column, center, center);
+				&.text { text-align: center; }
 				&:last-child { margin-right: 0; }
 				&[data-operation]::before {
 					content: attr(data-operation);

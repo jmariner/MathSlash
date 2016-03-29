@@ -1,36 +1,26 @@
 class TileRegistry {
 
-	constructor(mainParentSelector, choiceTileCount=4) {
-
-		if (mainParentSelector !== undefined) {
-			Utils.assert($(mainParentSelector).length > 0, "Invalid parameter: parentSelector" + ((mainParentSelector !== undefined) ? ` (${mainParentSelector})` : ""));
-			Utils.assert($(mainParentSelector).length === 1, `Invalid parentSelector (too many matches): ${mainParentSelector}`);
-			this.mainParentSelector = mainParentSelector;
-		}
-		else {
-			this.mainParentSelector = "";
-			$("body").addClass("noMainTile");
-		}
+	constructor(gameMode, choiceTileCount=4) {
 
 		this.choiceTileCount = choiceTileCount;
 
-		this.mainTile = undefined;
+		this.gameMode = gameMode;
 		this.groups = {};
 
 		this.maxGroup = undefined;
+		this.mainGroup = undefined; // main tile will go here when needed
+		this.hasMainTile = false;
+
 	}
 
-	_initGroup(name, parentSelector=this.groups[name].parentSelector) {
-		Utils.assert(typeof name === "string" && name.length > 0, `Invalid parameter: name ${name === undefined ? "" : name}`);
-
-		Utils.assert($(parentSelector).length > 0, "Invalid parameter: parentSelector" + ((parentSelector !== undefined) ? ` (${parentSelector})` : ""));
-		Utils.assert($(parentSelector).length === 1, `Invalid parentSelector (too many matches): ${parentSelector}`);
+	_initGroup(name, parentSelector=this.groups[name].parentSelector, isMainGroup=false) {
 
 		$(parentSelector).find(".tile").remove();
 
 		let registry = this;
 
 		this.groups[name] = {
+			isMainGroup,
 			registry,
 			name,
 			parentSelector,
@@ -39,34 +29,34 @@ class TileRegistry {
 				return registry.maxGroup.name === this.name;
 			},
 			get totalValue() {
-				// TODO where should the parenthesis be placed?
-				// should PEMDAS be used or should each operation effect the previous total?
+				if (!isMainGroup && registry.gameMode === GAME_MODES.GREATEST_SUM) {
+					var numbers = (this.choices || this.tiles).map(c => c.value);
 
-				var mathString = "";
+					var answer = math.sum(numbers);
 
-				if (registry.mainParentSelector !== "") {
-					// leave it to PEMDAS. ex: "7 * (11) + (49) / (39) + (23)"
-					mathString = registry.mainTile.value + " " + (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`).join(" ");
+					$(this.parentSelector).attr("title", numbers.join(" + ") + " = " + answer);
 
-					// OR build on previous total. ex: "( ( ( ( 7 * 11 ) + 49 ) / 39) + 23 )"
-					//var mathString = new Array(registry.choiceTileCount + 1).join("( ") + registry.mainTile.value + " " +
-					//	(this.choices || this.tiles).map(c => `${c.operation} ${c.value} )`).join(" ");
+					return answer;
 				}
-				else {
-					mathString = (this.choices || this.tiles).map(c => `${c.operation} (${c.value})`).join(" ");
-				}
-
-				var answer = math.eval(mathString);
-
-				$(this.parentSelector).attr("title", mathString + " = " + answer);
-
-				return answer;
+				else return NaN;
 			}
 		};
+
+		if (isMainGroup) this.mainGroup = this.groups[name];
 	}
 
 	addGroup(name, parentSelector) {
 		this._initGroup(name, parentSelector);
+	}
+
+	addMainGroup(name, parentSelector) {
+		if (this.mainGroup === undefined)
+			this._initGroup(name, parentSelector, true);
+		else throw "Main group already exists!";
+	}
+
+	get mainTile() {
+		return this.mainGroup.tiles[0];
 	}
 
 	getGroup(name) {
@@ -85,70 +75,46 @@ class TileRegistry {
 		this._initGroup(name);
 	}
 
-	_genMainTile(diff) {
-		if (this.mainTile !== undefined) {
-			this.mainTile.remove();
-			this.mainTile = undefined;
-		}
-
-		if (diff !== undefined) {
-			this.mainTile = new Tile(
-				Randomizer.getRandomTileData(diff, true).valueString,
-				this.mainParentSelector,
-				true
-			);
-		}
-	}
-
-	_genChoiceTiles(groupName, diff, mainNumber) {
-		Utils.assert(typeof groupName === "string" && this.groups[groupName] !== undefined,
-			`Invalid group: ${groupName}`);
+	_genTiles(groupName, diff) {
 
 		if (diff === undefined) {
 			this.clearGroup(groupName);
 			return;
 		}
 
-		if (mainNumber !== undefined) {
-			Utils.assert(typeof mainNumber === "string" || typeof mainNumber === "number",
-				`Invalid mainNumber: ${mainNumber}`);
-		}
-
-
 		var group = this.groups[groupName];
 
-		group.tiles.forEach(t => t.remove());
-		group.tiles = [];
+		if (group.isMainGroup) {
+			var modeOptions = GAME_DATA[this.gameMode][0];
+			if (modeOptions.usesMainTile) {
+				// generate the mail tile value
+			}
+			else if (modeOptions.mainTileText !== undefined) {
+				this.mainGroup.tiles = [new StringTile(modeOptions.mainTileText)];
+			}
+		}
+		else {
+			group.tiles.forEach(t => t.remove());
+			group.tiles = [];
 
-		for( // generate the tiles
-			group.choices = [];
-			group.choices.push(Randomizer.genSingleChoiceTile(diff, group, mainNumber)) < this.choiceTileCount;
-		) {}
-
-		var shuffle = false;
-		if (shuffle) {
-			for ( // shuffle the order
-				let a = group.choices, rand, i = a.length;
-				i > 0;
-				rand = Randomizer.rand(0, --i), [a[i], a[rand]] = [a[rand], a[i]]
+			for ( // generate the tiles
+				group.choices = [];
+				group.choices.push(Randomizer.genSingleChoiceTile(this.gameMode, diff)) < this.choiceTileCount;
 			) {}
+
+			group.tiles = group.choices.map(c => c.toTile());
 		}
 
-		group.tiles = group.choices.map(c => c.toTile(group.parentSelector));
+		group.tiles.forEach(t => t.addToPage(group.parentSelector, true));
 
-		$(group.parentSelector).attr("data-totalValue", group.totalValue);
+		if (group.totalValue)
+			$(group.parentSelector).attr("data-totalValue", group.totalValue);
 	}
 
 	generateTiles(diff) {
 		$(".max").removeClass("max");
 
-		if (this.mainParentSelector !== "") {
-			this._genMainTile(diff);
-			Object.keys(this.groups).forEach(g => this._genChoiceTiles(g, diff, this.mainTile.value));
-		}
-		else {
-			Object.keys(this.groups).forEach(g => this._genChoiceTiles(g, diff));
-		}
+		Object.keys(this.groups).forEach(g => this._genTiles(g, diff));
 
 		var totals = [];
 		Utils.forEachIn((name,data) => { totals.push(data.totalValue) }, this.groups);
@@ -157,7 +123,6 @@ class TileRegistry {
 	}
 
 	showTiles() {
-		if (this.mainParentSelector !== "") this.mainTile.show();
 		Object.keys(this.groups).forEach(g => this.getGroup(g).tiles.forEach(t => t.show()));
 	}
 }

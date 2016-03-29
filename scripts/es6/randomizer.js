@@ -16,12 +16,10 @@ class Randomizer {
 		else {
 			var currentCumSum = 0;
 			choices.forEach(function(c){
-				Utils.assert(c.hasOwnProperty("weight"),
-					`Invalid parameter format - each object in array needs a weight. (${JSON.stringify(choices)})`);
 				currentCumSum += c.weight;
 				c.cumSum = currentCumSum;
 			});
-			var r = Randomizer.rand(0,currentCumSum, true); // TODO this is inaccurate
+			var r = Randomizer.rand(0, currentCumSum, true); // TODO this is inaccurate-ish
 			choices.forEach(function(c, i){
 				if (r < c.cumSum && !ret) ret = choices[i];
 			});
@@ -30,47 +28,13 @@ class Randomizer {
 		return ret;
 	}
 
-	static genSingleChoiceTile(diff/*, group, mainNumber*/) {
-
-		//noinspection UnnecessaryLocalVariableJS
-		var choice = Randomizer.getRandomTileData(diff);
-
-		/* Retry conditions have been disabled until more work is done
-		 mainNumber = +mainNumber;
-
-		 var reRoll = () => Randomizer.getRandomTileData(diff);
-
-		var count = function(id) {
-			let count = 0;
-			group.choices.forEach(c => { count += c.id === id });
-			return count;
-		};
-
-		var scope = () => ({
-			mainNumber,
-			me: choice,
-			myCount: count(choice.id),
-			valueSoFar: group.totalValue,
-			myIndex: group.choices.length,
-			finalIndex: group.registry.choiceTileCount,
-			previous: group.choices[group.choices.length-1] || group.registry.mainTile
-		});
-
-		while (choice.condition !== undefined && false === Utils.compare(choice.condition, scope())) {
-			choice = reRoll();
-		}
-		while (choice.retryCondition !== undefined && Utils.compare(choice.retryCondition, scope()) ) {
-			choice.randomize();
-		}*/
-		return choice;
+	static genSingleChoiceTile(gameMode, diff) {
+		return Randomizer.getRandomTileData(gameMode, diff);
 	}
 
-	static getRandomTileData(difficulty, isMain=false) { // this pulls from difficulty.js
+	static getRandomTileData(gameMode, difficulty) { // this pulls from difficulty.js
 
-		Utils.assert(typeof difficulty === "number" && DIFFICULTY_DATA[difficulty] !== undefined,
-			`Invalid difficulty: ${difficulty}`);
-
-		var choices = DIFFICULTY_DATA[difficulty][isMain ? "main" : "choices"];
+		var choices = GAME_DATA[gameMode][difficulty].choices;
 
 		var rand = Randomizer.pickWeightedRandom(choices);
 		var choice = new RandomChoice(rand);
@@ -83,21 +47,15 @@ class Randomizer {
 class RandomChoice {
 	constructor(choice) {
 		this.value = undefined;
-		this.condition = choice.condition;
-		this.retryCondition = choice.retryCondition;
 		this.choice = choice;
 	}
 
 	get valueString() {
-		return [this.choice.operation, this.value].join(" ");
+		return ""+this.value;
 	}
 
-	toTile(parentSel) {
-		return new Tile(this.valueString, parentSel, true);
-	}
-
-	get operation() {
-		return this.toTile().operation;
+	toTile() {
+		return new NumberTile(this.valueString);
 	}
 
 	randomize() {
