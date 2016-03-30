@@ -33,6 +33,12 @@ class Game { // level = each enemy, round = each collection of tiles
 			baseHealth: 200,
 			baseDamage: 25
 		};
+
+		this.animationManager = undefined;
+	}
+
+	initDisplay() {
+		this.display.init();
 	}
 
 	startLevel(diff, delay) {
@@ -154,8 +160,6 @@ class Display {
 		this.$enemyHealth = $("#enemyHealth");
 
 		this.arrowColors = arrowColors;
-
-		this.init();
 
 	}
 

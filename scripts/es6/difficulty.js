@@ -42,8 +42,16 @@ var GAME_DATA = {
 			]
 		}
 	],
-	TRIG_CIRCLE: [null],
-	MULTI_TABLE: [null]
+	TRIG_CIRCLE: [
+		{
+			disabled: true
+		}
+	],
+	MULTI_TABLE: [
+		{
+			disabled: true
+		}
+	]
 };
 
 Utils.forEachIn(function(mode, modeArray) { // for each game mode

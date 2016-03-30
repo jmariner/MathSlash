@@ -17,8 +17,10 @@ $(function() {
 	};
 
 	$("body").keydown(function(e) {
-		if (e.which === 192) // ~ or `
+		if (e.which === 192) {// ~ or `
 			Utils.toggleDebug();
+			return false;
+		}
 	});
 
 });

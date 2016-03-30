@@ -27,11 +27,83 @@ body {
 	padding: 0;
 	width: 100vw;
 	height: 100vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	overflow: hidden;
-	background: #444;
+
+	@for $i from 1 through 4 {
+		&[data-current-page="#{$i}"] > div[data-page="#{$i}"] {
+			@include flex(column, center, center);
+		}
+	}
+
+	> div[data-page] {
+		display: none;
+		position: relative;
+		width: 100%;
+		height: 100%;
+		background: rgb(0, 0, 0);
+		color: white;
+
+		&:not(.last-page):after {
+			content: "Press any key to continue...";
+			position: absolute;
+			bottom: 0;
+		}
+
+		&[data-page="1"] {
+			justify-content: space-around;
+			.title { font-size: 100px; }
+			.byline { font-size: 36px; }
+		}
+
+		&[data-page="2"] {
+			justify-content: space-around;
+			.title { font-size: 72px; }
+			.subtitle { font-size: 36px; }
+			#gamemode-form {
+				@include flex(row, space-between, center);
+				width: 80%;
+				font-size: 24px;
+				input[type="radio"] { display: none; }
+				label {
+					padding: 16px;
+					color: rgb(100,100,100);
+					position: relative;
+					overflow: hidden;
+					&:not([disabled]):hover, &.checked { color: white; }
+					&.checked { outline: dotted red 2px; }
+					&:not([disabled]) { cursor: pointer; }
+					&[disabled] { cursor: no-drop; }
+					&[disabled]:hover:after {
+						content: "X";
+						position: absolute;
+						color: red;
+						top: 16px; bottom: 16px;
+						left: 50%;
+						line-height: 24px;
+						transform-origin: center center;
+						transform: translate(-50%, 0) scale(20, 1.4);
+						font: {
+							family: "Open Sans", sans-serif;
+							size: 24px;
+							weight: 100;
+						}
+					}
+				}
+			}
+		}
+
+		&.last-page {
+			flex-direction: row;
+		}
+
+		.click-to-continue {
+			position: absolute;
+			right: 0; bottom: 0;
+			color: rgb(100, 100, 100);
+			cursor: pointer;
+			&:hover { color: white; }
+		}
+	}
 
 	&.easterEgg * {
 		font-family: 'Comic Sans MS', sans-serif;
@@ -76,7 +148,7 @@ body {
 
 	}
 
-	//&.debug .debugOnly { display: flex; }
+	&.debug .debugOnly { display: flex; }
 	&:not(.debug) .debugOnlyHidden { visibility: hidden !important; }
 	&:not(.debug) .debugOnly { display: none !important; }
 
