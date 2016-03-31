@@ -3,8 +3,10 @@ var GAME_DATA = {
 
 		//-------GREATEST SUM---------INDEX 0: OPTIONS--------------------
 		{
+			disabled: false,
 			usesMainTile: false,
-			mainTileText: "GREATEST\nSUM\nMODE"
+			mainTileText: "GREATEST\nSUM\nMODE",
+			instructions: "Select the row with the highest sum"
 		},
 
 		//------GREATEST SUM---------DIFFICULTY 1-----------------------------

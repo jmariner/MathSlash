@@ -16,6 +16,18 @@ $(function() {
 		return $(this);
 	};
 
+	$.fn.rect = function(roundEverything) {
+		var r =  $(this).get(0).getBoundingClientRect();
+		if (roundEverything) {
+			r = $.extend({}, r); // can't edit ClientRect so copy it
+			Utils.forEachIn(function (prop, val) {
+				if (typeof val === "number")
+					r[prop] = Math.round(val);
+			}, r);
+		}
+		return r;
+	};
+
 	$("body").keydown(function(e) {
 		if (e.which === 192) {// ~ or `
 			Utils.toggleDebug();

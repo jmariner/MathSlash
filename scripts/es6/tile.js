@@ -14,7 +14,7 @@ class Tile {
 
 		this.$element.appendTo($parent);
 
-		var h = $parent.height();
+		var h = $parent.rect().height;
 		this.$element.outerHeight(h);
 		this.$element.outerWidth(h);
 	}

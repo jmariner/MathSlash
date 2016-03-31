@@ -91,8 +91,8 @@ class Game { // level = each enemy, round = each collection of tiles
 	onKeyDown(keyCode) {
 		var keyToRow = {38:1, 39:2, 40:3}; // up, right, down, respectively
 
-		if (keyCode === 32) // space
-			this.startLevel(2);
+		if (keyCode === Input.Esc)
+			document.location.reload(); // TODO actual restart
 
 		else if (keyToRow[keyCode] && !this.blockInput) { // up/down/right
 			this.chooseRow(keyToRow[keyCode]);
@@ -167,7 +167,7 @@ class Display {
 		this.fader.clear();
 		this.initTimerBar();
 		this.initHealthbars();
-		this.initHighlights();
+		//this.initHighlights();
 		this.initArrows();
 	}
 
@@ -186,7 +186,7 @@ class Display {
 
 	initHealthbars() {
 		this.$playerHealth.add(this.$enemyHealth).find(".barSegment").remove();
-		var eachHeight = this.$playerHealth.height() / this.healthSegmentCount;
+		var eachHeight = this.$playerHealth.rect().height / this.healthSegmentCount;
 		for (var i=0; i < this.healthSegmentCount; i++) {
 			this.$playerHealth.add(this.$enemyHealth).append($("<div>").addClass("barSegment").height(eachHeight));
 		}
@@ -206,10 +206,11 @@ class Display {
 	}
 
 	initArrows() {
-		var rowHeight = $(".arrow").parent().height();
+		var rowHeight = $(".arrow").parent().rect().height;
 		$.get("images/arrow.svg", data => {
 			$(".arrow").html($(data).children())
 				.width(rowHeight)
+				.height(rowHeight)
 				.find("polyline")
 				.attr("fill",   this.arrowColors.fill)
 				.attr("stroke", this.arrowColors.stroke);
