@@ -200,7 +200,7 @@ class Utils {
 		var comparers = /(?:<|>|==)=?|!==?/;
 		var parts = /[^=!<>\s]+/;
 
-		var condRegex = new RegExp("^\\s*(" + parts.source + ")\\s*(" + comparers.source + ")\\s*(" + parts.source + ")\\s*$").exec(singleCondition)
+		var condRegex = new RegExp("^\\s*(" + parts.source + ")\\s*(" + comparers.source + ")\\s*(" + parts.source + ")\\s*$").exec(singleCondition);
 		if (condRegex === null) return undefined;
 		else condRegex = condRegex.slice(1);
 

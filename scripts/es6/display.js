@@ -9,6 +9,9 @@ class Display {
 		this.playerHealthbar = new Display.Healthbar(this.game.player, "#playerHealth", healthSegmentCount);
 		this.enemyHealthbar = new Display.Healthbar(this.game.enemy, "#enemyHealth", healthSegmentCount);
 
+		this.mainOverlay = new Display.Overlay("#mainOverlay", true);
+		this.bottomOverlay = new Display.Overlay("#bottomOverlay", true);
+
 		this.arrowColors = arrowColors;
 
 	}
@@ -83,13 +86,22 @@ class Display {
 		this.enemyHealthbar.update();
 	}
 
-	static showBottomOverlay(type) {
-		Display.hideBottomOverlay();
-		$("#bottomOverlay")._show().addClass(type)
+	showBottomOverlay(type) {
+		this.bottomOverlay.showOnly(type);
 	}
 
-	static hideBottomOverlay() {
-		$("#bottomOverlay").removeAttr("class")._hide();
+	hideBottomOverlay() {
+		this.bottomOverlay.hideAll();
+	}
+
+	doBigCountdown(seconds, stopAt=1, after=undefined) {
+		var blinkLoop = () => {
+			if (seconds >= stopAt) {
+				this.mainOverlay.blink("countdown", 1000, 0, ""+seconds--, blinkLoop);
+			}
+			else if (typeof after === "function") after();
+		};
+		blinkLoop();
 	}
 
 	startCountdown(seconds) {
@@ -235,3 +247,53 @@ class Display_Timer {                           //===========Display.Timer======
 	}
 }
 Display.Timer = Display_Timer;
+
+class Display_Overlay {                           //===========Display.Overlay===========
+	constructor(sel, defaultHidden) {
+		this.$overlay = $(sel);
+		this.defaultHidden = defaultHidden;
+		if (this.defaultHidden) this.$overlay._hide();
+		this.hideAll();
+		this.$overlay.addClass("ready");
+		this.blinkTimeout = undefined;
+	}
+
+	showOnly(type) {
+		this.hideAll();
+		this.show(type);
+	}
+
+	showOne(type, customText) {
+		if (type)
+			this.$overlay._show().find("."+type)
+				._show().text((i, old) => (customText || old));
+	}
+
+	show(...types) {
+		types.forEach(t => { this.showOne(t); });
+	}
+
+	hideAll() {
+		if (this.defaultHidden) this.$overlay._hide();
+		this.$overlay.find("> div")._hide();
+	}
+
+	hideOne(type) {
+		if (this.defaultHidden) this.$overlay._hide();
+		this.$overlay.find("."+type)._hide();
+	}
+
+	blink(type, dur, delayBetween, customText, after) {
+		this.hideAll();
+		this.showOne(type, customText);
+		this.$overlay._show().find("."+type).hide().fadeIn(dur/2, function() {
+			this.blinkTimeout = setTimeout(() => {
+				$(this).fadeOut(dur/2, function() {
+					$(this).show()._hide();
+					if (typeof after === "function") after();
+				});
+			}, delayBetween);
+		});
+	}
+}
+Display.Overlay = Display_Overlay;

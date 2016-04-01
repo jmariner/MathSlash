@@ -55,7 +55,6 @@ class Pregame {
 	}
 
 	static getCurPageEl() {
-		//noinspection JSUnresolvedVariable
 		return Pregame.getPageEl(document.body.dataset.currentPage);
 	}
 
@@ -128,10 +127,12 @@ class Pregame {
 		return {gameMode: gm};
 	}
 
-	static startGame() {
+	static startGame(override) {
 		$(document).keydown(Input.onKeyDown);
-		if (Pregame.autoStartGame === true)
+		if (override || Pregame.autoStartGame === true) {
 			GAME.display.init(3000, 1000, 1000, 0, () => { GAME.startLevel(1); });
+			GAME.display.doBigCountdown(5);
+		}
 	}
 }
 Pregame.skipToGame = false;

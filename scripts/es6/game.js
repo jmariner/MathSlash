@@ -56,7 +56,7 @@ class Game { // level = each enemy, round = each collection of tiles
 
 			if (correct !== undefined) { // during round
 
-				Display.showBottomOverlay(correct ? "correct" : "failed");
+				this.display.showBottomOverlay(correct ? "correct" : "failed");
 				if (correct) this.damageEnemy();
 				else if (!correct) this.damagePlayer();
 
@@ -76,7 +76,7 @@ class Game { // level = each enemy, round = each collection of tiles
 			this.waiting = true;
 			this.timeouts.roundDelay = setTimeout(() => {
 				this.waiting = false;
-				Display.hideBottomOverlay();
+				this.display.hideBottomOverlay();
 				if (correct === undefined) this.display.updateHealth();
 				if (firstRound)	this.display.initHealthbars();
 				this.display.startCountdown(this.current.options.timeLimit);
@@ -115,7 +115,7 @@ class Game { // level = each enemy, round = each collection of tiles
 	}
 
 	onLevelOver(playerWon) {
-		Display.showBottomOverlay(playerWon ? "win" : "lose");
+		this.display.showBottomOverlay(playerWon ? "win" : "lose");
 		this.startLevel(this.current.diff, this.afterLevelDelay);
 	}
 
