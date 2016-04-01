@@ -1,9 +1,18 @@
 class Pregame {
 	static init() {
+		// set Pregame.skipToGame to true before calling init()
+		if (Pregame.skipToGame === true) {
+			Pregame.goToPage(Pregame.lastPage);
+			Pregame.setupForm();
+			Pregame.setupGame();
+			Pregame.startGame();
+			return;
+		}
+
+		// set up keydown even on first page
 		$(document).on("keydown.continue", function(e) {
 			if (Input.isAnyKey(e)) Pregame.onContinue(1);
 		});
-
 
 		// generate buttons to continue
 		$("body div[data-page]:not(.last-page)").append(
@@ -15,17 +24,24 @@ class Pregame {
 	}
 
 	static nextPage() {
-		var lastPage = +$("body div.last-page").data("page");
-		//noinspection JSUnresolvedVariable
 		var curPage = document.body.dataset.currentPage;
-		if (curPage < lastPage) { //noinspection JSUnresolvedVariable
+		if (curPage < Pregame.lastPage) {
 			var newPage = ++document.body.dataset.currentPage;
-			if (newPage < lastPage) {
+			if (newPage < Pregame.lastPage) {
 				$(document).on("keydown.continue", function(e) {
 					if (Input.isAnyKey(e)) Pregame.onContinue(newPage);
 				});
 			}
 		}
+	}
+
+	static goToPage(p) {
+		if (p > 0 && p <= Pregame.lastPage)
+			document.body.dataset.currentPage = p;
+	}
+
+	static get lastPage() {
+		return +$("body div.last-page").data("page");
 	}
 
 	static onContinue(oldPage) {
@@ -114,10 +130,10 @@ class Pregame {
 
 	static startGame() {
 		$(document).keydown(Input.onKeyDown);
-		GAME.initDisplay();
-		GAME.startLevel(1);
+		GAME.display.init(3000, 1000, 1000, 0, () => { GAME.startLevel(1); });
 	}
 }
+Pregame.skipToGame = false;
 
 class Input {
 

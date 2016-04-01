@@ -210,7 +210,7 @@ body {
 					position: relative;
 					@include flex(column, center, center);
 					> div { width: 100%; }
-					#barArea {
+					#timerArea {
 						height: 16.5%;
 						padding: 4px 0;
 						@include flex(row, flex-start, center);
@@ -288,13 +288,15 @@ body {
 					@include flex(row, center, center);
 					font-size: 45px;
 					color: white;
-					background: black;
 					position: absolute;
 					top: 0;
 					bottom: 0;
 					width: 100%;
 					> div {
 						display: none;
+						background: rgba(0, 0, 0, .9);
+						padding: 16px;
+						border-radius: 8px;
 					}
 					&.correct > .correct,
 					&.failed > .failed,
