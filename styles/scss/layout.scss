@@ -59,6 +59,10 @@ body {
 		background: rgb(0, 0, 0);
 		color: white;
 		padding-bottom: 32px;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 
 		&:not(.last-page):after {
 			content: "Press any key to continue...";

@@ -130,17 +130,16 @@ class Pregame {
 
 	static startGame() {
 		$(document).keydown(Input.onKeyDown);
-		GAME.display.init(3000, 1000, 1000, 0, () => { GAME.startLevel(1); });
+		if (Pregame.autoStartGame === true)
+			GAME.display.init(3000, 1000, 1000, 0, () => { GAME.startLevel(1); });
 	}
 }
 Pregame.skipToGame = false;
+Pregame.autoStartGame = true;
 
 class Input {
 
 	static onKeyDown(e) {
-		if (e.which === Input.F4)
-			$("body").toggleClass("easterEgg");
-
 		GAME.onKeyDown(e.which);
 	}
 
