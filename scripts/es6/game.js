@@ -30,7 +30,7 @@ class Game { // level = each enemy, round = each collection of tiles
 		};
 
 		this.display = new Display(this, this.registry, 30, 10, {fill:"black",stroke:"white"});
-		this.display.timer.onEnd = () => { this.onTimeOut(); };
+		//this.display.timer.onEnd = () => { this.onTimeOut(); };
 		this.animationManager = undefined;
 	}
 
@@ -79,7 +79,7 @@ class Game { // level = each enemy, round = each collection of tiles
 				this.display.hideBottomOverlay();
 				if (correct === undefined) this.display.updateHealth();
 				if (firstRound)	this.display.initHealthbars();
-				this.display.startCountdown(this.current.options.timeLimit);
+				this.display.startCountdown(this.current.options.timeLimit, () => { this.onTimeOut(); });
 				this.registry.showTiles();
 			}, delay);
 		}
@@ -128,7 +128,10 @@ class Game { // level = each enemy, round = each collection of tiles
 	}
 
 	onWrong() { // wrong answer is chosen, decrease time by this.current.options.wrongPenalty of start
-		this.display.timer.subtractTime(this.current.options.timeLimit * this.current.options.wrongPenalty);
+		this.display.subtractTime(
+			this.current.options.timeLimit * this.current.options.wrongPenalty,
+			() => { this.onTimeOut(); }
+		);
 	}
 
 	damagePlayer() {

@@ -1,5 +1,5 @@
 $(function() {
-	Pregame.skipToGame = false;
-	Pregame.autoStartGame = true;
+	Pregame.skipToGame = true;
+	Pregame.autoStartGame = false;
 	Pregame.init();
 });

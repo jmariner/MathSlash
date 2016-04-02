@@ -104,8 +104,12 @@ class Display {
 		blinkLoop();
 	}
 
-	startCountdown(seconds) {
-		this.timer.countdown(seconds);
+	startCountdown(seconds, after) {
+		this.timer.countdown(seconds*1000, after);
+	}
+
+	subtractTime(seconds, onTimeOut) {
+		this.timer.subtractTime(seconds*1000, onTimeOut);
 	}
 }
 
@@ -169,10 +173,40 @@ class Display_Timer {                           //===========Display.Timer======
 		this.current = {};
 		this.$barArea = $(sel);
 		this.segmentCount = segmentCount;
-		this.onEnd = function() {};
+		//this.onEnd = function() {};
 	}
 
-	countdown(seconds, loop) {
+	countdown(duration, after) {
+		this.init();
+		this.current.time = duration;
+
+		var eachFadeDur = duration / this.segmentCount;
+		this.current.speed = eachFadeDur;
+
+		var count = 0;
+		var timer = this;
+		var $out = $("#out1");
+
+		var fadeOutNext = () => {
+			if (count++ < this.segmentCount) {
+				this.$barArea.find(".barSegment").last().fadeOut({
+					duration: eachFadeDur,
+					progress: (a, p, ms) => {
+						$out.text(((this.current.time - eachFadeDur + ms)/1000).toFixed(3));
+					},
+					complete: function() {
+						$(this).remove();
+						timer.current.time -= eachFadeDur;
+						fadeOutNext();
+					}
+				});
+			}
+			else if (typeof after === "function") after();
+		};
+		fadeOutNext();
+	}
+
+	countdown0(seconds, loop) {
 		if (!loop) {
 			this.init();
 			this.current.time = seconds;
@@ -184,29 +218,39 @@ class Display_Timer {                           //===========Display.Timer======
 		this.current.speed = speed;
 
 		var timer = this;
+		var $out = $("#out1");
 
 		var $segments = this.$barArea.find(".barSegment");
 
 		if ($segments.length === 0) {
 			this.onEnd();
+			//$out.text("0");
 		}
 		else {
-			$segments.last().fadeOut(speed * 1000, function () {
-				$(this).remove();
-				timer.current.time -= speed;
-				timer.countdown(seconds, true);
-			});
+			$segments.last().fadeOut({
+				duration: speed*1000,
+				queue: "timer",
+				progress: function(anim, prog, ms) {
+					$out.text((timer.current.time - speed + ms/1000).toFixed(3));
+				},
+				complete: function () {
+					$(this).remove();
+					timer.current.time -= speed;
+					timer.countdown(seconds, true);
+				}
+			}).dequeue("timer");
 		}
 	}
 
-	subtractTime(seconds) {
-		if (seconds > this.current.time) {
+	subtractTime(time, onTimeOut) {
+		if (time > this.current.time) {
 			this.clear();
-			this.onEnd();
+			//this.onEnd();
+			onTimeOut();
 		}
-		else if (seconds > 0) {
-			this.current.time -= seconds;
-			var barsToRemove = seconds / this.current.speed;
+		else if (time > 0) {
+			this.current.time -= time;
+			var barsToRemove = time / this.current.speed;
 			this.$barArea.find(".barSegment").slice(0, barsToRemove).remove();
 		}
 	}
