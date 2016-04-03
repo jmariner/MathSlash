@@ -130,13 +130,20 @@ class Pregame {
 	static startGame(override) {
 		$(document).keydown(Input.onKeyDown);
 		if (override || Pregame.autoStartGame === true) {
-			GAME.display.init(3000, 1000, 1000, 0, () => { GAME.startLevel(1); });
-			GAME.display.doBigCountdown(5);
+			if (Pregame.loadingAnim === true) {
+				GAME.display.init(3000, 1000, 1000, 0, () => { GAME.startLevel(1); });
+				GAME.display.doBigCountdown(5);
+			}
+			else {
+				GAME.display.init();
+				GAME.startLevel(1);
+			}
 		}
 	}
 }
 Pregame.skipToGame = false;
 Pregame.autoStartGame = true;
+Pregame.loadingAnim = true;
 
 class Input {
 

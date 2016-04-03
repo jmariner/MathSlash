@@ -183,20 +183,30 @@ class Display_Timer {                           //===========Display.Timer======
 		var eachFadeDur = duration / this.segmentCount;
 		this.current.speed = eachFadeDur;
 
-		var count = 0;
+		var actualFadeDur = function($el) {
+			return eachFadeDur * ($el.data("fadeMod") || 1);
+		};
+
+		//var count = 0;
 		var timer = this;
-		var $out = $("#out1");
+		var $display = $("#timerDisplay");
 
 		var fadeOutNext = () => {
-			if (count++ < this.segmentCount) {
-				this.$barArea.find(".barSegment").last().fadeOut({
-					duration: eachFadeDur,
-					progress: (a, p, ms) => {
-						$out.text(((this.current.time - eachFadeDur + ms)/1000).toFixed(3));
+			var $segments = this.$barArea.find(".barSegment");
+			//if (count++ < this.segmentCount) {
+			if ($segments.length > 0) {
+				$segments.last().fadeOut({
+					duration: actualFadeDur($segments.last()),
+					progress: function(a, p, ms) {
+						// upon reaching 0 after calling subtractTime(...), this outputs "-0.000"
+						// this is because "timer.current.time - a.duration + ms" = -1.7053025658242404e-12
+						// and because .toFixed(...) retains the negative and rounds up to negative zero
+						// fix this by using Math.round(...) so that .toFixed() happens on exactly -0, rounding correctly to "0.000"
+						$display.text((Math.round(timer.current.time - a.duration + ms)/1000).toFixed(3));
 					},
 					complete: function() {
+						timer.current.time -= actualFadeDur($(this));
 						$(this).remove();
-						timer.current.time -= eachFadeDur;
 						fadeOutNext();
 					}
 				});
@@ -236,7 +246,7 @@ class Display_Timer {                           //===========Display.Timer======
 				complete: function () {
 					$(this).remove();
 					timer.current.time -= speed;
-					timer.countdown(seconds, true);
+					timer.countdown0(seconds, true);
 				}
 			}).dequeue("timer");
 		}
@@ -251,7 +261,13 @@ class Display_Timer {                           //===========Display.Timer======
 		else if (time > 0) {
 			this.current.time -= time;
 			var barsToRemove = time / this.current.speed;
-			this.$barArea.find(".barSegment").slice(0, barsToRemove).remove();
+			this.$barArea.find(".barSegment").slice(-1 * barsToRemove).remove();
+
+			// this offsets the numerical countdown due to barsToRemove being rounded down
+			// with time=7500 and speed=333.333, this leaves .5 bars ignored when removing the others
+			// after doing this, the following element will be faded with new duration eachFadeDur * offset
+			var offset = barsToRemove - Math.floor(barsToRemove); // get decimal portion
+			this.$barArea.find(".barSegment").last().data("fadeMod", offset);
 		}
 	}
 
