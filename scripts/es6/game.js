@@ -1,5 +1,5 @@
 class Game { // level = each enemy, round = each collection of tiles
-	constructor(gameMode) {
+	constructor(gameMode, timerSegments=30, healthSegments=10) {
 		this.gameMode = gameMode;
 		this.registry = new TileRegistry(gameMode);
 		this.registry.addGroup("row1", ".tileRow1");
@@ -29,7 +29,7 @@ class Game { // level = each enemy, round = each collection of tiles
 			baseDamage: 25
 		};
 
-		this.display = new Display(this, this.registry, 30, 10, {fill:"black",stroke:"white"});
+		this.display = new Display(this, this.registry, timerSegments, healthSegments, {fill:"black",stroke:"white"});
 		//this.display.timer.onEnd = () => { this.onTimeOut(); };
 		this.animationManager = undefined;
 	}

@@ -187,13 +187,11 @@ class Display_Timer {                           //===========Display.Timer======
 			return eachFadeDur * ($el.data("fadeMod") || 1);
 		};
 
-		//var count = 0;
 		var timer = this;
 		var $display = $("#timerDisplay");
 
 		var fadeOutNext = () => {
 			var $segments = this.$barArea.find(".barSegment");
-			//if (count++ < this.segmentCount) {
 			if ($segments.length > 0) {
 				$segments.last().fadeOut({
 					duration: actualFadeDur($segments.last()),
@@ -202,6 +200,9 @@ class Display_Timer {                           //===========Display.Timer======
 						// this is because "timer.current.time - a.duration + ms" = -1.7053025658242404e-12
 						// and because .toFixed(...) retains the negative and rounds up to negative zero
 						// fix this by using Math.round(...) so that .toFixed() happens on exactly -0, rounding correctly to "0.000"
+
+						// TODO when subtracting time in between multiples of eachDur, this decreases to -0.333
+						//      in other words, time reaches zero one bar too early
 						$display.text((Math.round(timer.current.time - a.duration + ms)/1000).toFixed(3));
 					},
 					complete: function() {
@@ -255,7 +256,6 @@ class Display_Timer {                           //===========Display.Timer======
 	subtractTime(time, onTimeOut) {
 		if (time > this.current.time) {
 			this.clear();
-			//this.onEnd();
 			onTimeOut();
 		}
 		else if (time > 0) {

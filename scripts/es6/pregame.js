@@ -96,7 +96,7 @@ class Pregame {
 	static setupGame() {
 		var $form = $("#gamemode-form");
 		var gm = $form.find("input:checked").attr("id").replace("gm_","");
-		window.GAME = new Game(GAME_MODES[gm]);
+		window.GAME = Pregame.GAME || new Game(GAME_MODES[gm]);
 
 		var a = GAME.animationManager = new AnimationManager("jane/idle.png");
 
@@ -144,6 +144,7 @@ class Pregame {
 Pregame.skipToGame = false;
 Pregame.autoStartGame = true;
 Pregame.loadingAnim = true;
+Pregame.GAME = undefined;
 
 class Input {
 
