@@ -218,9 +218,11 @@ body {
 						height: 16.5%;
 						padding: 4px 0;
 						@include flex(row, flex-start, center);
-						.barSegment {
+						.singleBar, .barSegment {
 							height: 100%;
 							background-color: rgb(33, 255, 0);
+						}
+						.barSegment {
 							border: solid 4px rgb(0, 128, 0);
 						}
 					}

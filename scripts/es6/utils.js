@@ -233,4 +233,10 @@ class Utils {
 				return left !== right;
 		}
 	}
+
+	static newWorker(script, onMessage) {
+		var worker = new Worker(`/scripts/workers/${script}.js`);
+		worker.onmessage = onMessage;
+		return worker;
+	}
 }

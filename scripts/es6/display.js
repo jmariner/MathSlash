@@ -168,12 +168,85 @@ class Display_Healthbar {                           //===========Display.Healthb
 }
 Display.Healthbar = Display_Healthbar;
 
-class Display_Timer {                           //===========Display.Timer===========
+class Display_Timer {
+	constructor(sel) {
+		this.running = false;
+		this.$barArea = $(sel);
+		this.$bar = $("<div>").addClass("singleBar").width(0);
+		this.timerWorker = undefined;
+
+		this.$barArea.append(this.$bar);
+	}
+
+	countdown(duration, onTimeOut) {
+		this.init();
+		if (this.timerWorker) this.timerWorker.terminate();
+		this.running = true;
+
+		var $display = $("#timerDisplay");
+		var initWidth = this.$bar.width();
+
+		this.timerWorker = Utils.newWorker("timer", (e) => {
+			if (e.data === "done") {
+				this.timerWorker.terminate();
+				$display.text((0).toFixed(3));
+				this.$bar.detach();
+				this.running = false;
+				if (typeof onTimeOut === "function") onTimeOut();
+			}
+			else if (e.data.time !== undefined) {
+				$display.text(((e.data.time)/1000).toFixed(3));
+				this.$bar.width(initWidth * (e.data.time/duration));
+			}
+		});
+
+		this.timerWorker.postMessage({
+			action: "start",
+			duration,
+			step: 10,
+			fixOffset: true
+		});
+	}
+
+	subtractTime(time) {
+		this.timerWorker.postMessage({
+			action: "jump",
+			diffString: "-"+time
+		});
+	}
+
+	clear() {
+		if (this.running)
+			this.timerWorker.postMessage({action: "pause"});
+		this.$bar.detach();
+	}
+
+	init() {
+		this.generate();
+	}
+
+	generate(totalDuration, after) {
+		this.clear();
+		if (!totalDuration) {
+			this.$barArea.append(this.$bar.width("100%"));
+			if (typeof after === "function") after();
+		}
+		else {
+			this.$barArea.append(this.$bar.animate(
+				{ width: "100%" },
+				totalDuration,
+				"linear",
+				after
+			));
+		}
+	}
+}
+
+class Display_Timer0 {                           //===========Display.Timer===========
 	constructor(sel, segmentCount) {
 		this.current = {};
 		this.$barArea = $(sel);
 		this.segmentCount = segmentCount;
-		//this.onEnd = function() {};
 	}
 
 	countdown(duration, after) {
