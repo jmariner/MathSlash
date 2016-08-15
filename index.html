@@ -87,8 +87,8 @@
 		<div class="game-page last-page" data-page="5">
 			<div class="side debugOnlyHidden" id="left">
 				<button class="hidden" onclick='try { (new NumberTile(prompt("Enter value (eg 104, 10/4, 10^4):","10"))).addToPage(".tileRow"+prompt("Enter row (1-3):","1")); } catch (e) { alert(e); }'>Generate Custom Tile...</button>
-				<button onclick='var d = prompt("Enter difficulty:","2"); GAME.registry.generateTiles(+d);'>Generate for Difficulty</button>
-				<button onclick='var time = prompt("Enter time (s):","30"); GAME.display.startCountdown(+time)'>Start countdown...</button>
+				<button class="hidden" onclick='var d = prompt("Enter difficulty:","2"); GAME.registry.generateTiles(+d);'>Generate for Difficulty</button>
+				<button class="hidden" onclick='var time = prompt("Enter time (s):","30"); GAME.display.startCountdown(+time)'>Start countdown...</button>
 				<button class="hidden" onclick='var time = prompt("Enter time (s):","5"); GAME.display.doBigCountdown(+time)'>Start big countdown...</button>
 				<button class="hidden" onclick='var d = prompt("Enter difficulty:","2"); GAME.startLevel(+d)'>Start round with diff...</button>
 				<button onclick='GAME.onCorrect()'>Force "Correct"</button>
@@ -96,8 +96,8 @@
 				<button onclick='GAME.onTimeOut()'>Force "Out of Time"</button>
 				<button onclick='GAME.onLevelOver(true)'>Force Victory</button>
 				<button onclick='GAME.onLevelOver(false)'>Force Loss</button>
-				<button onclick='GAME.enemy.damageMod = 0'>Nerf Enemy</button>
-				<button onclick='GAME.player.damageMod = 5'>Buff Playery</button>
+				<button class="hidden" onclick='GAME.enemy.damageMod = 0'>Nerf Enemy</button>
+				<button class="hidden" onclick='GAME.player.damageMod = 5'>Buff Playery</button>
 				<div id="_playerHealth">Player Health: <span></span></div>
 				<div id="_enemyHealth">Boss Health: <span></span></div>
 			</div>
