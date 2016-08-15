@@ -123,7 +123,10 @@ class Display {
 	}
 
 	static gameOver(won) {
-		$(".gameover-page").addClass(won ? "won" : "lost").addClass("enabled");
+		var $go = $(".gameover-page");
+		$go.addClass(won ? "won" : "lost").addClass("enabled");
+		$go.find(".click-to-continue").click(() => { window.location.reload() });
+		$(document).keydown(() => { window.location.reload() });
 	}
 }
 
