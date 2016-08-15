@@ -76,10 +76,6 @@ class Utils {
 		return data;
 	}
 
-	static rand(min, max) {
-		return min + Math.floor(Math.random() * (max - min + 1));
-	}
-
 	static forEachIn(func, obj) {
 		for (var i in obj) {
 			if (obj.hasOwnProperty(i)) {

@@ -5,6 +5,7 @@ var GAME_DATA = {
 		{
 			disabled: false,
 			usesMainTile: false,
+			choicesPerGroup: 4,
 			mainTileText: "GREATEST\nSUM\nMODE",
 			instructions: "Select the row with the highest sum"
 		},
@@ -75,8 +76,20 @@ var GAME_DATA = {
 		}
 	],
 	TRIG_CIRCLE: [
+		//-------TRIG CIRCLE---------INDEX 0: OPTIONS--------------------
 		{
-			disabled: true
+			disabled: true,
+			usesMainTile: true,
+			choicesPerGroup: 1,
+			instructions: "Select the row equal to the main tile."
+		},
+
+		//------TRIG CIRCLE---------DIFFICULTY 1-----------------------------
+		{
+			options: {
+				timeLimit: 10,
+				wrongPenalty: 0.75
+			}
 		}
 	],
 	MULTI_TABLE: [

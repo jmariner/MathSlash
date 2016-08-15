@@ -69,6 +69,14 @@ AnimationManager.Character.prototype.registerAnimation = function(name, options)
 	return this;
 };
 
+AnimationManager.Character.prototype.fadeOut = function(dur, after) {
+	this.$element.fadeOut(dur, after);
+};
+
+AnimationManager.Character.prototype.fadeIn = function(dur, after) {
+	this.$element.fadeIn(dur !== undefined ? dur : 0, after);
+};
+
 AnimationManager.Character.prototype.playAnimation = function(name, after) {
 	var anim = this.animations[name];
 	if (anim)
@@ -78,9 +86,18 @@ AnimationManager.Character.prototype.playAnimation = function(name, after) {
 
 };
 
+AnimationManager.Character.prototype.playThenFreeze = function(name, after) {
+	var anim = this.animations[name];
+	if (anim)
+		anim.playThenFreeze(after);
+	else
+		throw "Animation \"" + name + "\" not found!";
+};
+
 AnimationManager.Character.prototype.loopAnimation = function(name, loopDuration) {
-	if (name)
-		this.animations[name].loop(loopDuration);
+	var anim = this.animations[name]
+	if (anim && !anim.isLooping())
+		anim.loop(loopDuration);
 };
 
 AnimationManager.Character.prototype.toggleLoopAnimation = function(name) {
@@ -95,6 +112,10 @@ AnimationManager.Character.prototype.stopAnimation = function() {
 	if (this._currentAnimation) {
 		this._currentAnimation.stop();
 	}
+};
+
+AnimationManager.Character.prototype.freezeAtLast = function(name) {
+	this.animations[name].freezeAtLast();
 };
 
 //											====================== Animation ======================
@@ -142,6 +163,7 @@ AnimationManager.Animation.prototype._play = function(dur, returnToPrev, after) 
 
 	if (returnToPrev) var prev = this.character._currentAnimation;
 	this.character.stopAnimation();
+	this.character.$element.css("background-position", "");
 
 	this.character.$element
 		.addClass(this.name)
@@ -156,6 +178,20 @@ AnimationManager.Animation.prototype._play = function(dur, returnToPrev, after) 
 			if (typeof after === "function") after();
 		}, this.currentDuration);
 	}
+};
+
+AnimationManager.Animation.prototype.playThenFreeze = function(after) {
+	this._play(0, false, after);
+	this.freezeAtLast();
+};
+
+AnimationManager.Animation.prototype.freezeFrame = function(frameNum) {
+	var x = (frameNum-1) * this.character.size.w;
+	this.character.$element.css("background-position", `${-x}px ${-this.startY}px`);
+};
+
+AnimationManager.Animation.prototype.freezeAtLast = function() {
+	this.freezeFrame(this.frames);
 };
 
 // TODO PAUSE FUNCTION

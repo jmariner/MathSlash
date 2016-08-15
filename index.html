@@ -97,6 +97,7 @@
 				<button onclick='GAME.onCorrect()'>Force "Correct"</button>
 				<button onclick='GAME.onWrong()'>Force "Wrong"</button>
 				<button onclick='GAME.onTimeOut()'>Force "Out of Time"</button>
+				<button onclick='GAME.enemy.damageMod = 0'>Nerf Enemy</button>
 				<div id="_playerHealth">Player Health: <span></span></div>
 				<div id="_enemyHealth">Boss Health: <span></span></div>
 			</div>
@@ -139,6 +140,7 @@
 				</div>
 			</div>
 			<div class="side" id="right">
+				<div class="" id="difficultyDisplay"></div>
 				<button class="" onclick='Pregame.startGame(true)'>Play Example</button>
 				<div class="debugOnlyHidden" id="timerDisplay">0</div>
 			</div>

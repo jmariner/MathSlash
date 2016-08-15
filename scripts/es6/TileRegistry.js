@@ -1,15 +1,16 @@
 class TileRegistry {
 
-	constructor(gameMode, choiceTileCount=4) {
-
-		this.choiceTileCount = choiceTileCount;
+	constructor(gameMode) {
 
 		this.gameMode = gameMode;
+		this.modeOptions = GAME_DATA[gameMode][0];
+
+		this.choiceTileCount = this.modeOptions.choicesPerGroup;
+
 		this.groups = {};
 
-		this.maxGroup = undefined;
+		this.correctGroup = undefined;
 		this.mainGroup = undefined; // main tile will go here when needed
-		this.hasMainTile = false;
 
 	}
 
@@ -25,17 +26,21 @@ class TileRegistry {
 			name,
 			parentSelector,
 			tiles: [],
-			isMax() {
-				return registry.maxGroup.name === this.name;
+			isCorrect() {
+				return registry.correctGroup.name === this.name;
 			},
 			get totalValue() {
-				if (!isMainGroup && registry.gameMode === GAME_MODES.GREATEST_SUM) {
-					var numbers = (/*this.choices || */this.tiles).map(c => c.computedValue);
-
-					var answer = math.sum(numbers);
-
-					//$(this.parentSelector).attr("title", numbers.join(" + ") + " = " + answer);
-
+				if (!isMainGroup) {
+					var answer;
+					switch (registry.gameMode) {
+						case GAME_MODES.GREATEST_SUM:
+							var numbers = (this.tiles).map(c => c.computedValue);
+							answer = math.sum(numbers);
+							//$(this.parentSelector).attr("title", numbers.join(" + ") + " = " + answer);
+							break;
+						default:
+							answer = NaN;
+					}
 					return answer;
 				}
 				else return NaN;
@@ -67,12 +72,12 @@ class TileRegistry {
 		return $(this.groups[name].parentSelector).get(0)
 	}
 
-	isMaxGroup(name) {
-		return this.getGroup(name).isMax();
+	isCorrectGroup(name) {
+		return this.getGroup(name).isCorrect();
 	}
 
 	clearGroup(name) {
-		this._initGroup(name);
+		this._initGroup(name, undefined, this.groups[name].isMainGroup);
 	}
 
 	_genTiles(groupName, diff) {
@@ -85,16 +90,30 @@ class TileRegistry {
 		var group = this.groups[groupName];
 
 		if (group.isMainGroup) {
-			var modeOptions = GAME_DATA[this.gameMode][0];
-			if (modeOptions.usesMainTile) {
-				// generate the mail tile value
+
+			if (this.modeOptions.usesMainTile) {
+
+				switch (this.gameMode) {
+					case GAME_MODES.TRIG_CIRCLE:
+						var r = new RandomTrigChoice();
+						r.randomize();
+						this.mainGroup.choice = r;
+						this.mainGroup.tiles = [r.toTile()];
+						break;
+					default:
+						this.mainGroup = null;
+				}
+
 			}
-			else if (modeOptions.mainTileText !== undefined) {
+			else if (this.modeOptions.mainTileText !== undefined) {
+
 				if (this.mainGroup.tiles.length > 0) this.mainGroup.tiles[0].remove();
-				this.mainGroup.tiles = [new StringTile(modeOptions.mainTileText)];
+				this.mainGroup.tiles = [new StringTile(this.modeOptions.mainTileText)];
+
 			}
 		}
 		else {
+
 			group.tiles.forEach(t => t.remove());
 			group.tiles = [];
 
@@ -104,6 +123,7 @@ class TileRegistry {
 			) {}
 
 			group.tiles = group.choices.map(c => c.toTile());
+
 		}
 
 		group.tiles.forEach(t => t.addToPage(group.parentSelector, true));
@@ -113,14 +133,39 @@ class TileRegistry {
 	}
 
 	generateTiles(diff) {
-		$(".max").removeClass("max");
+		$("#rightArea").find(".row.correct").removeClass("correct");
 
-		Object.keys(this.groups).forEach(g => this._genTiles(g, diff));
+		switch (this.gameMode) {
+			case GAME_MODES.GREATEST_SUM:
+				Object.keys(this.groups).forEach(g => this._genTiles(g, diff));
+				// set correct group to the one with the highest total sum
+				var	totals = [];
+				Utils.forEachIn((name, data) => { totals.push(data.totalValue) }, this.groups);
+				this.correctGroup = this.groups[Object.keys(this.groups)[totals.indexOf(math.max(totals))]];
+				break;
+			case GAME_MODES.TRIG_CIRCLE:
+				Object.keys(this.groups).forEach(g => this.clearGroup(g));
+				this._genTiles(this.mainGroup.name, diff);
+				var choices = [this.mainGroup.choice.getCircleValue()];
 
-		var totals = [];
-		Utils.forEachIn((name,data) => { totals.push(data.totalValue) }, this.groups);
-		this.maxGroup = this.groups[Object.keys(this.groups)[totals.indexOf(math.max(totals))]];
-		$(this.maxGroup.parentSelector).addClass("max");
+				var groups = Object.keys(this.groups).filter(g => g !== this.mainGroup.name);
+				var correctGroupName = Randomizer.fromArray(groups);
+				this.correctGroup = this.groups[correctGroupName];
+				this.correctGroup.tiles = [new TrigCircleTile(choices[0])];
+				this.correctGroup.tiles[0].addToPage(this.correctGroup.parentSelector);
+
+				groups.filter(g => g !== correctGroupName).forEach(g => {
+					var r = new RandomTrigCircleChoice(choices);
+					r.randomize();
+					choices.push(r.value);
+					var t = r.toTile();
+					t.addToPage(this.groups[g].parentSelector);
+					this.groups[g].tiles = [t];
+				});
+
+				break;
+		}
+		$(this.correctGroup.parentSelector).addClass("correct");
 	}
 
 	showTiles() {

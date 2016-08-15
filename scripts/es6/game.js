@@ -1,5 +1,5 @@
 class Game { // level = each enemy, round = each collection of tiles
-	constructor(gameMode, timerSegments=30, healthSegments=10) {
+	constructor(gameMode) {
 		this.gameMode = gameMode;
 		this.registry = new TileRegistry(gameMode);
 		this.registry.addGroup("row1", ".tileRow1");
@@ -7,8 +7,8 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.registry.addGroup("row3", ".tileRow3");
 		this.registry.addMainGroup("main", ".bigTileArea");
 
-
 		this.difficultyData = $.extend(true, [], GAME_DATA[this.gameMode]);
+		this.levels = this.difficultyData.length - 1;
 
 		this.playing = false;
 		this.waiting = true;
@@ -29,7 +29,7 @@ class Game { // level = each enemy, round = each collection of tiles
 			baseDamage: 25
 		};
 
-		this.display = new Display(this, this.registry, timerSegments, {fill:"black",stroke:"white"});
+		this.display = new Display(this, this.registry, {fill:"black",stroke:"white"});
 		//this.display.timer.onEnd = () => { this.onTimeOut(); };
 		this.animationManager = null
 	}
@@ -39,9 +39,9 @@ class Game { // level = each enemy, round = each collection of tiles
 	}
 
 	startLevel(diff, delay) {
-		if (diff > 3) throw "Difficulties > 3 are not supported";
 		var options = this.difficultyData[diff].options;
 		this.current = {diff, options};
+		this.display.updateLevel();
 		this.playing = true;
 		this.player.health = this.player.baseHealth;
 		this.enemy.health = this.enemy.baseHealth;
@@ -53,16 +53,16 @@ class Game { // level = each enemy, round = each collection of tiles
 	nextRound(delay, correct, firstRound) {
 		if (firstRound) {
 			this.waiting = false;
-			Utils.forEachIn((n, c) => c.loopAnimation("idle"), this.animationManager.characters);
 		}
 		if (this.playing && !this.waiting) {
+
 
 			if (correct !== undefined) { // during round, after the attack anim and hp change
 
 				this.display.updateHealth();
 
-				if (this.player.health === 0 || this.enemy.health === 0) {
-					this.onLevelOver(this.enemy.health === 0);
+				if (this.player.health <= 0 || this.enemy.health <= 0) {
+					this.onLevelOver(this.enemy.health <= 0);
 					return;
 				}
 			}
@@ -73,9 +73,16 @@ class Game { // level = each enemy, round = each collection of tiles
 
 			this.timeouts.roundDelay = setTimeout(() => {
 				this.waiting = false;
+				this.blockInput = false;
 				this.display.hideBottomOverlay();
 				if (correct === undefined) this.display.updateHealth();
-				if (firstRound)	this.display.initHealthbars();
+				if (firstRound)	{
+					this.display.initHealthbars();
+					Utils.forEachIn((n, c) => {
+						c.fadeIn();
+						c.loopAnimation("idle");
+					}, this.animationManager.characters);
+				}
 				this.display.startCountdown(this.current.options.timeLimit, () => { this.onTimeOut(); });
 				this.registry.showTiles();
 			}, delay);
@@ -105,17 +112,17 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.display.blinkArrow("lightgray", rowNumber);
 
 		if (this.playing && !this.waiting) {
-			if (this.registry.isMaxGroup(rowName)) this.onCorrect();
+			if (this.registry.isCorrectGroup(rowName)) this.onCorrect();
 			else this.onWrong();
 		}
 
 	}
 
 	onRoundEnd(correct, fromWrong) {
-		debugger;
 		this.display.showBottomOverlay(correct ? "correct" : fromWrong ? "wrong" : "failed");
 		this.registry.hideTiles();
 		this.display.timer.clear();
+		this.blockInput = true;
 
 		var afterAttack = () => {
 			this.nextRound(this.preRoundDelay, correct);
@@ -157,7 +164,20 @@ class Game { // level = each enemy, round = each collection of tiles
 
 	onLevelOver(playerWon) {
 		this.display.showBottomOverlay(playerWon ? "win" : "lose");
+
+		var deadAnim = playerWon ? this.enemy.animManager : this.player.animManager;
+
 		// slide background to next part of level, then start next one
-		this.startLevel(this.current.diff, this.afterLevelDelay);
+
+		deadAnim.playThenFreeze("dead", () => {
+			deadAnim.$element.fadeOut(this.afterLevelDelay/2);
+			if (playerWon) {
+				if (this.current.diff < this.levels)
+					this.startLevel(this.current.diff + 1, this.afterLevelDelay);
+			}
+			else {
+				this.startLevel(1, this.afterLevelDelay);
+			}
+		});
 	}
 }

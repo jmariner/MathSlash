@@ -9,7 +9,7 @@ class Pregame {
 			return;
 		}
 
-		// set up keydown even on first page
+		// set up keydown event on first page
 		$(document).on("keydown.continue", function(e) {
 			if (Input.isAnyKey(e)) Pregame.onContinue(1);
 		});
@@ -104,7 +104,7 @@ class Pregame {
 			selector: ".jane",
 			startY: 0,
 			size: "70x100",
-			position: { bottom:"25%", left:"20%" },
+			position: { bottom:"20%", left:"25%" },
 			styles: { transform:"scale(4)" }
 		})
 		.registerAnimation("idle", {
@@ -115,19 +115,24 @@ class Pregame {
 		.registerAnimation("attack", {
 			index: 1,
 			frames: 17,
-			duration: 1000
+			duration: 1300
 		})
 		.registerAnimation("hurt", {
 			index: 2,
 			frames: 12,
 			duration: 1000
+		})
+		.registerAnimation("dead", {
+				index: 3,
+				frames: 9,
+				duration: 1500
 		});
 
 		GAME.enemy.animManager = a.registerCharacter("rip", {
 			selector: ".rip",
-			startY: 300,
+			startY: 400,
 			size: "50x72",
-			position: { bottom:"15%", right:"15%" },
+			position: { bottom:"25%", right:"15%" },
 			styles: { transform:"scale(4)" }
 		})
 		.registerAnimation("idle", {
@@ -144,6 +149,11 @@ class Pregame {
 			index: 2,
 			frames: 10,
 			duration: 1000
+		})
+		.registerAnimation("dead", {
+				index: 3,
+				frames: 22,
+				duration: 1500
 		});
 
 		return {gameMode: gm};

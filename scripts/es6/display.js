@@ -1,16 +1,18 @@
 class Display {
-	constructor(game, registry, timerSegmentCount, arrowColors) {
+	constructor(game, registry, arrowColors) {
 
 		this.game = game;
 		this.registry = registry;
 
-		this.timer = new Display.Timer("#timerArea", timerSegmentCount);
+		this.timer = new Display.Timer("#timerArea");
 
 		this.playerHealthbar = new Display.Healthbar(this.game.player, "#playerHealth");
 		this.enemyHealthbar = new Display.Healthbar(this.game.enemy, "#enemyHealth");
 
 		this.mainOverlay = new Display.Overlay("#mainOverlay", true);
 		this.bottomOverlay = new Display.Overlay("#bottomOverlay", true);
+
+		this.difficultyDisplay = $("#difficultyDisplay");
 
 		this.arrowColors = arrowColors;
 
@@ -77,6 +79,10 @@ class Display {
 				{duration:dur, queue:true}
 			);
 		});
+	}
+
+	updateLevel() {
+		this.difficultyDisplay.text("Level: " + this.game.current.diff);
 	}
 
 	updateHealth() {

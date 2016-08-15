@@ -9,6 +9,11 @@ class Randomizer {
 			return min + Math.floor(Math.random() * (max-min+1));
 	}
 
+	static fromArray(a) {
+		var r = Randomizer.rand(0, a.length-1, false);
+		return a[r];
+	}
+
 	static pickWeightedRandom(choices) {
 		var ret = undefined;
 		choices = $.extend(true, [], choices);
@@ -61,7 +66,7 @@ class RandomChoice {
 	randomize() {
 		switch (this.choice.type) {
 			case "integer":
-				this.value = Utils.rand(...this.choice.limits);
+				this.value = Randomizer.rand(...this.choice.limits);
 				break;
 			case "fraction":
 				this.value = Utils.buildFraction(
@@ -78,5 +83,63 @@ class RandomChoice {
 			default:
 				this.value = NaN;
 		}
+	}
+}
+
+class RandomTrigChoice {
+	constructor() {
+		this.value = undefined;
+		this.choices = [
+			"0",
+			"pi/6", "pi/4", "pi/3",
+			"pi/2",
+			"(2pi)/3", "(3pi)/4", "(5pi)/6",
+			"pi",
+			"(7pi)/6", "(5pi)/4", "(4pi)/3",
+			"(3pi)/2",
+			"(5pi)/3", "(7pi)/4", "(11pi)/6"
+		];
+	}
+
+	toTile() {
+		return new NumberTile(this.value);
+	}
+
+	randomize() {
+		var trig = Randomizer.fromArray(["sin", "cos"]);
+		var inside = Randomizer.fromArray(this.choices);
+		this.value = trig + `(${inside})`;
+	}
+
+	getCircleValue() {
+		var match = undefined;
+		new RandomTrigCircleChoice().choices.forEach(c => {
+			if (!match && math.compile(`${c} == ${this.value}`).eval())
+				match = c;
+		});
+		return match;
+	}
+}
+
+class RandomTrigCircleChoice {
+	constructor(exceptArray) {
+		this.exceptArray = exceptArray;
+		this.value = undefined;
+		this.choices = [
+			"0",
+			"1", "-1",
+			"1/2", "-1/2",
+			"sqrt(3)/2", "-sqrt(3)/2",
+			"1/sqrt(2)", "-1/sqrt(2)"
+		];
+	}
+
+	toTile() {
+		return new TrigCircleTile(this.value);
+	}
+
+	randomize() {
+
+		this.value = ""+Randomizer.fromArray(_.without(this.choices, this.exceptArray));
 	}
 }

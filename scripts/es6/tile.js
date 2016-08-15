@@ -37,27 +37,27 @@ class NumberTile extends Tile {
 
 		super();
 
-		var valueRegex = /^([\d\-]+(?:\s?(\/|\^)\s?[\d\-]+)?)$/.exec(value);
+//		var valueRegex = /^([\d\-]+(?:\s?(\/|\^)\s?[\d\-]+)?)$/.exec(value);
+		var valueRegex = /^((sin|cos|tan|csc|sec|cot)?\(?(?:\(?\-?\d{0,2}pi\)?|[\d\-]+)(?:\s?(\/|\^)\s?[\d\-]+)?\)?)$/.exec(value);
 
 		if ((value.match(/-/g) || []).length > 1)
 			throw "More than one negative is not allowed";
 
-		var valuePart = valueRegex[1];
-		var typePart = valueRegex[2];
+		this.value = valueRegex[1];
+		var trigPart = valueRegex[2];
+		var typePart = valueRegex[3];
 
-		this.value = valuePart;
-
-		this.isInteger = typePart === undefined;
+		this.isTrig = trigPart !== undefined;
+		this.isInteger = !this.isTrig && typePart === undefined;
 
 		this.$element = undefined;
 
-		try { math.parse(this.value); }
+		try { this.mathNode = math.parse(this.value); }
 		catch(e) { throw `Cannot parse math: ${value}`; }
 
-		this.mathNode = math.parse(this.value);
 		this.computedValue = this.mathNode.compile().eval();
 
-		this.isNegative = this.computedValue < 0;
+		this.isNegative = !this.isTrig && this.computedValue < 0;
 
 	}
 
@@ -68,8 +68,9 @@ class NumberTile extends Tile {
 
 		super.addToPage(parentSelector);
 
-		this.$element.attr("data-operation", this.isNegative ? "-" : "+");
 		this.$element.attr("data-value", this.computedValue);
+		if (!this.isTrig)
+			this.$element.attr("data-operation", this.isNegative ? "-" : "+");
 
 		if (!this.isInteger) {
 			var tex = math.parse(this.value).toTex({parenthesis: "auto"});
@@ -103,5 +104,45 @@ class StringTile extends Tile {
 		this.$element.addClass("text");
 		Utils.scaleToFit(this.$element, ".scaleToFit", .9);
 		this.show();
+	}
+}
+
+class TrigCircleTile extends Tile {
+	constructor(value) {
+		super();
+		var valueRegex = /^((\-)?(?:sqrt\()?\d+\)?(?:\s?(\/)\s?(?:sqrt\()?\d+\)?)?)$/.exec(value);
+
+		this.value = valueRegex[1];
+		this.isNegative = valueRegex[2] === "-";
+		this.isInteger = valueRegex[3] === undefined;
+
+		this.$element = undefined;
+
+		try { this.mathNode = math.parse(this.value); }
+		catch(e) { throw `Cannot parse math: ${value}`; }
+
+		this.computedValue = this.mathNode.compile().eval();
+	}
+
+	addToPage(parentSelector, startHidden) {
+		super.addToPage(parentSelector);
+
+		this.$element.attr("data-value", this.computedValue);
+
+		if (!this.isInteger) {
+			var tex = math.parse(this.value).toTex({parenthesis: "auto"});
+			this.$element.html(`$$ ${tex} $$`);
+		}
+
+		var ready = () => {
+			this.$element.find(".math").addClass("scaleToFit");
+			Utils.scaleToFit(this.$element, ".scaleToFit");
+			if (!startHidden) this.show();
+		};
+
+		if (!this.isInteger) {
+			MathJax.Hub.Queue(["Typeset", MathJax.Hub, this.$element.get(0)], ready);
+		}
+		else ready();
 	}
 }
