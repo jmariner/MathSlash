@@ -199,9 +199,11 @@ body {
 						@include flex(column, flex-start, center);
 						border: none 5px black;
 						border-bottom-style: solid;
-						.barSegment {
+						.singleBar, .barSegment {
 							width: 100%;
 							background-color: rgb(255, 0, 0);
+						}
+						.barSegment {
 							border: solid 4px rgb(128, 8, 0);
 						}
 					}
@@ -257,11 +259,6 @@ body {
 								}
 								&.selected.max .highlighter { border-color: green; }
 								&.selected:not(.max) .highlighter { border-color: red; }
-								/*&::after {
-									content: "=" attr(data-totalValue);
-									position: absolute;
-									right: 0;
-								}*/
 							}
 						}
 						.tile {

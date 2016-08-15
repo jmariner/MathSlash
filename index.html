@@ -91,19 +91,17 @@
 			<div class="side debugOnlyHidden" id="left">
 				<button onclick='try { (new NumberTile(prompt("Enter value (eg 104, 10/4, 10^4):","10"))).addToPage(".tileRow"+prompt("Enter row (1-3):","1")); } catch (e) { alert(e); }'>Generate Custom Tile...</button>
 				<button onclick='var d = prompt("Enter difficulty:","2"); GAME.registry.generateTiles(+d);'>Generate for Difficulty</button>
-				<button class="hidden" onclick='$("#graphicArea").toggleClass("scrolling")'>Toggle Scrolling Background</button>
 				<button onclick='var time = prompt("Enter time (s):","30"); GAME.display.startCountdown(+time)'>Start countdown...</button>
 				<button onclick='var time = prompt("Enter time (s):","5"); GAME.display.doBigCountdown(+time)'>Start big countdown...</button>
 				<button onclick='var d = prompt("Enter difficulty:","2"); GAME.startLevel(+d)'>Start round with diff...</button>
 				<button onclick='GAME.onCorrect()'>Force "Correct"</button>
+				<button onclick='GAME.onWrong()'>Force "Wrong"</button>
 				<button onclick='GAME.onTimeOut()'>Force "Out of Time"</button>
-				<button onclick="GAME.display.init(); $('.tile').remove();">Reset Display</button>
 				<div id="_playerHealth">Player Health: <span></span></div>
 				<div id="_enemyHealth">Boss Health: <span></span></div>
 			</div>
 			<div id="game">
 				<div id="graphicArea">
-					<!--<img src="images/castleBackgroundTiled.jpg" class="background">-->
 					<img src="images/background.png" class="background">
 					<div class="healthbar" id="playerHealth"></div>
 					<div class="healthbar" id="enemyHealth"></div>
@@ -142,10 +140,7 @@
 			</div>
 			<div class="side" id="right">
 				<button class="" onclick='Pregame.startGame(true)'>Play Example</button>
-				<button class="hidden" onclick='a.characters.jane.toggleLoopAnimation("idle");'>Animate Character</button>
-				<button class="hidden" onclick="a.characters.jane.loopAnimation('idle');">Start Test Anim</button>
-				<button class="hidden" onclick="a.characters.jane.stopAnimation('idle');">Stop Test Anim</button>
-				<div id="timerDisplay"></div>
+				<div class="debugOnlyHidden" id="timerDisplay">0</div>
 			</div>
 		</div>
 	</body>

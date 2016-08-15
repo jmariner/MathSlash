@@ -34,7 +34,7 @@ class TileRegistry {
 
 					var answer = math.sum(numbers);
 
-					$(this.parentSelector).attr("title", numbers.join(" + ") + " = " + answer);
+					//$(this.parentSelector).attr("title", numbers.join(" + ") + " = " + answer);
 
 					return answer;
 				}

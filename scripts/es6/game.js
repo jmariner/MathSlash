@@ -29,7 +29,7 @@ class Game { // level = each enemy, round = each collection of tiles
 			baseDamage: 25
 		};
 
-		this.display = new Display(this, this.registry, timerSegments, healthSegments, {fill:"black",stroke:"white"});
+		this.display = new Display(this, this.registry, timerSegments, {fill:"black",stroke:"white"});
 		//this.display.timer.onEnd = () => { this.onTimeOut(); };
 		this.animationManager = null
 	}
@@ -111,8 +111,9 @@ class Game { // level = each enemy, round = each collection of tiles
 
 	}
 
-	onRoundEnd(correct) {
-		this.display.showBottomOverlay(correct ? "correct" : "failed");
+	onRoundEnd(correct, fromWrong) {
+		debugger;
+		this.display.showBottomOverlay(correct ? "correct" : fromWrong ? "wrong" : "failed");
 		this.registry.hideTiles();
 		this.display.timer.clear();
 
@@ -127,15 +128,15 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.onRoundEnd(true);
 	}
 
-	onTimeOut() {
-		this.onRoundEnd(false);
+	onTimeOut(fromWrong) {
+		this.onRoundEnd(false, fromWrong);
 	}
 
 	onWrong() { // wrong answer is chosen, decrease time by this.current.options.wrongPenalty of start
 		this.display.blinkBottomOverlay("wrong", 500);
 		this.display.subtractTime(
 			this.current.options.timeLimit * this.current.options.wrongPenalty,
-			() => { this.onTimeOut(); }
+			() => { this.onTimeOut(true); }
 		);
 	}
 

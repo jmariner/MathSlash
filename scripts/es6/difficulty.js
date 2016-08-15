@@ -19,12 +19,42 @@ var GAME_DATA = {
 				{
 					type: "integer",
 					weight: 1,
-					limits: [1, 50]
+					limits: [1, 25]
 				}
 			]
 		},
 
 		//-----GREATEST SUM---------DIFFICULTY 2-----------------------------
+		{
+			options: {
+				timeLimit: 15,
+				wrongPenalty: 0.75
+			},
+			choices: [
+				{
+					type: "integer",
+					weight: 1,
+					limits: [1, 50]
+				}
+			]
+		},
+
+		//-----GREATEST SUM---------DIFFICULTY 3-----------------------------
+		{
+			options: {
+				timeLimit: 20,
+				wrongPenalty: 0.75
+			},
+			choices: [
+				{
+					type: "integer",
+					weight: 1,          // this means it is 3x more likely than a weight of 1
+					limits: [1, 99]
+				}
+			]
+		},
+
+		//-----GREATEST SUM---------DIFFICULTY 4-----------------------------
 		{
 			options: {
 				timeLimit: 20,
@@ -34,7 +64,7 @@ var GAME_DATA = {
 				{
 					type: "integer",
 					weight: 3,          // this means it is 3x more likely than a weight of 1
-					limits: [1, 99]
+					limits: [1, 50]
 				},
 				{
 					type: "integer",
@@ -63,7 +93,7 @@ Utils.forEachIn(function(mode, modeArray) { // for each game mode
 
 			if (type !== "options") {
 				typeData.forEach(function (data) { // for each choice
-					data.id = [mode, diff, type, typeData.indexOf(data)].join("_");
+					data.id = [mode, diff+1, type, typeData.indexOf(data)].join("_");
 				}); // end for each choice
 			}
 

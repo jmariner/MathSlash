@@ -1,13 +1,13 @@
 class Display {
-	constructor(game, registry, timerSegmentCount, healthSegmentCount, arrowColors) {
+	constructor(game, registry, timerSegmentCount, arrowColors) {
 
 		this.game = game;
 		this.registry = registry;
 
 		this.timer = new Display.Timer("#timerArea", timerSegmentCount);
 
-		this.playerHealthbar = new Display.Healthbar(this.game.player, "#playerHealth", healthSegmentCount);
-		this.enemyHealthbar = new Display.Healthbar(this.game.enemy, "#enemyHealth", healthSegmentCount);
+		this.playerHealthbar = new Display.Healthbar(this.game.player, "#playerHealth");
+		this.enemyHealthbar = new Display.Healthbar(this.game.enemy, "#enemyHealth");
 
 		this.mainOverlay = new Display.Overlay("#mainOverlay", true);
 		this.bottomOverlay = new Display.Overlay("#bottomOverlay", true);
@@ -117,7 +117,46 @@ class Display {
 	}
 }
 
-class Display_Healthbar {                           //===========Display.Healthbar===========
+class Display_Healthbar {
+	constructor(charData, sel) {
+		this.data = charData;
+		this.$barArea = $(sel);
+		this.$bar = $("<div>").addClass("singleBar").height(0);
+	}
+
+	clear() {
+		this.$barArea.find(".barSegment").stop().remove();
+	}
+
+	generate(totalDuration, after) {
+		this.clear();
+		if (!totalDuration) {
+			this.$barArea.append(this.$bar.height("100%"));
+			if (typeof after === "function") after();
+		}
+		else {
+			this.$barArea.append(this.$bar.animate(
+				{ height: "100%" },
+				totalDuration,
+				"linear",
+				after
+			));
+		}
+	}
+
+	init() {
+		this.generate();
+	}
+
+	update() {
+		var initHeight = this.$bar.height();
+		var hpRatio = this.data.health / this.data.baseHealth;
+		this.$bar.height(hpRatio*100 + "%");
+	}
+}
+Display.Healthbar = Display_Healthbar;
+
+class Display_Healthbar0 {                           //===========Display.Healthbar===========
 	constructor(charData, sel, segmentCount) {
 		this.data = charData;
 		this.$barArea = $(sel);
@@ -170,7 +209,6 @@ class Display_Healthbar {                           //===========Display.Healthb
 		}
 	}
 }
-Display.Healthbar = Display_Healthbar;
 
 class Display_Timer {
 	constructor(sel) {
@@ -189,6 +227,7 @@ class Display_Timer {
 
 		var $display = $("#timerDisplay");
 		var initWidth = this.$bar.width();
+		this.onTimeOut = onTimeOut || $.noop();
 
 		this.timerWorker = Utils.newWorker("timer", (e) => {
 			if (e.data === "done") {
@@ -196,9 +235,9 @@ class Display_Timer {
 				$display.text((0).toFixed(3));
 				this.$bar.detach();
 				this.running = false;
-				if (typeof onTimeOut === "function") onTimeOut();
+				this.onTimeOut();
 			}
-			else if (e.data.time !== undefined) {
+			else if (e.data.time !== undefined) { // each step
 				$display.text(((e.data.time)/1000).toFixed(3));
 				this.$bar.width(initWidth * (e.data.time/duration));
 			}
@@ -212,7 +251,10 @@ class Display_Timer {
 		});
 	}
 
-	subtractTime(time) {
+	subtractTime(time, onTimeOut) {
+		var onTimeOut_old = this.onTimeOut;
+		this.onTimeOut = onTimeOut;
+		setTimeout(() => { this.onTimeOut = onTimeOut_old; }, 500);
 		this.timerWorker.postMessage({
 			action: "jump",
 			diffString: "-"+time
@@ -401,9 +443,11 @@ class Display_Overlay {                           //===========Display.Overlay==
 	}
 
 	showOne(type, customText) {
-		if (type)
-			this.$overlay._show().find("."+type)
-				._show().text((i, old) => (customText || old));
+		if (type) {
+			clearTimeout(this.blinkTimeout);
+			this.$overlay._show().find("." + type)
+				.stop().fadeIn(0)._show().text((i, old) => (customText || old));
+		}
 	}
 
 	show(...types) {
