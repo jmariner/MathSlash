@@ -63,6 +63,7 @@ class Pregame {
 		var $form = $("#gamemode-form");
 		Object.keys(GAME_MODES).forEach(function(gameMode) {
 			var disabled = GAME_DATA[gameMode][0].disabled;
+			var unstable = GAME_DATA[gameMode][0].unstable;
 			var inputAttr = {
 				type: "radio",
 				id: "gm_"+gameMode,
@@ -72,10 +73,10 @@ class Pregame {
 			var labelAttr = {
 				"for": "gm_"+gameMode,
 				disabled,
-				title: disabled ? "Game Mode Disabled" : ""
+				title: disabled ? "Game Mode Disabled" : unstable ? "Game Mode Unstable" : ""
 			};
 
-			var $label = $("<label>").attr(labelAttr).text(gameMode.replace(/_/g," "));
+			var $label = $("<label>").attr(labelAttr).addClass(unstable ? "unstable" : "").text(gameMode.replace(/_/g," "));
 			var $input = $("<input>").attr(inputAttr).on("change", function() {
 				$(this).parent().parent().find(".checked").removeClass("checked");
 				$(this).parent().addClass("checked");
@@ -104,7 +105,7 @@ class Pregame {
 			selector: ".jane",
 			startY: 0,
 			size: "70x100",
-			position: { bottom:"20%", left:"25%" },
+			position: { bottom:"20%", left:"20%" },
 			styles: { transform:"scale(4)" }
 		})
 		.registerAnimation("idle", {
@@ -123,9 +124,9 @@ class Pregame {
 			duration: 1000
 		})
 		.registerAnimation("dead", {
-				index: 3,
-				frames: 9,
-				duration: 1500
+			index: 3,
+			frames: 16,
+			duration: 2000
 		});
 
 		GAME.enemy.animManager = a.registerCharacter("rip", {
@@ -133,7 +134,8 @@ class Pregame {
 			startY: 400,
 			size: "50x72",
 			position: { bottom:"25%", right:"15%" },
-			styles: { transform:"scale(4)" }
+			styles: { transform:"scale(5)" },
+			skins: 6
 		})
 		.registerAnimation("idle", {
 			index: 0,

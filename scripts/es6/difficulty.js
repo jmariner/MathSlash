@@ -78,7 +78,8 @@ var GAME_DATA = {
 	TRIG_CIRCLE: [
 		//-------TRIG CIRCLE---------INDEX 0: OPTIONS--------------------
 		{
-			disabled: true,
+			disabled: false,
+			unstable: true,
 			usesMainTile: true,
 			choicesPerGroup: 1,
 			instructions: "Select the row equal to the main tile."
@@ -87,7 +88,7 @@ var GAME_DATA = {
 		//------TRIG CIRCLE---------DIFFICULTY 1-----------------------------
 		{
 			options: {
-				timeLimit: 10,
+				timeLimit: 30,
 				wrongPenalty: 0.75
 			}
 		}
@@ -118,5 +119,5 @@ Utils.forEachIn(function(mode, modeArray) { // for each game mode
 var GAME_MODES = {
 	GREATEST_SUM: "GREATEST_SUM",
 	TRIG_CIRCLE: "TRIG_CIRCLE",
-	MULTI_TABLE: "MULTI_TABLE"
+//	MULTI_TABLE: "MULTI_TABLE"
 };

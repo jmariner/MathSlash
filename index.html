@@ -98,6 +98,7 @@
 				<button onclick='GAME.onWrong()'>Force "Wrong"</button>
 				<button onclick='GAME.onTimeOut()'>Force "Out of Time"</button>
 				<button onclick='GAME.enemy.damageMod = 0'>Nerf Enemy</button>
+				<button onclick='GAME.player.damageMod = 5'>Buff Playery</button>
 				<div id="_playerHealth">Player Health: <span></span></div>
 				<div id="_enemyHealth">Boss Health: <span></span></div>
 			</div>
@@ -110,7 +111,9 @@
 					<div class="rip pixelArt"></div>
 				</div>
 				<div id="bottomArea">
-					<div id="timerArea"></div>
+					<div id="timerArea">
+						<div class="" id="timerDisplay"></div>
+					</div>
 					<div id="tileArea">
 						<div id="leftArea">
 							<div class="bigTileArea"></div>
@@ -142,7 +145,7 @@
 			<div class="side" id="right">
 				<div class="" id="difficultyDisplay"></div>
 				<button class="" onclick='Pregame.startGame(true)'>Play Example</button>
-				<div class="debugOnlyHidden" id="timerDisplay">0</div>
+
 			</div>
 		</div>
 	</body>

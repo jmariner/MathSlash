@@ -47,6 +47,7 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.enemy.health = this.enemy.baseHealth;
 		this.player.damageMod = 1;
 		this.enemy.damageMod = 1;
+		this.enemy.animManager.randomizeSkin();
 		this.nextRound(delay, undefined, true);
  	}
 
@@ -171,7 +172,7 @@ class Game { // level = each enemy, round = each collection of tiles
 
 		deadAnim.playThenFreeze("dead", () => {
 			deadAnim.$element.fadeOut(this.afterLevelDelay/2);
-			if (playerWon) {
+			if (playerWon && this.gameMode == GAME_MODES.GREATEST_SUM) {
 				if (this.current.diff < this.levels)
 					this.startLevel(this.current.diff + 1, this.afterLevelDelay);
 			}

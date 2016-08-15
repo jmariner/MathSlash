@@ -14,22 +14,24 @@ AnimationManager.prototype.registerCharacter = function(name, options) {
 	if (name && options) {
 		this._characterList.push(name);
 		this.characters[name] = new AnimationManager.Character(this,
-			name, options.selector, options.startY, options.size, options.position, options.styles);
+			name, options.selector, options.startY, options.size, options.position, options.styles, options.skins);
 		return this.characters[name];
 	}
 };
 
 //											====================== Character ======================
-AnimationManager.Character = function(manager, name, selector, startY, size, position, styles) {
+AnimationManager.Character = function(manager, name, selector, startY, size, position, styles, skins) {
 
 	this.manager = manager;
 	this.name = name;
 	this.selector = selector;
 	this.$element = $(this.selector);
+	this.initialStartY = startY;
 	this.startY = startY;
 	this.size = size;
 	this.position = position || {};
 	this.styles = styles || {};
+	this.skins = skins;
 
 	if (this.$element.length === 0) throw "Element not found: " + selector;
 	if (this.$element.length > 1) throw "Too many element matches (requires 1): " + selector;
@@ -40,6 +42,14 @@ AnimationManager.Character = function(manager, name, selector, startY, size, pos
 	this.size = {w: +sizeSplit[0], h: +sizeSplit[1]};
 
 	this.$element.addClass("animated").css(styles);
+	this.generateStyles();
+
+	this._animationList = [];
+	this.animations = {};
+	this._currentAnimation = undefined;
+};
+
+AnimationManager.Character.prototype.generateStyles = function() {
 	Utils.generateStylesheet("animated_element_template", {
 		selector: this.selector,
 		width: this.size.w,
@@ -50,10 +60,14 @@ AnimationManager.Character = function(manager, name, selector, startY, size, pos
 		right: this.position.right,
 		backgroundPosition: "0px " + -this.startY+"px"
 	}, this.name);
+};
 
-	this._animationList = [];
-	this.animations = {};
-	this._currentAnimation = undefined;
+AnimationManager.Character.prototype.randomizeSkin = function() {
+	var randomSkin = Randomizer.rand(1, this.skins);
+	var anims = Object.keys(this.animations).length;
+	this.startY = this.initialStartY + (randomSkin-1)*anims*this.size.h;
+	this.generateStyles();
+	Object.keys(this.animations).forEach(a => this.animations[a]._generateStyles());
 };
 
 AnimationManager.Character.prototype.setStyles = function(styles) {
@@ -132,16 +146,17 @@ AnimationManager.Animation = function(character, name, index, frames, duration) 
 	if (typeof this.frames !== "number" || this.frames < 0) throw "Invalid frame amount: " + this.index + ". Must be positive number.";
 	if (typeof this.duration != "number" || this.duration < 0) throw "Invalid duration: " + this.duration + ". Must be a number (milliseconds)";
 
-	this.startY = this.character.startY + this.character.size.h * this.index;
-
     this._generateStyles();
 
 	this._timeouts = {};
 	this._status = "stop";
 };
 
+
+
 AnimationManager.Animation.prototype._generateStyles = function() {
-    Utils.generateStylesheet("element_animation_template", {
+	this.startY = this.character.startY + this.character.size.h * this.index;
+	Utils.generateStylesheet("element_animation_template", {
         selector: this.character.selector,
         start: "0px " + -this.startY+"px",
         end: (-this.frames*this.character.size.w)+"px " + -this.startY+"px",
