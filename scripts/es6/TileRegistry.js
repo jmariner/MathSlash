@@ -126,4 +126,9 @@ class TileRegistry {
 	showTiles() {
 		Object.keys(this.groups).forEach(g => this.getGroup(g).tiles.forEach(t => t.show()));
 	}
+
+	hideTiles() {
+		Object.keys(this.groups).forEach(g => this.getGroup(g).tiles.forEach(t => t.hide()));
+		this.mainTile.show();
+	}
 }

@@ -25,6 +25,7 @@
 			left: {left};
 			bottom: {bottom};
 			right: {right};
+			background-position: {backgroundPosition};
 			}
 		</template>
 		<template id="element_animation_template">
@@ -103,11 +104,11 @@
 			<div id="game">
 				<div id="graphicArea">
 					<!--<img src="images/castleBackgroundTiled.jpg" class="background">-->
-					<img src="images/backgroundTiled.jpg" class="background">
+					<img src="images/background.png" class="background">
 					<div class="healthbar" id="playerHealth"></div>
 					<div class="healthbar" id="enemyHealth"></div>
 					<div class="jane pixelArt"></div>
-					<div class="knight pixelArt"></div>
+					<div class="rip pixelArt"></div>
 				</div>
 				<div id="bottomArea">
 					<div id="timerArea"></div>
@@ -132,6 +133,7 @@
 						<div class="failed">OUT OF TIME!</div>
 						<div class="win">YOU WIN!</div>
 						<div class="lose">YOU LOST!</div>
+						<div class="wrong">WRONG!</div>
 					</div>
 				</div>
 				<div id="mainOverlay">
@@ -139,7 +141,7 @@
 				</div>
 			</div>
 			<div class="side" id="right">
-				<button class="hidden" onclick='game.startLevel(2)'>Play Example</button>
+				<button class="" onclick='Pregame.startGame(true)'>Play Example</button>
 				<button class="hidden" onclick='a.characters.jane.toggleLoopAnimation("idle");'>Animate Character</button>
 				<button class="hidden" onclick="a.characters.jane.loopAnimation('idle');">Start Test Anim</button>
 				<button class="hidden" onclick="a.characters.jane.stopAnimation('idle');">Stop Test Anim</button>

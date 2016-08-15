@@ -90,6 +90,10 @@ class Display {
 		this.bottomOverlay.showOnly(type);
 	}
 
+	blinkBottomOverlay(type, dur) {
+		this.bottomOverlay.blink(type, dur || 1000);
+	}
+
 	hideBottomOverlay() {
 		this.bottomOverlay.hideAll();
 	}

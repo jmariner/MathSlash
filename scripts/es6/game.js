@@ -13,7 +13,7 @@ class Game { // level = each enemy, round = each collection of tiles
 		this.playing = false;
 		this.waiting = true;
 
-		this.preRoundDelay = 1000;
+		this.preRoundDelay = 500;
 		this.afterLevelDelay = 5000;
 		this.keypressTimeout = 500; //ms
 		this.blockInput = false;
@@ -31,7 +31,7 @@ class Game { // level = each enemy, round = each collection of tiles
 
 		this.display = new Display(this, this.registry, timerSegments, healthSegments, {fill:"black",stroke:"white"});
 		//this.display.timer.onEnd = () => { this.onTimeOut(); };
-		this.animationManager = undefined;
+		this.animationManager = null
 	}
 
 	initDisplay() {
@@ -51,29 +51,26 @@ class Game { // level = each enemy, round = each collection of tiles
  	}
 
 	nextRound(delay, correct, firstRound) {
-		if (firstRound) this.waiting = false;
+		if (firstRound) {
+			this.waiting = false;
+			Utils.forEachIn((n, c) => c.loopAnimation("idle"), this.animationManager.characters);
+		}
 		if (this.playing && !this.waiting) {
 
-			if (correct !== undefined) { // during round
-
-				this.display.showBottomOverlay(correct ? "correct" : "failed");
-				if (correct) this.damageEnemy();
-				else if (!correct) this.damagePlayer();
+			if (correct !== undefined) { // during round, after the attack anim and hp change
 
 				this.display.updateHealth();
 
-				if (this.player.health === 0) {
-					this.onLevelOver(false);
-					return;
-				}
-				else if (this.enemy.health === 0) {
-					this.onLevelOver(true);
+				if (this.player.health === 0 || this.enemy.health === 0) {
+					this.onLevelOver(this.enemy.health === 0);
 					return;
 				}
 			}
+
 			this.display.timer.clear();
 			this.registry.generateTiles(this.current.diff);
 			this.waiting = true;
+
 			this.timeouts.roundDelay = setTimeout(() => {
 				this.waiting = false;
 				this.display.hideBottomOverlay();
@@ -114,33 +111,52 @@ class Game { // level = each enemy, round = each collection of tiles
 
 	}
 
-	onLevelOver(playerWon) {
-		this.display.showBottomOverlay(playerWon ? "win" : "lose");
-		this.startLevel(this.current.diff, this.afterLevelDelay);
+	onRoundEnd(correct) {
+		this.display.showBottomOverlay(correct ? "correct" : "failed");
+		this.registry.hideTiles();
+		this.display.timer.clear();
+
+		var afterAttack = () => {
+			this.nextRound(this.preRoundDelay, correct);
+		};
+
+		this.attack(correct ? "enemy" : "player", afterAttack);
+	}
+
+	onCorrect() {
+		this.onRoundEnd(true);
 	}
 
 	onTimeOut() {
-		this.nextRound(this.preRoundDelay, false);
-	}
-
-	onCorrect() { // correct answer is chosen, damage the enemy and load next round
-		this.nextRound(this.preRoundDelay, true);
+		this.onRoundEnd(false);
 	}
 
 	onWrong() { // wrong answer is chosen, decrease time by this.current.options.wrongPenalty of start
+		this.display.blinkBottomOverlay("wrong", 500);
 		this.display.subtractTime(
 			this.current.options.timeLimit * this.current.options.wrongPenalty,
 			() => { this.onTimeOut(); }
 		);
 	}
 
-	damagePlayer() {
-		this.player.health -= (this.enemy.baseDamage * this.enemy.damageMod);
-		// do animation stuff
+	attack(who, after) { // who = person being attacked
+		if (who === "player") {
+			this.enemy.animManager.playAnimation("attack", () => { //after
+				this.player.animManager.playAnimation("hurt", after);
+			});
+			this.player.health -= (this.enemy.baseDamage * this.enemy.damageMod);
+		}
+		else if (who === "enemy") {
+			this.player.animManager.playAnimation("attack", () => { //after
+				this.enemy.animManager.playAnimation("hurt", after);
+			});
+			this.enemy.health -= (this.player.baseDamage * this.player.damageMod);
+		}
 	}
 
-	damageEnemy() {
-		this.enemy.health -= (this.player.baseDamage * this.player.damageMod);
-		// do animation stuff
+	onLevelOver(playerWon) {
+		this.display.showBottomOverlay(playerWon ? "win" : "lose");
+		// slide background to next part of level, then start next one
+		this.startLevel(this.current.diff, this.afterLevelDelay);
 	}
 }

@@ -2,6 +2,7 @@
 
 //											====================== Animation Manager ======================
 var AnimationManager = function(spriteSheet) {
+	// spriteSheet is from images/
 	this._characterList = [];
 	this.characters = {};
 	Utils.generateStylesheet("spriteSheet_template", {spriteSheet:spriteSheet})
@@ -46,8 +47,9 @@ AnimationManager.Character = function(manager, name, selector, startY, size, pos
 		top: this.position.top,
 		left: this.position.left,
 		bottom: this.position.bottom,
-		right: this.position.right
-	});
+		right: this.position.right,
+		backgroundPosition: "0px " + -this.startY+"px"
+	}, this.name);
 
 	this._animationList = [];
 	this.animations = {};
@@ -64,11 +66,16 @@ AnimationManager.Character.prototype.registerAnimation = function(name, options)
 	this._animationList.push(name);
 	this.animations[name] = new AnimationManager.Animation(this,
 		name, options.index, options.frames, options.duration);
-	return this.animations[name];
+	return this;
 };
 
-AnimationManager.Character.prototype.playAnimation = function(name) {
-	this.animations[name].playOnce();
+AnimationManager.Character.prototype.playAnimation = function(name, after) {
+	var anim = this.animations[name];
+	if (anim)
+		anim.playOnce(after);
+	else
+		throw "Animation \"" + name + "\" not found!";
+
 };
 
 AnimationManager.Character.prototype.loopAnimation = function(name, loopDuration) {
@@ -129,7 +136,7 @@ AnimationManager.Animation.prototype.isStopped = function() { return this._statu
 AnimationManager.Animation.prototype.isPlaying = function() { return this._status === "play"; };
 AnimationManager.Animation.prototype.isLooping = function() { return this._status.indexOf("loop") > -1; };
 
-AnimationManager.Animation.prototype._play = function(dur, returnToPrev) {
+AnimationManager.Animation.prototype._play = function(dur, returnToPrev, after) {
 	var dis = this;
     this.currentDuration = dur || this.duration;
 
@@ -146,6 +153,7 @@ AnimationManager.Animation.prototype._play = function(dur, returnToPrev) {
 		this._timeouts.play = setTimeout(function(){
 			dis.stop.call(dis);
 			if (prev) prev.loop();
+			if (typeof after === "function") after();
 		}, this.currentDuration);
 	}
 };
@@ -158,7 +166,12 @@ AnimationManager.Animation.prototype.pause = function() {
 };
 
 AnimationManager.Animation.prototype.playAndReturn = function() { this._play(0, true)};
-AnimationManager.Animation.prototype.playOnce = function() { this._play(); };
+
+AnimationManager.Animation.prototype.playOnce = function(after) {
+	var cur = this.character._currentAnimation;
+	this._play(0, cur && cur.isLooping(), after);
+};
+
 AnimationManager.Animation.prototype.loop = function(dur) { this._play(dur || -1); };
 
 AnimationManager.Animation.prototype.stop = function() {

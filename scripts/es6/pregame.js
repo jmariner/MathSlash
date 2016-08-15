@@ -98,30 +98,52 @@ class Pregame {
 		var gm = $form.find("input:checked").attr("id").replace("gm_","");
 		window.GAME = Pregame.GAME || new Game(GAME_MODES[gm]);
 
-		var a = GAME.animationManager = new AnimationManager("jane/idle.png");
+		var a = GAME.animationManager = new AnimationManager("spritesheet.png");
 
-		a.registerCharacter("jane", {
-			selector:".jane",
-			startY:0,
-			size:"50x70",
-			position:{ bottom:"12.5%", left:"7.5%"},
-			styles:{transform:"scale(2)"}
+		GAME.player.animManager = a.registerCharacter("jane", {
+			selector: ".jane",
+			startY: 0,
+			size: "70x100",
+			position: { bottom:"25%", left:"20%" },
+			styles: { transform:"scale(4)" }
+		})
+		.registerAnimation("idle", {
+			index: 0,
+			frames: 4,
+			duration: 1000
+		})
+		.registerAnimation("attack", {
+			index: 1,
+			frames: 17,
+			duration: 1000
+		})
+		.registerAnimation("hurt", {
+			index: 2,
+			frames: 12,
+			duration: 1000
 		});
 
-		a.characters["jane"].registerAnimation("idle", {
-			index:0,
-			frames:4,
-			duration:1400
-		});
-
-		$(".knight").css({
-			"background-image": 'url("images/knight.png")',
-			right: "15%",
-			bottom: "25%",
-			transform: "scale(-4, 4)",
-			width: "40px",
-			height: "60px",
-			position: "absolute"
+		GAME.enemy.animManager = a.registerCharacter("rip", {
+			selector: ".rip",
+			startY: 300,
+			size: "50x72",
+			position: { bottom:"15%", right:"15%" },
+			styles: { transform:"scale(4)" }
+		})
+		.registerAnimation("idle", {
+			index: 0,
+			frames: 10,
+			duration: 1000
+		})
+		.registerAnimation("attack", {
+			index: 1,
+			frames: 11,
+			duration: 1000
+		})
+		.registerAnimation("hurt", {
+			index: 2,
+			frames: 10,
+			duration: 1000
 		});
 
 		return {gameMode: gm};
