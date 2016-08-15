@@ -82,6 +82,7 @@ var GAME_DATA = {
 			unstable: true,
 			usesMainTile: true,
 			choicesPerGroup: 1,
+			name: "TRIG SURVIVAL",
 			instructions: "Select the row equal to the main tile."
 		},
 

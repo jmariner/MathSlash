@@ -121,6 +121,10 @@ class Display {
 	subtractTime(seconds, onTimeOut) {
 		this.timer.subtractTime(seconds*1000, onTimeOut);
 	}
+
+	static gameOver(won) {
+		$(".gameover-page").addClass(won ? "won" : "lost").addClass("enabled");
+	}
 }
 
 class Display_Healthbar {

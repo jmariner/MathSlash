@@ -29,6 +29,7 @@ body {
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
+	position: relative;
 
 	&.debug .debugOnly { display: flex; }
 	&:not(.debug) .debugOnlyHidden { visibility: hidden !important; }
@@ -49,7 +50,7 @@ body {
 		display: none !important;
 	}
 
-	@for $i from 1 through 5 {
+	@for $i from 1 through 6 {
 		&[data-current-page="#{$i}"] > div[data-page="#{$i}"] {
 			@include flex(column, center, center);
 		}
@@ -104,9 +105,6 @@ body {
 					color: rgb(100,100,100);
 					position: relative;
 					overflow: hidden;
-					&.unstable:before, &.unstable:after {
-						content: "⚠";
-					}
 					&:not([disabled]):hover, &.checked { color: white; }
 					&.checked { outline: dotted red 2px; }
 					&:not([disabled]) { cursor: pointer; }
@@ -147,6 +145,28 @@ body {
 		&.story-page {
 			justify-content: space-around;
 			.title { font-size: 72px; }
+			p {
+				text-align: justify;
+				line-height: 1.5em;
+				margin: 0 20%;
+			}
+		}
+
+		&.gameover-page {
+			position: absolute;
+			top: 0; left: 0; right: 0; bottom: 0;
+			z-index: 100;
+			&.enabled {
+				@include flex(column, space-around, center);
+			}
+			.title { font-size: 72px; }
+			p {
+				text-align: justify;
+				line-height: 1.5em;
+				margin: 0 20%;
+				display: none;
+			}
+			&.won > p.won, &.lost > p.lost { display: block; }
 		}
 
 		&.game-page {

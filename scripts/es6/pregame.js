@@ -62,8 +62,8 @@ class Pregame {
 		// generate game mode list
 		var $form = $("#gamemode-form");
 		Object.keys(GAME_MODES).forEach(function(gameMode) {
-			var disabled = GAME_DATA[gameMode][0].disabled;
-			var unstable = GAME_DATA[gameMode][0].unstable;
+			var data = GAME_DATA[gameMode][0];
+			var disabled = data.disabled;
 			var inputAttr = {
 				type: "radio",
 				id: "gm_"+gameMode,
@@ -73,10 +73,12 @@ class Pregame {
 			var labelAttr = {
 				"for": "gm_"+gameMode,
 				disabled,
-				title: disabled ? "Game Mode Disabled" : unstable ? "Game Mode Unstable" : ""
+				title: disabled ? "Game Mode Disabled" : ""
 			};
 
-			var $label = $("<label>").attr(labelAttr).addClass(unstable ? "unstable" : "").text(gameMode.replace(/_/g," "));
+			var name = data.name || gameMode.replace(/_/g," ");
+
+			var $label = $("<label>").attr(labelAttr).text(name);
 			var $input = $("<input>").attr(inputAttr).on("change", function() {
 				$(this).parent().parent().find(".checked").removeClass("checked");
 				$(this).parent().addClass("checked");
